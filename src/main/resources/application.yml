@@ -1,0 +1,43 @@
+spring:
+  rabbitmq:
+    addresses: "amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"
+    listener:
+      concurrency: 5
+      max-concurrency: 10
+  jpa:
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wa}
+    username: ${DB_USER:wa}
+    password: ${DB_PASSWORD:wa123}
+    driverClassName: org.postgresql.Driver
+
+app:
+  security:
+    jwtSecret: stafus-api
+    jwtExpirationInMs: 3600000
+    refreshExpirationDateInMs: 604800000
+
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: method
+git:
+  url: https://github.com/kiditz/wa-integration.git
+  username: kiditzbastara@gmail.com
+  password: 1Sampaisembilan
+
+logging:
+  level:
+    com.stafsus.waapi: trace
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} Tracing: %X{tracingId}  [%t] %-5level %logger{36} - %msg %n"
