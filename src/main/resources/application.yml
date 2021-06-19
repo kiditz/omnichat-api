@@ -32,9 +32,8 @@ springdoc:
     tags-sorter: alpha
     operations-sorter: method
 git:
-  url: https://github.com/kiditz/wa-integration.git
-  username: kiditzbastara@gmail.com
-  password: 1Sampaisembilan
+  url: "git@github.com:kiditz/wa-integration.git"
+  privateKey: "/Users/sd/.ssh/id_rifky"
 
 logging:
   level:
