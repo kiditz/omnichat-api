@@ -10,7 +10,7 @@ data class UserDto(
     @JsonIgnore
     var password: String,
     var role: Role,
-    var authorities: List<Authority>,
+    var authorities: Set<Authority>,
     var status: Status
 
 ) {

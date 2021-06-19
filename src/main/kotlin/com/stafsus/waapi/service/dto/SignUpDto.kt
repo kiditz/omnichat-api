@@ -7,5 +7,5 @@ data class SignUpDto(
     val email: String,
     val password: String,
     val role: Role,
-    val authority: Authority
+    val authorities: Set<Authority>
 )

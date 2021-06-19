@@ -1,41 +1,59 @@
 package com.stafsus.waapi.service
 
+import com.stafsus.waapi.config.RabbitConfig
+import com.stafsus.waapi.entity.User
+import com.stafsus.waapi.entity.WaDevice
+import com.stafsus.waapi.repository.WaDeviceRepository
 import com.stafsus.waapi.service.security.SshTransportConfigCallback
 import com.stafsus.waapi.utils.Random
 import org.apache.commons.io.FileUtils
-import org.apache.commons.io.FileUtils.deleteDirectory
 import org.apache.logging.log4j.ThreadContext
 import org.eclipse.jgit.api.Git
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.File
-import java.io.InputStream
 import java.nio.file.Files
-import java.text.DecimalFormat
-import java.text.NumberFormat
-import java.util.*
+import java.time.LocalDateTime
 
 
 @Service
 class WaServiceImpl(
-        @Value("\${git.url}") val gitUrl: String,
-        @Value("\${git.privateKey}") val privateKey: String,
-
-        ) : WaService {
+        @Value("\${app.git.url}") val gitUrl: String,
+        @Value("\${app.git.privateKey}") val privateKey: String,
+        @Value("\${app.git.cloneDir}") val cloneDir: String,
+        @Value("\${app.device.period}") val period: Long,
+        private val rabbitTemplate: RabbitTemplate,
+        private val deviceRepository: WaDeviceRepository
+) : WaService {
     private val log: Logger = LoggerFactory.getLogger(javaClass)
     private val tracingId: String = "tracingId"
-    override fun generateDevice(deviceId: String) {
-        val destDir = Files.createTempDirectory("wa-integration").toFile()
+    override fun deployDevice(user: User, deviceId: String) {
+        saveDevice(user, deviceId)
+        writeDevice(deviceId)
+    }
 
-        ThreadContext.put(tracingId, Random.string(5))
+    private fun saveDevice(user: User, deviceId: String) {
+        val startAt = LocalDateTime.now()
+        val endAt = LocalDateTime.now().plusDays(period)
+        val device = WaDevice(deviceId = deviceId, user = user, startAt = startAt, endAt = endAt)
+        deviceRepository.save(device)
+    }
+
+    private fun writeDevice(deviceId: String) {
+        val destDir = File(cloneDir, deviceId)
+        if(!destDir.isDirectory)
+            destDir.mkdirs()
         log.info("Start compute new application with deviceId: $deviceId tracingId: [$tracingId] In : $destDir ")
         cloneRepository(destDir)
-        buildDockerImage(destDir, deviceId)
-        deleteDirectory(destDir)
-        ThreadContext.remove(tracingId)
         log.info("End compute")
+        val result = mutableMapOf<String, Any>(
+                "deviceId" to deviceId,
+                "directory" to destDir
+        )
+        rabbitTemplate.convertAndSend(RabbitConfig.DEPLOY, result)
     }
 
 
@@ -48,35 +66,5 @@ class WaServiceImpl(
                     .call().use { result ->
                         log.info("Having repository: " + result.repository.directory)
                     }
-    }
-
-    private fun buildDockerImage(destDir: File, deviceId: String) {
-        log.info("build docker image")
-        val builder = ProcessBuilder()
-        builder.directory(destDir)
-        builder.redirectErrorStream(true)
-        builder.command("docker", "build", ".", "-t", "wa:${deviceId}")
-        val start = System.currentTimeMillis()
-        log.info("Start Execute")
-        val process = builder.start()
-        inheritIO(process.inputStream, false)
-        inheritIO(process.errorStream, true)
-        process.waitFor()
-        val end = System.currentTimeMillis()
-        val formatter: NumberFormat = DecimalFormat("#0.00000")
-        log.info("End Execute after ${formatter.format((end - start) / 1000.0)} seconds")
-    }
-
-    private fun inheritIO(src: InputStream, isError: Boolean) {
-        Thread {
-            val sc = Scanner(src)
-            while (sc.hasNextLine()) {
-                if (isError) {
-                    log.error("Error > ${sc.nextLine()}")
-                } else {
-                    log.info("Run > ${sc.nextLine()}")
-                }
-            }
-        }.start()
     }
 }

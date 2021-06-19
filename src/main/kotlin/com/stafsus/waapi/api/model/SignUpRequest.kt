@@ -9,24 +9,22 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 data class SignUpRequest(
-    @field:Email
-    @field:NotBlank
-    @field:Size(max = 100)
-    val email: String,
-    @field:NotBlank
-    @field:Size(max = 60)
-    val password: String,
-    @NotNull
-    val role: Role,
-    @NotNull
-    val authority: Authority
+        @field:Email
+        @field:NotBlank
+        @field:Size(max = 100)
+        val email: String,
+        @field:NotBlank
+        @field:Size(max = 60)
+        val password: String,
+        @NotNull
+        val role: Role,
 ) {
     fun toDto(): SignUpDto {
         return SignUpDto(
-            email = email,
-            password = password,
-            role = role,
-            authority = authority
+                email = email,
+                password = password,
+                role = role,
+                authorities = mutableSetOf(Authority.API_ACCESS, Authority.EDIT_WEBHOOK, Authority.VIEW_WEBHOOK)
         )
     }
 }

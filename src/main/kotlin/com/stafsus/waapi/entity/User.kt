@@ -23,7 +23,7 @@ data class User(
     @ElementCollection(fetch = FetchType.EAGER, targetClass = Authority::class)
     @CollectionTable(name = "user_authority", joinColumns = [JoinColumn(name = "user_id")])
     @Column(name = "authority")
-    var authorities: List<Authority>,
+    var authorities: Set<Authority>,
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)

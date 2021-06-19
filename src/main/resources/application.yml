@@ -4,6 +4,7 @@ spring:
     listener:
       concurrency: 5
       max-concurrency: 10
+    dynamic: true
   jpa:
     show-sql: true
     open-in-view: false
@@ -21,22 +22,26 @@ spring:
     driverClassName: org.postgresql.Driver
 
 app:
+  device:
+    period: 3
   security:
     jwtSecret: stafus-api
     jwtExpirationInMs: 3600000
     refreshExpirationDateInMs: 604800000
+  git:
+    url: "git@github.com:kiditz/wa-integration.git"
+    privateKey: ${SSH_PATH:/Users/sd/.ssh/id_rifky}
+    cloneDir: ${GIT_CLONE_DIR:/Users/sd/development/wa}
 
 springdoc:
   use-fqn: true
   swagger-ui:
     tags-sorter: alpha
     operations-sorter: method
-git:
-  url: "git@github.com:kiditz/wa-integration.git"
-  privateKey: "/Users/sd/.ssh/id_rifky"
 
 logging:
   level:
     com.stafsus.waapi: trace
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} Tracing: %X{tracingId}  [%t] %-5level %logger{36} - %msg %n"
+

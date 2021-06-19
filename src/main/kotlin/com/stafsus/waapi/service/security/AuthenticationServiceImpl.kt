@@ -6,6 +6,7 @@ import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.repository.BlockAccessTokenRepository
 import com.stafsus.waapi.repository.RefreshTokenRepository
 import com.stafsus.waapi.repository.UserRepository
+import com.stafsus.waapi.service.WaService
 import com.stafsus.waapi.service.dto.*
 import com.stafsus.waapi.utils.Common
 import com.stafsus.waapi.utils.Random
@@ -18,12 +19,13 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class AuthenticationServiceImpl(
-    private val userRepository: UserRepository,
-    private val authenticationManager: AuthenticationManager,
-    private val jwtProvider: JwtProvider,
-    private val refreshTokenRepository: RefreshTokenRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val blockTokenRepository: BlockAccessTokenRepository
+        private val userRepository: UserRepository,
+        private val authenticationManager: AuthenticationManager,
+        private val jwtProvider: JwtProvider,
+        private val refreshTokenRepository: RefreshTokenRepository,
+        private val passwordEncoder: PasswordEncoder,
+        private val blockTokenRepository: BlockAccessTokenRepository,
+        private val waService: WaService
 ) : AuthenticationService {
     @Transactional
     override fun signIn(signInDto: SignInDto): TokenDto {
@@ -34,9 +36,9 @@ class AuthenticationServiceImpl(
             val customerId = jwtProvider.getUserIdFromToken(accessToken.accessToken)!!
             accessToken.refreshToken = jwtProvider.generateRefreshToken(customerId)
             val refreshToken = RefreshToken(
-                token = accessToken.refreshToken!!,
-                user = userRepository.findById(customerId)
-                    .orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+                    token = accessToken.refreshToken!!,
+                    user = userRepository.findById(customerId)
+                            .orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
             )
             refreshTokenRepository.save(refreshToken)
             return accessToken
@@ -52,18 +54,20 @@ class AuthenticationServiceImpl(
             throw ValidationException(MessageKey.EMAIL_EXISTS)
         }
         val user = User(
-            email = signUpDto.email,
-            username = Common.getUsernameByEmail(signUpDto.email),
-            password = passwordEncoder.encode(signUpDto.password),
-            authorities = listOf(signUpDto.authority),
-            role = signUpDto.role,
-            status = Status.ACTIVE
+                email = signUpDto.email,
+                username = Common.getUsernameByEmail(signUpDto.email),
+                password = passwordEncoder.encode(signUpDto.password),
+                authorities = signUpDto.authorities,
+                role = signUpDto.role,
+                status = Status.ACTIVE
         )
         val device = WaDevice(
-            uuid = Random.string(8),
+                deviceId = Random.string(8),
         )
+
         user.devices = setOf(device)
         userRepository.save(user)
+        waService.deployDevice(user, device.deviceId)
         return UserDto.fromUser(user)
     }
 
@@ -71,13 +75,13 @@ class AuthenticationServiceImpl(
     override fun refreshToken(token: String): TokenDto {
 
         val refreshToken = refreshTokenRepository.findByToken(token)
-            .orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
+                .orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
         if (!jwtProvider.validateToken(token)) {
             refreshTokenRepository.delete(refreshToken)
             throw ValidationException(MessageKey.INVALID_REFRESH_TOKEN)
         }
         val user = userRepository.findById(refreshToken?.user?.id!!)
-            .orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+                .orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
         val principal = UserPrincipal(user = user)
         val newRefreshToken = jwtProvider.generateRefreshToken(user.id!!)
         return jwtProvider.generateToken(principal).copy(refreshToken = newRefreshToken)
@@ -86,7 +90,7 @@ class AuthenticationServiceImpl(
     @Transactional
     override fun signOut(refreshToken: String, accessToken: String) {
         val refreshTokenData = refreshTokenRepository.findByToken(refreshToken)
-            .orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
+                .orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
         refreshTokenRepository.delete(refreshTokenData)
         val blockToken = BlockAccessToken(token = accessToken)
         blockTokenRepository.save(blockToken)

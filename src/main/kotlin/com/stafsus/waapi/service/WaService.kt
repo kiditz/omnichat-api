@@ -1,5 +1,7 @@
 package com.stafsus.waapi.service
 
+import com.stafsus.waapi.entity.User
+
 interface WaService {
-    fun generateDevice(deviceId: String)
+    fun deployDevice(user: User, deviceId: String)
 }
