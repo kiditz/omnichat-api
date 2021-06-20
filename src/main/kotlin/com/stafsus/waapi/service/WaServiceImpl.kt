@@ -26,10 +26,7 @@ class WaServiceImpl(
         @Value("\${app.device.period}") val period: Long,
         private val rabbitTemplate: RabbitTemplate,
         private val deviceRepository: WaDeviceRepository,
-        private val resourceLoader: ResourceLoader
 ) : WaService {
-    private val log: Logger = LoggerFactory.getLogger(javaClass)
-    private val tracingId: String = "tracingId"
     override fun deployDevice(user: User, deviceId: String) {
         saveDevice(user, deviceId)
     }
@@ -39,7 +36,11 @@ class WaServiceImpl(
         val endAt = LocalDateTime.now().plusDays(period)
         val device = WaDevice(deviceId = deviceId, user = user, startAt = startAt, endAt = endAt)
         deviceRepository.save(device)
-        rabbitTemplate.convertAndSend(RabbitConfig.DEPLOY, device)
+        val result = mutableMapOf(
+                "deviceId" to deviceId,
+                "userId" to user.id
+        )
+        rabbitTemplate.convertAndSend(RabbitConfig.DEPLOY, result)
     }
 
 //    private fun writeDevice(deviceId: String) {

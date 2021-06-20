@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: asia.gcr.io/stafsus-35cc5/wa-api
-  pullPolicy: IfNotPresent
+  pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "v1"
 
@@ -41,13 +41,13 @@ service:
   port: 8080
 
 ingress:
-  enabled: false
+  enabled: true
   className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
+  annotations: 
+    kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: 'api.stafsus.com'
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -92,6 +92,8 @@ env:
    value: "tLAnVFvZOB"
  - name: "DB_NAME"
    value: "wa"
+ - name: "AMQP_ADDRESS"
+   value: "amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"
 
 
 
