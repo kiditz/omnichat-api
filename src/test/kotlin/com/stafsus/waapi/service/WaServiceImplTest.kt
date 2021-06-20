@@ -16,7 +16,7 @@ internal class WaServiceImplTest {
 
     @Test
     fun generateDevice() {
-        waService.deployDevice(User(
+        waService.sendDeviceToQueue(User(
                 email = "", password = "", role = Role.ROLE_ADMIN, authorities = setOf(), status = Status.ACTIVE, username = ""
         ), Random.string(5))
     }

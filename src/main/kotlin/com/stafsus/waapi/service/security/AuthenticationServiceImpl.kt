@@ -10,12 +10,14 @@ import com.stafsus.waapi.service.WaService
 import com.stafsus.waapi.service.dto.*
 import com.stafsus.waapi.utils.Common
 import com.stafsus.waapi.utils.Random
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 @Service
 class AuthenticationServiceImpl(
@@ -25,7 +27,8 @@ class AuthenticationServiceImpl(
         private val refreshTokenRepository: RefreshTokenRepository,
         private val passwordEncoder: PasswordEncoder,
         private val blockTokenRepository: BlockAccessTokenRepository,
-        private val waService: WaService
+        private val waService: WaService,
+        @Value("\${app.device.period}") val period: Long,
 ) : AuthenticationService {
     @Transactional
     override fun signIn(signInDto: SignInDto): TokenDto {
@@ -61,13 +64,13 @@ class AuthenticationServiceImpl(
                 role = signUpDto.role,
                 status = Status.ACTIVE
         )
-        val device = WaDevice(
-                deviceId = Random.string(8),
-        )
+        val startAt = LocalDateTime.now()
+        val endAt = LocalDateTime.now().plusDays(period)
+        val device = WaDevice(deviceId = Random.string(8), startAt = startAt, endAt = endAt, deviceStatus = DeviceStatus.ON_PROGRESS)
 
-        user.devices = setOf(device)
+        user.devices = mutableSetOf(device)
         userRepository.save(user)
-        waService.deployDevice(user, device.deviceId)
+        waService.sendDeviceToQueue(user, device.deviceId)
         return UserDto.fromUser(user)
     }
 

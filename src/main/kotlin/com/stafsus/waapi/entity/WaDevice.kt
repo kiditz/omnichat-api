@@ -16,5 +16,11 @@ data class WaDevice(
         @JoinColumn(name = "user_id")
         var user: User? = null,
         val startAt: LocalDateTime? = null,
-        val endAt: LocalDateTime? = null
+        val endAt: LocalDateTime? = null,
+        @Enumerated(EnumType.STRING)
+        val deviceStatus: DeviceStatus? = null
 ) : Auditable()
+
+enum class DeviceStatus {
+    PHONE_ONLINE, PHONE_OFFLINE, ON_PROGRESS,
+}

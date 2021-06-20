@@ -1,6 +1,6 @@
 spring:
   rabbitmq:
-    addresses: ${AMQP_ADDRESS:"amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"}
+    addresses: ${AMQP_ADDRESS:amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk}
     listener:
       concurrency: 5
       max-concurrency: 10
