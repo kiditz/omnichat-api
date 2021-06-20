@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api")
-class HomeController {
-    @GetMapping("/home")
+class HealthController {
+    @GetMapping("/health")
     @Operation(security = [SecurityRequirement(name = "bearer-key")])
     fun index(): Map<String, Any> {
         return mapOf(

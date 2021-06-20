@@ -1,5 +1,8 @@
 package com.stafsus.waapi.service
 
+import com.stafsus.waapi.entity.Role
+import com.stafsus.waapi.entity.Status
+import com.stafsus.waapi.entity.User
 import com.stafsus.waapi.utils.Random
 import org.junit.jupiter.api.Test
 
@@ -13,6 +16,8 @@ internal class WaServiceImplTest {
 
     @Test
     fun generateDevice() {
-        waService.deployDevice(Random.string(5))
+        waService.deployDevice(User(
+                email = "", password = "", role = Role.ROLE_ADMIN, authorities = setOf(), status = Status.ACTIVE, username = ""
+        ), Random.string(5))
     }
 }

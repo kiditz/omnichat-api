@@ -8,13 +8,13 @@ import java.io.File
 
 
 class SshTransportConfigCallback(
-        val privateKeyPath: String
+        val rsaStr: String
 ) : TransportConfigCallback {
     private val sshSessionFactory: SshSessionFactory = object : JschConfigSessionFactory() {
         override fun createDefaultJSch(fs: FS?): JSch {
             val defaultJSch = super.createDefaultJSch(fs)
             defaultJSch.removeAllIdentity()
-            defaultJSch.addIdentity(File(privateKeyPath).absolutePath)
+            defaultJSch.addIdentity("id_rsa", rsaStr.toByteArray(), null, null)
             return defaultJSch
         }
 

@@ -75,7 +75,7 @@ class WebSecurityConfig(
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers("/api/auth/sign-in", "/api/auth/sign-up", "/api/auth/sign-out").permitAll()
+            .antMatchers("/api/auth/sign-in", "/api/auth/sign-up", "/api/auth/sign-out", "/api/health").permitAll()
             .anyRequest().authenticated()
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
     }

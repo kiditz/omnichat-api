@@ -1,6 +1,6 @@
 spring:
   rabbitmq:
-    addresses: "amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"
+    addresses: ${AMQP_ADDRESS:"amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"}
     listener:
       concurrency: 5
       max-concurrency: 10
@@ -28,10 +28,6 @@ app:
     jwtSecret: stafus-api
     jwtExpirationInMs: 3600000
     refreshExpirationDateInMs: 604800000
-  git:
-    url: "git@github.com:kiditz/wa-integration.git"
-    privateKey: ${SSH_PATH:/Users/sd/.ssh/id_rifky}
-    cloneDir: ${GIT_CLONE_DIR:/Users/sd/development/wa}
 
 springdoc:
   use-fqn: true
