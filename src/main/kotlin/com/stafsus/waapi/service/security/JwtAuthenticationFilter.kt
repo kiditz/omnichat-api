@@ -1,7 +1,7 @@
 package com.stafsus.waapi.service.security
 
 import com.stafsus.waapi.constant.MessageKey
-import javassist.NotFoundException
+import com.stafsus.waapi.exception.ValidationException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
@@ -24,8 +24,7 @@ class JwtAuthenticationFilter(
         val token = getJwtFromRequest(request)
         if (StringUtils.hasText(token) && jwtProvider.validateToken(token) && !securityUserService.isBlocked(token)) {
             val userId = jwtProvider.getUserIdFromToken(token)
-            val userDetails = securityUserService.loadUserId(userId!!)
-                .orElseThrow { NotFoundException(MessageKey.USER_NOT_FOUND) }
+            val userDetails = securityUserService.loadUserId(userId!!).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
             val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
             authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
             SecurityContextHolder.getContext().authentication = authentication

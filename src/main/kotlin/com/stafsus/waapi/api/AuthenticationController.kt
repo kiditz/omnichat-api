@@ -9,6 +9,7 @@ import com.stafsus.waapi.service.dto.ApiResponse
 import com.stafsus.waapi.service.security.AuthenticationService
 import com.stafsus.waapi.service.security.JwtAuthenticationFilter
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -48,7 +49,10 @@ class AuthenticationController(
     }
 
     @PostMapping("/auth/sign-out")
-    @Operation(summary = "Remove and invalidate token")
+    @Operation(
+            security = [SecurityRequirement(name = "bearer-key")],
+            summary = "Sign out jwt token"
+    )
     fun signOut(@Valid @RequestBody request: RefreshTokenRequest, sRequest: HttpServletRequest): ApiResponse {
         val accessToken = JwtAuthenticationFilter.getJwtFromRequest(sRequest)
         authenticationService.signOut(request.refreshToken!!, accessToken!!)

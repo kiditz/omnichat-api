@@ -15,12 +15,18 @@ data class WaDevice(
         @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
         @JoinColumn(name = "user_id")
         var user: User? = null,
-        val startAt: LocalDateTime? = null,
-        val endAt: LocalDateTime? = null,
+        var startAt: LocalDateTime? = null,
+        var endAt: LocalDateTime? = null,
         @Enumerated(EnumType.STRING)
-        val deviceStatus: DeviceStatus? = null
+        var deviceStatus: DeviceStatus? = null,
+        @Enumerated(EnumType.STRING)
+        var deviceInfo: DeviceInfo? = null
 ) : Auditable()
 
 enum class DeviceStatus {
-    PHONE_ONLINE, PHONE_OFFLINE, ON_PROGRESS,
+    PHONE_ONLINE, PHONE_OFFLINE
+}
+
+enum class DeviceInfo {
+    ON_INSTALL, ON_UNINSTALLED, ON_RESTART, ACTIVE
 }

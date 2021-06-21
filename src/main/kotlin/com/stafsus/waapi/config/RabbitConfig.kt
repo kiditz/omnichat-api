@@ -1,9 +1,6 @@
 package com.stafsus.waapi.config
 
-import org.springframework.amqp.core.Binding
-import org.springframework.amqp.core.BindingBuilder
-import org.springframework.amqp.core.DirectExchange
-import org.springframework.amqp.core.Queue
+import org.springframework.amqp.core.*
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
@@ -14,25 +11,77 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class RabbitConfig {
     companion object {
-        const val DEPLOY_EX = "deploy_ex"
-        const val DEPLOY_Q = "deploy_q"
-        const val DEPLOY_RQ = "deploy_q"
+        const val INSTALL_EX = "install_ex"
+        const val INSTALL_Q = "install_q"
+        const val INSTALL_RK = "deploy.*.install"
+        const val UNINSTALL_EX = "uninstall_ex"
+        const val UNINSTALL_RK = "deploy.*.uninstall"
+        const val UNINSTALL_Q = "uninstall_q"
+        const val RESTART_EX = "restart_ex"
+        const val RESTART_RK = "deploy.*.restart"
+        const val RESTART_Q = "restart_q"
+        const val LOGS_Q = "logs_q"
     }
 
     @Bean
-    fun queue(): Queue {
-        return Queue(DEPLOY_Q, true)
+    fun installQueue(): Queue {
+        return Queue(INSTALL_Q, true)
     }
 
     @Bean
-    fun exchange(): DirectExchange {
-        return DirectExchange(DEPLOY_EX)
+    fun installExchange(): TopicExchange {
+        return TopicExchange(INSTALL_EX)
     }
 
     @Bean
-    fun binding(queue: Queue, exchange: DirectExchange): Binding {
-        return BindingBuilder.bind(queue).to(exchange).with(DEPLOY_RQ)
+    fun installBindings(): Declarables {
+        return Declarables(
+                BindingBuilder.bind(installQueue()).to(installExchange()).with(INSTALL_RK),
+                BindingBuilder.bind(logsQueue()).to(installExchange()).with(INSTALL_RK)
+        )
     }
+
+    @Bean
+    fun uninstallQueue(): Queue {
+        return Queue(UNINSTALL_Q, true)
+    }
+
+    @Bean
+    fun uninstallExchange(): TopicExchange {
+        return TopicExchange(UNINSTALL_EX)
+    }
+
+    @Bean
+    fun uninstallBindings(): Declarables {
+        return Declarables(
+                BindingBuilder.bind(uninstallQueue()).to(uninstallExchange()).with(UNINSTALL_RK),
+                BindingBuilder.bind(logsQueue()).to(uninstallExchange()).with(UNINSTALL_RK)
+        )
+    }
+
+    @Bean
+    fun restartQueue(): Queue {
+        return Queue(RESTART_Q, true)
+    }
+
+    @Bean
+    fun restartExchange(): TopicExchange {
+        return TopicExchange(RESTART_EX)
+    }
+
+    @Bean
+    fun restartBindings(): Declarables {
+        return Declarables(
+                BindingBuilder.bind(restartQueue()).to(restartExchange()).with(RESTART_RK),
+                BindingBuilder.bind(logsQueue()).to(restartExchange()).with(RESTART_RK)
+        )
+    }
+
+    @Bean
+    fun logsQueue(): Queue {
+        return Queue(LOGS_Q, true)
+    }
+
 
     @Bean
     fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {

@@ -1,23 +1,23 @@
 package com.stafsus.waapi.service.security
 
 import com.stafsus.waapi.constant.MessageKey
-import com.stafsus.waapi.entity.*
+import com.stafsus.waapi.entity.BlockAccessToken
+import com.stafsus.waapi.entity.RefreshToken
+import com.stafsus.waapi.entity.Status
+import com.stafsus.waapi.entity.User
 import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.repository.BlockAccessTokenRepository
 import com.stafsus.waapi.repository.RefreshTokenRepository
 import com.stafsus.waapi.repository.UserRepository
-import com.stafsus.waapi.service.WaService
+import com.stafsus.waapi.service.WaDeviceService
 import com.stafsus.waapi.service.dto.*
 import com.stafsus.waapi.utils.Common
-import com.stafsus.waapi.utils.Random
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 
 @Service
 class AuthenticationServiceImpl(
@@ -27,9 +27,9 @@ class AuthenticationServiceImpl(
         private val refreshTokenRepository: RefreshTokenRepository,
         private val passwordEncoder: PasswordEncoder,
         private val blockTokenRepository: BlockAccessTokenRepository,
-        private val waService: WaService,
-        @Value("\${app.device.period}") val period: Long,
-) : AuthenticationService {
+        private val waDeviceService: WaDeviceService,
+
+        ) : AuthenticationService {
     @Transactional
     override fun signIn(signInDto: SignInDto): TokenDto {
         val authenticationToken = UsernamePasswordAuthenticationToken(signInDto.email, signInDto.password)
@@ -64,12 +64,8 @@ class AuthenticationServiceImpl(
                 role = signUpDto.role,
                 status = Status.ACTIVE
         )
-        val startAt = LocalDateTime.now()
-        val endAt = LocalDateTime.now().plusDays(period)
-        val device = WaDevice(deviceId = Random.stringLowerOnly(8), startAt = startAt, endAt = endAt, deviceStatus = DeviceStatus.ON_PROGRESS)
-        user.devices = mutableSetOf(device)
         userRepository.save(user)
-        waService.sendDeviceToQueue(user, device.deviceId)
+        waDeviceService.install(user)
         return UserDto.fromUser(user)
     }
 
