@@ -19,7 +19,7 @@ class DeviceController(
         private val waDeviceService: WaDeviceService,
         private val translateService: TranslateService
 ) {
-    @PostMapping("/update")
+    @PostMapping("/restart")
     @Operation(
             security = [SecurityRequirement(name = "bearer-key")],
             summary = "Restart existing device"
