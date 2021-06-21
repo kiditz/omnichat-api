@@ -35,7 +35,7 @@ class WaDeviceServiceImpl(
         log.info("Install Device :${device.deviceId}")
         val result = mutableMapOf(
                 "deviceId" to device.deviceId,
-                "status" to DeviceInfo.ON_INSTALL
+                "deviceInfo" to DeviceInfo.ON_INSTALL
         )
         rabbitTemplate.convertAndSend(RabbitConfig.INSTALL_EX, RabbitConfig.INSTALL_RK, result)
     }
@@ -45,7 +45,7 @@ class WaDeviceServiceImpl(
         deviceRepository.findByDeviceIdAndUserEmail(deviceId, email).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
         val result = mutableMapOf(
                 "deviceId" to deviceId,
-                "info" to DeviceInfo.ON_UNINSTALLED
+                "deviceInfo" to DeviceInfo.ON_UNINSTALLED
         )
         rabbitTemplate.convertAndSend(RabbitConfig.UNINSTALL_EX, RabbitConfig.UNINSTALL_RK, result)
     }
@@ -55,8 +55,14 @@ class WaDeviceServiceImpl(
         deviceRepository.findByDeviceIdAndUserEmail(deviceId, email).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
         val result = mutableMapOf(
                 "deviceId" to deviceId,
-                "status" to DeviceInfo.ON_RESTART
+                "deviceInfo" to DeviceInfo.ON_RESTART
         )
         rabbitTemplate.convertAndSend(RabbitConfig.RESTART_EX, RabbitConfig.RESTART_RK, result)
+    }
+
+    override fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo) {
+        val device = deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+        device.deviceInfo = deviceInfo
+        deviceRepository.save(device)
     }
 }

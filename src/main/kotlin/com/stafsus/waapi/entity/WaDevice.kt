@@ -28,5 +28,5 @@ enum class DeviceStatus {
 }
 
 enum class DeviceInfo {
-    ON_INSTALL, ON_UNINSTALLED, ON_RESTART, ACTIVE
+    ON_INSTALL, ON_UNINSTALLED, ON_RESTART, ACTIVE, INACTIVE
 }
