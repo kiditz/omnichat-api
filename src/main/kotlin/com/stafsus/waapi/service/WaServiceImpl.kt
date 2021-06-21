@@ -13,7 +13,8 @@ class WaServiceImpl(
     override fun sendDeviceToQueue(user: User, deviceId: String) {
         val result = mutableMapOf(
                 "deviceId" to deviceId,
-                "userId" to user.id
+                "userId" to user.id,
+                "username" to user.username,
         )
         rabbitTemplate.convertAndSend(RabbitConfig.DEPLOY_RQ, result)
     }

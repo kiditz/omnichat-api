@@ -66,8 +66,7 @@ class AuthenticationServiceImpl(
         )
         val startAt = LocalDateTime.now()
         val endAt = LocalDateTime.now().plusDays(period)
-        val device = WaDevice(deviceId = Random.string(8), startAt = startAt, endAt = endAt, deviceStatus = DeviceStatus.ON_PROGRESS)
-
+        val device = WaDevice(deviceId = Random.stringLowerOnly(8), startAt = startAt, endAt = endAt, deviceStatus = DeviceStatus.ON_PROGRESS)
         user.devices = mutableSetOf(device)
         userRepository.save(user)
         waService.sendDeviceToQueue(user, device.deviceId)
