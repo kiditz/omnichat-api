@@ -2,6 +2,7 @@ package com.stafsus.waapi.service
 
 import com.stafsus.waapi.entity.DeviceInfo
 import com.stafsus.waapi.entity.User
+import com.stafsus.waapi.entity.WaDevice
 import com.stafsus.waapi.service.dto.ResponseDto
 import com.stafsus.waapi.service.dto.DeviceDto
 import java.security.Principal
@@ -13,4 +14,5 @@ interface WaDeviceService {
     fun uninstall(deviceId: String, email: String)
     fun restart(deviceId: String, email: String)
     fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo)
+    fun validateDevice(deviceId: String): WaDevice?
 }
