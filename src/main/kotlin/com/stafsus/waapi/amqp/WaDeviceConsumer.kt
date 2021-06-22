@@ -14,11 +14,10 @@ class WaDeviceConsumer(
     private val log = LoggerFactory.getLogger(javaClass)
 
     @RabbitListener(queues = [RabbitConfig.LOGS_Q])
-    fun logs(data: Map<String, Any>) {
+    fun deviceInfoState(data: Map<String, Any>) {
         log.info("Data Received : $data")
         val deviceId = data["deviceId"] as String
         val deviceInfo = data["deviceInfo"] as String
         waDeviceService.updateDeviceInfo(deviceId, DeviceInfo.valueOf(deviceInfo))
-
     }
 }
