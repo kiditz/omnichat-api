@@ -5,6 +5,7 @@ class MessageKey {
         const val USER_NOT_FOUND = "user.not_found"
         const val INVALID_VERSION = "invalid.version"
         const val INVALID_DEVICE_ID = "invalid.device.id"
+        const val INACTIVE_DEVICE = "device.not.active"
         const val UPDATE_DEVICE = "update.device"
         const val UNINSTALL_DEVICE = "uninstall.device"
         const val INVALID_EMAIL_OR_PASSWORD = "invalid.email.or.password"

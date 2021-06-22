@@ -3,7 +3,7 @@ package com.stafsus.waapi.service.security
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.stafsus.waapi.constant.MessageKey
 import com.stafsus.waapi.service.TranslateService
-import com.stafsus.waapi.service.dto.ApiResponse
+import com.stafsus.waapi.service.dto.ResponseDto
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -27,7 +27,7 @@ class JwtAuthenticationEntryPoint(
         log.error("Unauthorized - {}", authException!!.message)
         response.contentType = "application/json;charset=UTF-8"
         response.status = HttpStatus.UNAUTHORIZED.value()
-        val status = ApiResponse(false, translateService.toLocale(MessageKey.UNAUTHORIZED_ERROR), null)
+        val status = ResponseDto(false, translateService.toLocale(MessageKey.UNAUTHORIZED_ERROR), null)
         response.writer.write(
             mapper.writeValueAsString(
                 status

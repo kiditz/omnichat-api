@@ -1,7 +1,7 @@
 package com.stafsus.waapi.service.security
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stafsus.waapi.service.dto.ApiResponse
+import com.stafsus.waapi.service.dto.ResponseDto
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.web.access.AccessDeniedHandler
 import java.io.IOException
@@ -20,7 +20,7 @@ class CustomAccessDeniedHandler(
     ) {
         response.contentType = "application/json;charset=UTF-8"
         response.status = 403
-        val status = ApiResponse(false, accessDeniedException.message!!, null)
+        val status = ResponseDto(false, accessDeniedException.message!!, null)
         response.writer.write(
             mapper.writeValueAsString(
                 status

@@ -42,3 +42,11 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} Tracing: %X{tracingId}  [%t] %-5level %logger{36} - %msg %n"
 
+feign:
+  client:
+    config:
+      wa-device:
+        url: http://localhost:8081
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: basic

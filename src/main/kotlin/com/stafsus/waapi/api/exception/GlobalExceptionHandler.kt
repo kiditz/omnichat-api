@@ -3,7 +3,7 @@ package com.stafsus.waapi.api.exception
 import com.stafsus.waapi.constant.MessageKey
 import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.service.TranslateService
-import com.stafsus.waapi.service.dto.ApiResponse
+import com.stafsus.waapi.service.dto.ResponseDto
 import org.hibernate.StaleObjectStateException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -22,25 +22,25 @@ class GlobalExceptionHandler(
     val translateService: TranslateService
 ) : ResponseEntityExceptionHandler() {
     @ExceptionHandler(value = [ValidationException::class])
-    fun handleValidationException(ex: ValidationException): ResponseEntity<ApiResponse> {
+    fun handleValidationException(ex: ValidationException): ResponseEntity<ResponseDto> {
         return ResponseEntity(
-            ApiResponse(false, translateService.toLocale(ex.message!!), null),
+            ResponseDto(false, translateService.toLocale(ex.message!!), null),
             HttpStatus.INTERNAL_SERVER_ERROR
         )
     }
 
     @ExceptionHandler(value = [UsernameNotFoundException::class])
-    fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<ApiResponse> {
+    fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<ResponseDto> {
         return ResponseEntity(
-            ApiResponse(false, translateService.toLocale(ex.message!!), null),
+            ResponseDto(false, translateService.toLocale(ex.message!!), null),
             HttpStatus.INTERNAL_SERVER_ERROR
         )
     }
 
     @ExceptionHandler(value = [StaleObjectStateException::class])
-    fun handleStaleObjectStateException(ex: StaleObjectStateException): ResponseEntity<ApiResponse> {
+    fun handleStaleObjectStateException(ex: StaleObjectStateException): ResponseEntity<ResponseDto> {
         return ResponseEntity(
-            ApiResponse(false, translateService.toLocale(MessageKey.INVALID_VERSION), null),
+            ResponseDto(false, translateService.toLocale(MessageKey.INVALID_VERSION), null),
             HttpStatus.BAD_REQUEST
         )
     }
@@ -59,11 +59,11 @@ class GlobalExceptionHandler(
 //            val args = error.arguments!!.drop(1).toTypedArray()
             errors[field.field] = translateService.getMessage(field)
         }
-        return ResponseEntity(ApiResponse(false, payload = errors), HttpStatus.BAD_REQUEST)
+        return ResponseEntity(ResponseDto(false, payload = errors), HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(ConstraintViolationException::class)
-    fun handleConstraintViolationException(ex: ConstraintViolationException): ResponseEntity<ApiResponse> {
+    fun handleConstraintViolationException(ex: ConstraintViolationException): ResponseEntity<ResponseDto> {
         val errors: MutableMap<String, String> = mutableMapOf()
 
         ex.constraintViolations.forEach { err ->
@@ -73,6 +73,6 @@ class GlobalExceptionHandler(
                     .map { it.value }.toTypedArray()
             errors[err.propertyPath.last().name] = translateService.toLocale(errorMessage.trim(), args)
         }
-        return ResponseEntity(ApiResponse(false, payload = errors), HttpStatus.BAD_REQUEST)
+        return ResponseEntity(ResponseDto(false, payload = errors), HttpStatus.BAD_REQUEST)
     }
 }
