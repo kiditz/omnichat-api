@@ -1,9 +1,17 @@
 spring:
   rabbitmq:
-    addresses: ${AMQP_ADDRESS:amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk}
+    addresses: ${AMQP_ADDRESS:amqp://guest:guest@localhost:5672}
     listener:
       concurrency: 5
       max-concurrency: 10
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 3s
+          max-attempts: 3
+          max-interval: 10s
+          multiplier: 2
+
     dynamic: true
   jpa:
     show-sql: true

@@ -107,10 +107,19 @@ class WaDeviceServiceImpl(
         rabbitTemplate.convertAndSend(RabbitConfig.RESTART_EX, RabbitConfig.RESTART_RK, result)
     }
 
+    @Transactional
     override fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo) {
         val device =
             deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
         device.deviceInfo = deviceInfo
+        deviceRepository.save(device)
+    }
+
+    @Transactional
+    override fun updateDeviceStatus(deviceId: String, deviceStatus: DeviceStatus) {
+        val device =
+            deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+        device.deviceStatus = deviceStatus
         deviceRepository.save(device)
     }
 }

@@ -1,11 +1,19 @@
 package com.stafsus.waapi.config
 
-import org.springframework.amqp.core.*
+import com.stafsus.waapi.amqp.CustomFatalExceptionStrategy
+import org.springframework.amqp.core.BindingBuilder
+import org.springframework.amqp.core.Declarables
+import org.springframework.amqp.core.Queue
+import org.springframework.amqp.core.TopicExchange
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler
+import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.util.ErrorHandler
 
 
 @Configuration
@@ -21,6 +29,11 @@ class RabbitConfig {
         const val RESTART_RK = "deploy.*.restart"
         const val RESTART_Q = "restart_q"
         const val LOGS_Q = "logs_q"
+        const val READY_Q = "ready_q"
+        const val AUTHENTICATION_FAILURE_Q = "auth_failure_q"
+        const val ERROR_Q = "error_q"
+        const val QR_Q = "qr_q"
+
     }
 
     @Bean
@@ -36,8 +49,8 @@ class RabbitConfig {
     @Bean
     fun installBindings(): Declarables {
         return Declarables(
-                BindingBuilder.bind(installQueue()).to(installExchange()).with(INSTALL_RK),
-                BindingBuilder.bind(logsQueue()).to(installExchange()).with(INSTALL_RK)
+            BindingBuilder.bind(installQueue()).to(installExchange()).with(INSTALL_RK),
+            BindingBuilder.bind(logsQueue()).to(installExchange()).with(INSTALL_RK)
         )
     }
 
@@ -54,8 +67,8 @@ class RabbitConfig {
     @Bean
     fun uninstallBindings(): Declarables {
         return Declarables(
-                BindingBuilder.bind(uninstallQueue()).to(uninstallExchange()).with(UNINSTALL_RK),
-                BindingBuilder.bind(logsQueue()).to(uninstallExchange()).with(UNINSTALL_RK)
+            BindingBuilder.bind(uninstallQueue()).to(uninstallExchange()).with(UNINSTALL_RK),
+            BindingBuilder.bind(logsQueue()).to(uninstallExchange()).with(UNINSTALL_RK)
         )
     }
 
@@ -72,8 +85,8 @@ class RabbitConfig {
     @Bean
     fun restartBindings(): Declarables {
         return Declarables(
-                BindingBuilder.bind(restartQueue()).to(restartExchange()).with(RESTART_RK),
-                BindingBuilder.bind(logsQueue()).to(restartExchange()).with(RESTART_RK)
+            BindingBuilder.bind(restartQueue()).to(restartExchange()).with(RESTART_RK),
+            BindingBuilder.bind(logsQueue()).to(restartExchange()).with(RESTART_RK)
         )
     }
 
@@ -94,5 +107,6 @@ class RabbitConfig {
     fun producerJackson2MessageConverter(): Jackson2JsonMessageConverter {
         return Jackson2JsonMessageConverter()
     }
+
 
 }

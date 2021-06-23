@@ -9,7 +9,7 @@ data class WaDevice(
         @Column(nullable = false)
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         val id: Long? = null,
-        @Column(nullable = false)
+        @Column(nullable = false, columnDefinition = "varchar(12) default ''")
         var deviceId: String,
         var phone: String? = null,
         @ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
