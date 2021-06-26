@@ -25,42 +25,42 @@ import javax.validation.Valid
 @Tag(name = "Authentication", description = "Used to authenticated user")
 @Validated
 class AuthenticationController(
-        private val authenticationService: AuthenticationService,
-        private val translateService: TranslateService
+	private val authenticationService: AuthenticationService,
+	private val translateService: TranslateService
 
 ) {
 
-    @PostMapping("/auth/sign-up")
-    @Operation(summary = "Register new user account")
-    fun signUp(@Valid @RequestBody request: SignUpRequest): ResponseDto {
-        val userDto = authenticationService.signUp(request.toDto())
-        return ResponseDto(payload = userDto)
-    }
+	@PostMapping("/auth/sign-up")
+	@Operation(summary = "Register new user account")
+	fun signUp(@Valid @RequestBody request: SignUpRequest): ResponseDto {
+		val userDto = authenticationService.signUp(request.toDto())
+		return ResponseDto(payload = userDto)
+	}
 
-    @PostMapping("/auth/sign-in")
-    @Operation(summary = "Get jwt token by sign in")
-    fun signIn(@Valid @RequestBody request: SignInRequest): ResponseDto {
-        val userDto = authenticationService.signIn(request.toDto())
-        return ResponseDto(payload = userDto)
-    }
+	@PostMapping("/auth/sign-in")
+	@Operation(summary = "Get jwt token by sign in")
+	fun signIn(@Valid @RequestBody request: SignInRequest): ResponseDto {
+		val userDto = authenticationService.signIn(request.toDto())
+		return ResponseDto(payload = userDto)
+	}
 
-    @PostMapping("/auth/refresh-token")
-    @Operation(summary = "Get jwt token by refresh token")
-    fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseDto {
-        val userDto = authenticationService.refreshToken(request.refreshToken!!)
-        return ResponseDto(payload = userDto)
-    }
+	@PostMapping("/auth/refresh-token")
+	@Operation(summary = "Get jwt token by refresh token")
+	fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseDto {
+		val userDto = authenticationService.refreshToken(request.refreshToken!!)
+		return ResponseDto(payload = userDto)
+	}
 
-    @PostMapping("/auth/sign-out")
-    @Operation(
-            security = [SecurityRequirement(name = "bearer-key")],
-            summary = "Sign out jwt token"
-    )
-    fun signOut(@Valid @RequestBody request: RefreshTokenRequest, sRequest: HttpServletRequest): ResponseDto {
-        val accessToken = JwtAuthenticationFilter.getJwtFromRequest(sRequest)
-        authenticationService.signOut(request.refreshToken!!, accessToken!!)
-        return ResponseDto(message = translateService.toLocale(MessageKey.SIGN_OUT_SUCCESS))
-    }
+	@PostMapping("/auth/sign-out")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Sign out jwt token"
+	)
+	fun signOut(@Valid @RequestBody request: RefreshTokenRequest, sRequest: HttpServletRequest): ResponseDto {
+		val accessToken = JwtAuthenticationFilter.getJwtFromRequest(sRequest)
+		authenticationService.signOut(request.refreshToken!!, accessToken!!)
+		return ResponseDto(message = translateService.toLocale(MessageKey.SIGN_OUT_SUCCESS))
+	}
 
 
 }

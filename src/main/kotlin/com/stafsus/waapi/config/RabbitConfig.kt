@@ -1,19 +1,14 @@
 package com.stafsus.waapi.config
 
-import com.stafsus.waapi.amqp.CustomFatalExceptionStrategy
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Declarables
 import org.springframework.amqp.core.Queue
-import org.springframework.amqp.core.TopicExchange
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory
+import org.springframework.amqp.core.DirectExchange
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
-import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler
-import org.springframework.amqp.rabbit.listener.FatalExceptionStrategy
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.util.ErrorHandler
 
 
 @Configuration
@@ -21,12 +16,12 @@ class RabbitConfig {
     companion object {
         const val INSTALL_EX = "install_ex"
         const val INSTALL_Q = "install_q"
-        const val INSTALL_RK = "deploy.*.install"
+        const val INSTALL_RK = "deploy.install"
         const val UNINSTALL_EX = "uninstall_ex"
-        const val UNINSTALL_RK = "deploy.*.uninstall"
+        const val UNINSTALL_RK = "deploy.uninstall"
         const val UNINSTALL_Q = "uninstall_q"
         const val RESTART_EX = "restart_ex"
-        const val RESTART_RK = "deploy.*.restart"
+        const val RESTART_RK = "deploy.restart"
         const val RESTART_Q = "restart_q"
         const val LOGS_Q = "logs_q"
         const val READY_Q = "ready_q"
@@ -42,8 +37,8 @@ class RabbitConfig {
     }
 
     @Bean
-    fun installExchange(): TopicExchange {
-        return TopicExchange(INSTALL_EX)
+    fun installExchange(): DirectExchange {
+        return DirectExchange(INSTALL_EX)
     }
 
     @Bean
@@ -60,8 +55,8 @@ class RabbitConfig {
     }
 
     @Bean
-    fun uninstallExchange(): TopicExchange {
-        return TopicExchange(UNINSTALL_EX)
+    fun uninstallExchange(): DirectExchange {
+        return DirectExchange(UNINSTALL_EX)
     }
 
     @Bean
@@ -78,8 +73,8 @@ class RabbitConfig {
     }
 
     @Bean
-    fun restartExchange(): TopicExchange {
-        return TopicExchange(RESTART_EX)
+    fun restartExchange(): DirectExchange {
+        return DirectExchange(RESTART_EX)
     }
 
     @Bean

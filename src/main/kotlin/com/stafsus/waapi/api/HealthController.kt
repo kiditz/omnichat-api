@@ -10,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 @Hidden
 class HealthController {
 
-    @GetMapping("/health")
-    fun index(): Map<String, Any> {
-        return mapOf(
-                "name" to "Wa Api",
-                "description" to "Api To Access By Stafsus",
-        )
-    }
+	@GetMapping("/health")
+	fun index(): Map<String, Any> {
+		return mapOf(
+			"name" to "Wa Api",
+			"description" to "Api To Access By Stafsus",
+		)
+	}
 }

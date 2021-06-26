@@ -18,52 +18,52 @@ import javax.validation.Valid
 @Validated
 @Tag(name = "Device", description = "Control your whats app web device")
 class DeviceController(
-        private val waDeviceService: WaDeviceService,
-        private val translateService: TranslateService
+	private val waDeviceService: WaDeviceService,
+	private val translateService: TranslateService
 ) {
-    @PostMapping("/install")
-    @Operation(
-            security = [SecurityRequirement(name = "bearer-key")],
-            summary = "Install new device"
-    )
-    fun installDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
-        val device = waDeviceService.install(principal)
-        return ResponseDto(
-                success = true,
-                message = translateService.toLocale(MessageKey.UPDATE_DEVICE),
-                payload = device
-        )
-    }
+	@PostMapping("/install")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Install new device"
+	)
+	fun installDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
+		val device = waDeviceService.install(principal)
+		return ResponseDto(
+			success = true,
+			message = translateService.toLocale(MessageKey.UPDATE_DEVICE),
+			payload = device
+		)
+	}
 
-    @PostMapping("/restart")
-    @Operation(
-            security = [SecurityRequirement(name = "bearer-key")],
-            summary = "Restart existing device"
-    )
-    fun restartDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
-        waDeviceService.restart(deviceRequest.deviceId, principal.name)
-        return ResponseDto(
-                success = true,
-                message = translateService.toLocale(MessageKey.UPDATE_DEVICE),
-        )
-    }
+	@PostMapping("/restart")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Restart existing device"
+	)
+	fun restartDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
+		waDeviceService.restart(deviceRequest.deviceId, principal.name)
+		return ResponseDto(
+			success = true,
+			message = translateService.toLocale(MessageKey.UPDATE_DEVICE),
+		)
+	}
 
-    @PostMapping("/uninstall")
-    @Operation(
-            security = [SecurityRequirement(name = "bearer-key")],
-            summary = "Uninstall device"
-    )
-    fun uninstallDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
-        waDeviceService.uninstall(deviceRequest.deviceId, principal.name)
-        return ResponseDto(message = translateService.toLocale(MessageKey.UNINSTALL_DEVICE))
-    }
+	@PostMapping("/uninstall")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Uninstall device"
+	)
+	fun uninstallDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
+		waDeviceService.uninstall(deviceRequest.deviceId, principal.name)
+		return ResponseDto(message = translateService.toLocale(MessageKey.UNINSTALL_DEVICE))
+	}
 
-    @PostMapping("/qr")
-    @Operation(
-            security = [SecurityRequirement(name = "bearer-key")],
-            summary = "Get qrcode by client"
-    )
-    fun getQrCode(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
-        return waDeviceService.getQrCode(deviceRequest.deviceId)
-    }
+	@PostMapping("/qr")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Get qrcode by client"
+	)
+	fun getQrCode(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
+		return waDeviceService.getQrCode(deviceRequest.deviceId)
+	}
 }
