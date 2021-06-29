@@ -40,8 +40,8 @@ class AuthenticationController(
 	@PostMapping("/auth/sign-in")
 	@Operation(summary = "Get jwt token by sign in")
 	fun signIn(@Valid @RequestBody request: SignInRequest): ResponseDto {
-		val userDto = authenticationService.signIn(request.toDto())
-		return ResponseDto(payload = userDto)
+		val tokenDto = authenticationService.signIn(request.toDto())
+		return ResponseDto(payload = tokenDto)
 	}
 
 	@PostMapping("/auth/refresh-token")

@@ -5,10 +5,11 @@ import com.stafsus.waapi.entity.User
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import java.security.Principal
 
 data class UserPrincipal(
     val user: User
-) : UserDetails {
+) : UserDetails, Principal {
     override fun getAuthorities(): List<GrantedAuthority> {
         val authorities = mutableListOf<SimpleGrantedAuthority>()
         authorities.add(SimpleGrantedAuthority(user.role.name))
@@ -38,5 +39,9 @@ data class UserPrincipal(
 
     override fun isEnabled(): Boolean {
         return user.status == Status.ACTIVE
+    }
+
+    override fun getName(): String {
+        return user.email
     }
 }

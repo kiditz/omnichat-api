@@ -10,43 +10,53 @@ import com.stafsus.waapi.service.WaDeviceService
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.annotation.RabbitListener
+import org.springframework.messaging.simp.SimpMessagingTemplate
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+
 
 @Component
 class WaDeviceConsumer(
-    private val waDeviceService: WaDeviceService,
-    private val objectMapper: ObjectMapper
+	private val waDeviceService: WaDeviceService,
+	private val objectMapper: ObjectMapper,
+	private val simpMessagingTemplate: SimpMessagingTemplate
 ) {
-    private val log = LoggerFactory.getLogger(javaClass)
+	private val log = LoggerFactory.getLogger(javaClass)
 
-    @RabbitListener(queues = [RabbitConfig.LOGS_Q])
-    @Throws(ValidationException::class)
-    fun deviceInfoState(data: Map<String, Any>) {
-        log.info("Data Received : $data")
-        val deviceId = data["deviceId"] as String
-        val deviceInfo = data["deviceInfo"] as String
-        waDeviceService.updateDeviceInfo(deviceId, DeviceInfo.valueOf(deviceInfo))
-    }
+	@Scheduled(fixedDelay = 10000)
+	fun reportTime() {
+		log.info("Send message")
+		simpMessagingTemplate.convertAndSend("/topic/updateService", "Hello")
+	}
 
-    @Throws(ValidationException::class)
-    @RabbitListener(queues = [RabbitConfig.AUTHENTICATION_FAILURE_Q, RabbitConfig.READY_Q])
-    fun statusReady(message: Message) {
-        log.info("Data Received : ${message.body}")
-        val data = objectMapper.readValue<Map<String, Any>>(message.body)
-        val deviceId = data["deviceId"] as String
-        val deviceStatus = data["status"] as String
-        waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.valueOf(deviceStatus))
-    }
+	@RabbitListener(queues = [RabbitConfig.LOGS_Q])
+	@Throws(ValidationException::class)
+	fun deviceInfoState(data: Map<String, Any>) {
+		log.info("Data Received : $data")
+		val deviceId = data["deviceId"] as String
+		val deviceInfo = data["deviceInfo"] as String
+		waDeviceService.updateDeviceInfo(deviceId, DeviceInfo.valueOf(deviceInfo))
+	}
 
-    @RabbitListener(queues = [RabbitConfig.ERROR_Q])
-    @Throws(ValidationException::class)
-    fun errorReceived(data: Map<String, Any>) {
-        log.info("Errors : $data")
-    }
+	@Throws(ValidationException::class)
+	@RabbitListener(queues = [RabbitConfig.AUTHENTICATION_FAILURE_Q, RabbitConfig.READY_Q])
+	fun statusReady(message: Message) {
+		log.info("Data Received : ${message.body}")
+		val data = objectMapper.readValue<Map<String, Any>>(message.body)
+		val deviceId = data["deviceId"] as String
+		val deviceStatus = data["status"] as String
+		waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.valueOf(deviceStatus))
+	}
 
-    @RabbitListener(queues = [RabbitConfig.QR_Q])
-    @Throws(ValidationException::class)
-    fun qrReceived(data: Map<String, Any>) {
-        log.info("Qr Data    : $data")
-    }
+	@RabbitListener(queues = [RabbitConfig.ERROR_Q])
+	@Throws(ValidationException::class)
+	fun errorReceived(data: Map<String, Any>) {
+		log.info("Errors : $data")
+	}
+
+	@RabbitListener(queues = [RabbitConfig.QR_Q])
+	@Throws(ValidationException::class)
+	fun qrReceived(data: Map<String, Any>) {
+		log.info("Qr Data    : $data")
+	}
 }

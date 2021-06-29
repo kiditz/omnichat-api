@@ -63,7 +63,8 @@ class WebSecurityConfig(
     }
 
     override fun configure(http: HttpSecurity?) {
-        http!!.antMatcher("/api/**").cors().disable()
+        http!!.antMatcher("/api/**")
+            .cors().and()
             .csrf().disable()
             .logout().disable()
             .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
