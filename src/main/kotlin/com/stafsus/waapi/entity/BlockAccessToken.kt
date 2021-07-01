@@ -8,6 +8,6 @@ data class BlockAccessToken(
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "text")
     var token: String,
 ) : Auditable()

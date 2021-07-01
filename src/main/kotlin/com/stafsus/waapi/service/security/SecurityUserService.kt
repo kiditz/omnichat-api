@@ -7,5 +7,5 @@ import java.util.*
 interface SecurityUserService : UserDetailsService {
 
     fun loadUserId(id: Long): Optional<UserPrincipal>
-    fun isBlocked(accessToken: String?): Boolean
+    fun isBlocked(accessToken: String): Boolean
 }

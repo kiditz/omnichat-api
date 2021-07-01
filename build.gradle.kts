@@ -46,7 +46,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-kotlin:1.5.7")
 
     runtimeOnly("org.postgresql:postgresql")
-    compileOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.amqp:spring-rabbit-test")
     testImplementation("org.springframework.security:spring-security-test")

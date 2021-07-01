@@ -12,12 +12,9 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import java.security.Principal
 import javax.servlet.http.HttpServletRequest
-
 import javax.validation.Valid
 
 @RestController
@@ -58,9 +55,17 @@ class AuthenticationController(
 	)
 	fun signOut(@Valid @RequestBody request: RefreshTokenRequest, sRequest: HttpServletRequest): ResponseDto {
 		val accessToken = JwtAuthenticationFilter.getJwtFromRequest(sRequest)
-		authenticationService.signOut(request.refreshToken!!, accessToken!!)
+		authenticationService.signOut(request.refreshToken, accessToken!!)
 		return ResponseDto(message = translateService.toLocale(MessageKey.SIGN_OUT_SUCCESS))
 	}
 
-
+	@GetMapping("/auth/user")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Get User By jwt token"
+	)
+	fun getUser(principal: Principal): ResponseDto {
+		val userDto = authenticationService.findUser(principal.name)
+		return ResponseDto(payload = userDto)
+	}
 }

@@ -4,6 +4,4 @@ data class TokenDto(
 	var accessToken: String? = null,
 	var refreshToken: String? = null,
 	var expiryDate: Long? = null,
-	var userName: String? = null,
-	var email: String? = null,
 )

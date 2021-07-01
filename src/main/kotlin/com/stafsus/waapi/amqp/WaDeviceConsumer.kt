@@ -23,11 +23,6 @@ class WaDeviceConsumer(
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
 
-	@Scheduled(fixedDelay = 10000)
-	fun reportTime() {
-		log.info("Send message")
-		simpMessagingTemplate.convertAndSend("/topic/updateService", "Hello")
-	}
 
 	@RabbitListener(queues = [RabbitConfig.LOGS_Q])
 	@Throws(ValidationException::class)

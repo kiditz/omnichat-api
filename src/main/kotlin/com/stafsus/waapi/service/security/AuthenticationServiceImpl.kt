@@ -9,7 +9,6 @@ import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.repository.BlockAccessTokenRepository
 import com.stafsus.waapi.repository.RefreshTokenRepository
 import com.stafsus.waapi.repository.UserRepository
-import com.stafsus.waapi.service.WaDeviceService
 import com.stafsus.waapi.service.dto.*
 import com.stafsus.waapi.utils.Common
 import org.springframework.security.authentication.AuthenticationManager
@@ -27,9 +26,15 @@ class AuthenticationServiceImpl(
 	private val refreshTokenRepository: RefreshTokenRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val blockTokenRepository: BlockAccessTokenRepository,
-	private val waDeviceService: WaDeviceService,
 
 	) : AuthenticationService {
+
+	@Transactional(readOnly = true)
+	override fun findUser(email: String): UserDto {
+		val user = userRepository.findByEmail(email).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+		return UserDto.fromUser(user)
+	}
+
 	@Transactional
 	override fun signIn(signInDto: SignInDto): TokenDto {
 		val authenticationToken = UsernamePasswordAuthenticationToken(signInDto.email, signInDto.password)
@@ -44,8 +49,6 @@ class AuthenticationServiceImpl(
 				token = accessToken.refreshToken!!,
 				user = user
 			)
-			accessToken.userName = user.username
-			accessToken.email = user.email
 			refreshTokenRepository.save(refreshToken)
 			return accessToken
 		} catch (ex: AuthenticationException) {
@@ -92,7 +95,7 @@ class AuthenticationServiceImpl(
 	override fun signOut(refreshToken: String, accessToken: String) {
 		val refreshTokenData = refreshTokenRepository.findByToken(refreshToken)
 			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
-		refreshTokenRepository.delete(refreshTokenData)
+		refreshTokenRepository.deleteByToken(refreshToken)
 		val blockToken = BlockAccessToken(token = accessToken)
 		blockTokenRepository.save(blockToken)
 	}
