@@ -26,7 +26,7 @@ class DeviceController(
 		security = [SecurityRequirement(name = "bearer-key")],
 		summary = "Install new device"
 	)
-	fun installDevice(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
+	fun installDevice(principal: Principal): ResponseDto {
 		val device = waDeviceService.install(principal)
 		return ResponseDto(
 			success = true,

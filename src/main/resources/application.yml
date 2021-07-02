@@ -14,13 +14,13 @@ spring:
 
     dynamic: true
   jpa:
-    show-sql: true
+    show-sql: false
     open-in-view: false
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         enable_lazy_load_no_trans: true
         dialect: org.hibernate.dialect.PostgreSQL10Dialect
   datasource:
@@ -41,8 +41,8 @@ app:
 springdoc:
   use-fqn: true
   swagger-ui:
-    tags-sorter: alpha
-    operations-sorter: method
+    tagsSorter: alpha
+    operationsSorter: alpha
 
 logging:
   level:

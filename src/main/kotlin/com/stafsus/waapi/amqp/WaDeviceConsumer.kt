@@ -11,13 +11,13 @@ import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
 import org.springframework.amqp.rabbit.annotation.RabbitListener
 import org.springframework.messaging.simp.SimpMessagingTemplate
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 
 @Component
 class WaDeviceConsumer(
 	private val waDeviceService: WaDeviceService,
+
 	private val objectMapper: ObjectMapper,
 	private val simpMessagingTemplate: SimpMessagingTemplate
 ) {
@@ -53,5 +53,8 @@ class WaDeviceConsumer(
 	@Throws(ValidationException::class)
 	fun qrReceived(data: Map<String, Any>) {
 		log.info("Qr Data    : $data")
+		val deviceId = data["deviceId"] as String
+		val device = waDeviceService.findByDeviceId(deviceId = deviceId).orElse(null)
+		simpMessagingTemplate.convertAndSendToUser(device.user!!.email, "/queue/qr",data)
 	}
 }

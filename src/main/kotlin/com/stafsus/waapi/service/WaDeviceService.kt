@@ -7,6 +7,7 @@ import com.stafsus.waapi.entity.WaDevice
 import com.stafsus.waapi.service.dto.ResponseDto
 import com.stafsus.waapi.service.dto.DeviceDto
 import java.security.Principal
+import java.util.*
 
 interface WaDeviceService {
     fun getQrCode(deviceId: String): ResponseDto
@@ -17,4 +18,5 @@ interface WaDeviceService {
     fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo)
     fun updateDeviceStatus(deviceId: String, deviceStatus: DeviceStatus)
     fun validateDevice(deviceId: String): WaDevice?
+    fun findByDeviceId(deviceId: String): Optional<WaDevice>
 }

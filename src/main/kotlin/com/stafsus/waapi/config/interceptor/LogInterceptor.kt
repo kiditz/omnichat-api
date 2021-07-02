@@ -31,7 +31,6 @@ class LogInterceptor(
             userId = jwtProvider.getUserIdFromToken(token)
         }
         if (handler is HandlerMethod) {
-            // there are cases where this handler isn't an instance of HandlerMethod, so the cast fails.
             val handlerMethod: HandlerMethod = handler
             controllerName = handlerMethod.bean.javaClass.simpleName
             actionName = handlerMethod.method.name
