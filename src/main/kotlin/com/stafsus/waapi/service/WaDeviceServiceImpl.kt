@@ -12,10 +12,14 @@ import com.stafsus.waapi.repository.UserRepository
 import com.stafsus.waapi.repository.WaDeviceRepository
 import com.stafsus.waapi.service.dto.DeviceDto
 import com.stafsus.waapi.service.dto.ResponseDto
+import com.stafsus.waapi.service.dto.WaDeviceDto
 import com.stafsus.waapi.utils.Random
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.net.URI
@@ -32,8 +36,6 @@ class WaDeviceServiceImpl(
 	private val waDeviceClient: WaDeviceClient,
 	private val translateService: TranslateService,
 	@Value("\${app.device.period}") val period: Long,
-//	@Value("\${spring.profiles.active}") val appProfile: String,
-//	@Value("\${feign.client.config.wa-device.url}") val defaultUrl: String,
 
 	) : WaDeviceService {
 	private val log = LoggerFactory.getLogger(javaClass)
@@ -88,6 +90,16 @@ class WaDeviceServiceImpl(
 		return DeviceDto(deviceId = device.deviceId, accessedBy = user.email)
 	}
 
+	@Transactional
+	override fun startTrial(principal: Principal): DeviceDto {
+		val user = userRepository.findByEmail(principal.name)
+			.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+		user.startTrialAt = LocalDateTime.now()
+		user.endTrialAt = LocalDateTime.now().plusDays(period)
+		userRepository.save(user)
+		return install(user)
+	}
+
 	@Transactional(readOnly = true)
 	override fun uninstall(deviceId: String, email: String) {
 		log.info("Uninstall Device :${deviceId}:${email}")
@@ -126,5 +138,10 @@ class WaDeviceServiceImpl(
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
 		deviceRepository.save(device)
+	}
+
+	@Transactional(readOnly = true)
+	override fun findDevices(email: String, page: Int, size: Int): Page<WaDeviceDto> {
+		return deviceRepository.findByUserEmail(email, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
 }

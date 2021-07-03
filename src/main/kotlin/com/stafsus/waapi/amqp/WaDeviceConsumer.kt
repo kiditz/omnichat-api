@@ -6,6 +6,7 @@ import com.stafsus.waapi.config.RabbitConfig
 import com.stafsus.waapi.entity.DeviceInfo
 import com.stafsus.waapi.entity.DeviceStatus
 import com.stafsus.waapi.exception.ValidationException
+import com.stafsus.waapi.service.TranslateService
 import com.stafsus.waapi.service.WaDeviceService
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
@@ -17,9 +18,9 @@ import org.springframework.stereotype.Component
 @Component
 class WaDeviceConsumer(
 	private val waDeviceService: WaDeviceService,
-
 	private val objectMapper: ObjectMapper,
-	private val simpMessagingTemplate: SimpMessagingTemplate
+	private val messagingTemplate: SimpMessagingTemplate,
+	private val translateService: TranslateService
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -30,7 +31,18 @@ class WaDeviceConsumer(
 		log.info("Data Received : $data")
 		val deviceId = data["deviceId"] as String
 		val deviceInfo = data["deviceInfo"] as String
-		waDeviceService.updateDeviceInfo(deviceId, DeviceInfo.valueOf(deviceInfo))
+		val device = waDeviceService.findByDeviceId(deviceId = deviceId).orElse(null)
+		val currentInfo = DeviceInfo.valueOf(deviceInfo)
+		val message = mapOf<String, Any>(
+			"message" to translateService.toLocale(currentInfo.display),
+			"info" to currentInfo.name
+		)
+		messagingTemplate.convertAndSendToUser(
+			device.user!!.email,
+			"/queue/device",
+			message
+		)
+		waDeviceService.updateDeviceInfo(deviceId, currentInfo)
 	}
 
 	@Throws(ValidationException::class)
@@ -55,6 +67,6 @@ class WaDeviceConsumer(
 		log.info("Qr Data    : $data")
 		val deviceId = data["deviceId"] as String
 		val device = waDeviceService.findByDeviceId(deviceId = deviceId).orElse(null)
-		simpMessagingTemplate.convertAndSendToUser(device.user!!.email, "/queue/qr",data)
+		messagingTemplate.convertAndSendToUser(device.user!!.email, "/queue/qr", data)
 	}
 }

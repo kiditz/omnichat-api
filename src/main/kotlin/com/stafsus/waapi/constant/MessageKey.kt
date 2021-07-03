@@ -13,5 +13,11 @@ class MessageKey {
         const val EMAIL_EXISTS = "email.exists"
         const val INVALID_REFRESH_TOKEN = "invalid.refresh.token"
         const val SIGN_OUT_SUCCESS = "sign.out.success"
+        const val DEVICE_ON_INSTALL = "install.device"
+        const val DEVICE_ON_RESTART = "restart.device"
+        const val DEVICE_ON_UNINSTALL = "uninstall.device"
+        const val DEVICE_ON_ACTIVE = "active.device"
+        const val DEVICE_ON_INACTIVE = "inactive.device"
+
     }
 }

@@ -14,7 +14,7 @@ spring:
 
     dynamic: true
   jpa:
-    show-sql: false
+    show-sql: true
     open-in-view: false
     hibernate:
       ddl-auto: update
@@ -46,7 +46,7 @@ springdoc:
 
 logging:
   level:
-    com.stafsus.waapi: trace
+    ROOT: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} Tracing: %X{tracingId}  [%t] %-5level %logger{36} - %msg %n"
 

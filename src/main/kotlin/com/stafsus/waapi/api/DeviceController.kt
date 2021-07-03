@@ -21,6 +21,30 @@ class DeviceController(
 	private val waDeviceService: WaDeviceService,
 	private val translateService: TranslateService
 ) {
+	@GetMapping
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Get devices by access token"
+	)
+	fun getDevices(principal: Principal): ResponseDto {
+		val devices = waDeviceService.findDevices(principal.name, 0, 10)
+		return ResponseDto.fromPage(devices)
+	}
+
+	@PostMapping("/trial")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Start trial device"
+	)
+	fun startTrial(principal: Principal): ResponseDto {
+		val device = waDeviceService.startTrial(principal)
+		return ResponseDto(
+			success = true,
+			message = translateService.toLocale(MessageKey.UPDATE_DEVICE),
+			payload = device
+		)
+	}
+
 	@PostMapping("/install")
 	@Operation(
 		security = [SecurityRequirement(name = "bearer-key")],
