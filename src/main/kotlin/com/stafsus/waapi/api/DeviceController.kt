@@ -88,6 +88,7 @@ class DeviceController(
 		summary = "Get qrcode by client"
 	)
 	fun getQrCode(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
-		return waDeviceService.getQrCode(deviceRequest.deviceId)
+		val qrCode = waDeviceService.getQrCode(deviceRequest.deviceId)
+		return ResponseDto(payload = qrCode, message = translateService.toLocale(MessageKey.QR_SUCCESS))
 	}
 }

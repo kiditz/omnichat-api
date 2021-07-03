@@ -14,7 +14,7 @@ spring:
 
     dynamic: true
   jpa:
-    show-sql: true
+    show-sql: false
     open-in-view: false
     hibernate:
       ddl-auto: update

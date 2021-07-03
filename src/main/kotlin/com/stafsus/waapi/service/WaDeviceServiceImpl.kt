@@ -2,16 +2,12 @@ package com.stafsus.waapi.service
 
 import com.stafsus.waapi.config.RabbitConfig
 import com.stafsus.waapi.constant.MessageKey
-import com.stafsus.waapi.entity.DeviceInfo
-import com.stafsus.waapi.entity.DeviceStatus
-import com.stafsus.waapi.entity.User
-import com.stafsus.waapi.entity.WaDevice
+import com.stafsus.waapi.entity.*
 import com.stafsus.waapi.exception.ValidationException
-import com.stafsus.waapi.feign.WaDeviceClient
+import com.stafsus.waapi.repository.QrCodeRepository
 import com.stafsus.waapi.repository.UserRepository
 import com.stafsus.waapi.repository.WaDeviceRepository
 import com.stafsus.waapi.service.dto.DeviceDto
-import com.stafsus.waapi.service.dto.ResponseDto
 import com.stafsus.waapi.service.dto.WaDeviceDto
 import com.stafsus.waapi.utils.Random
 import org.slf4j.LoggerFactory
@@ -22,7 +18,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.net.URI
+import org.springframework.util.StringUtils
 import java.security.Principal
 import java.time.LocalDateTime
 import java.util.*
@@ -33,19 +29,17 @@ class WaDeviceServiceImpl(
 	private val rabbitTemplate: RabbitTemplate,
 	private val deviceRepository: WaDeviceRepository,
 	private val userRepository: UserRepository,
-	private val waDeviceClient: WaDeviceClient,
-	private val translateService: TranslateService,
+//	private val waDeviceClient: WaDeviceClient,
+//	private val translateService: TranslateService,
+	private val qrCodeRepository: QrCodeRepository,
 	@Value("\${app.device.period}") val period: Long,
 
 	) : WaDeviceService {
 	private val log = LoggerFactory.getLogger(javaClass)
 
 	@Transactional(readOnly = true)
-	override fun getQrCode(deviceId: String): ResponseDto {
-		val device = validateDevice(deviceId)
-		val url = "http://wa-${device.deviceId}"
-		val qrCodeResponse = waDeviceClient.getQrCode(URI.create(url))
-		return qrCodeResponse.copy(message = translateService.toLocale(qrCodeResponse.message as String))
+	override fun getQrCode(deviceId: String): QrCode {
+		return qrCodeRepository.findById(deviceId).orElseThrow { ValidationException(MessageKey.QR_NOT_READY) }
 	}
 
 	override fun validateDevice(deviceId: String): WaDevice {
@@ -84,7 +78,7 @@ class WaDeviceServiceImpl(
 		log.info("Install Device :${device.deviceId}")
 		val result = mutableMapOf(
 			"deviceId" to device.deviceId,
-			"deviceInfo" to DeviceInfo.ON_INSTALL
+			"deviceInfo" to DeviceInfo.ON_INSTALL.name
 		)
 		rabbitTemplate.convertAndSend(RabbitConfig.INSTALL_EX, RabbitConfig.INSTALL_RK, result)
 		return DeviceDto(deviceId = device.deviceId, accessedBy = user.email)
@@ -107,7 +101,7 @@ class WaDeviceServiceImpl(
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		val result = mutableMapOf(
 			"deviceId" to deviceId,
-			"deviceInfo" to DeviceInfo.ON_UNINSTALLED
+			"deviceInfo" to DeviceInfo.ON_UNINSTALLED.name
 		)
 		rabbitTemplate.convertAndSend(RabbitConfig.UNINSTALL_EX, RabbitConfig.UNINSTALL_RK, result)
 	}
@@ -119,7 +113,7 @@ class WaDeviceServiceImpl(
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		val result = mutableMapOf(
 			"deviceId" to deviceId,
-			"deviceInfo" to DeviceInfo.ON_RESTART
+			"deviceInfo" to DeviceInfo.ON_RESTART.name
 		)
 		rabbitTemplate.convertAndSend(RabbitConfig.RESTART_EX, RabbitConfig.RESTART_RK, result)
 	}
@@ -134,9 +128,16 @@ class WaDeviceServiceImpl(
 
 	@Transactional
 	override fun updateDeviceStatus(deviceId: String, deviceStatus: DeviceStatus) {
+		return updateDeviceStatus(deviceId, "", deviceStatus)
+	}
+
+	@Transactional
+	override fun updateDeviceStatus(deviceId: String, phone: String, deviceStatus: DeviceStatus) {
 		val device =
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
+		if (StringUtils.hasText(phone))
+			device.phone = phone
 		deviceRepository.save(device)
 	}
 
