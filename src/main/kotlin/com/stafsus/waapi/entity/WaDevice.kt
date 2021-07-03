@@ -1,5 +1,6 @@
 package com.stafsus.waapi.entity
 
+import com.fasterxml.jackson.annotation.JsonValue
 import com.stafsus.waapi.constant.MessageKey
 import java.time.LocalDateTime
 import javax.persistence.*
@@ -24,11 +25,11 @@ data class WaDevice(
 	var deviceInfo: DeviceInfo? = null
 ) : Auditable()
 
-enum class DeviceStatus {
-	PHONE_ONLINE, PHONE_OFFLINE
+enum class DeviceStatus(@JsonValue val display: String) {
+	PHONE_ONLINE(MessageKey.PHONE_ONLINE), PHONE_OFFLINE(MessageKey.PHONE_OFFLINE);
 }
 
-enum class DeviceInfo(val display: String) {
+enum class DeviceInfo(@JsonValue val display: String) {
 	ON_INSTALL(MessageKey.DEVICE_ON_INSTALL),
 	ON_UNINSTALLED(MessageKey.DEVICE_ON_UNINSTALL),
 	ON_RESTART(MessageKey.DEVICE_ON_RESTART),

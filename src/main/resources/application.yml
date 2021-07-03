@@ -45,8 +45,8 @@ springdoc:
     operationsSorter: alpha
 
 logging:
-  level:
-    ROOT: DEBUG
+#  level:
+#    ROOT: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} Tracing: %X{tracingId}  [%t] %-5level %logger{36} - %msg %n"
 
