@@ -2,6 +2,7 @@ package com.stafsus.waapi.service.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.stafsus.waapi.entity.*
+import java.time.LocalDateTime
 
 
 data class UserDto(
@@ -13,8 +14,9 @@ data class UserDto(
 	var authorities: Set<Authority>,
 	var status: Status,
 	var username: String,
-
-	) {
+	var startTrialAt: LocalDateTime? = null,
+	var endTrialAt: LocalDateTime? = null
+) {
 	companion object {
 		fun fromUser(user: User): UserDto {
 			return UserDto(
@@ -24,7 +26,9 @@ data class UserDto(
 				role = user.role,
 				authorities = user.authorities,
 				status = user.status,
-				username = user.username
+				username = user.username,
+				startTrialAt = user.startTrialAt,
+				endTrialAt = user.endTrialAt
 			)
 		}
 	}

@@ -17,6 +17,9 @@ import org.springframework.security.core.AuthenticationException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.Instant
+import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class AuthenticationServiceImpl(
@@ -47,7 +50,11 @@ class AuthenticationServiceImpl(
 			accessToken.refreshToken = jwtProvider.generateRefreshToken(userId)
 			val refreshToken = RefreshToken(
 				token = accessToken.refreshToken!!,
-				user = user
+				user = user,
+				expiryDate = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(accessToken.expiryDate!!),
+					TimeZone.getDefault().toZoneId()
+				)
 			)
 			refreshTokenRepository.save(refreshToken)
 			return accessToken
@@ -78,7 +85,7 @@ class AuthenticationServiceImpl(
 	@Transactional
 	override fun refreshToken(token: String): TokenDto {
 
-		val refreshToken = refreshTokenRepository.findByToken(token)
+		var refreshToken = refreshTokenRepository.findByToken(token)
 			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
 		if (!jwtProvider.validateToken(token)) {
 			refreshTokenRepository.delete(refreshToken)
@@ -88,12 +95,17 @@ class AuthenticationServiceImpl(
 			.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
 		val principal = UserPrincipal(user = user)
 		val newRefreshToken = jwtProvider.generateRefreshToken(user.id!!)
-		return jwtProvider.generateToken(principal).copy(refreshToken = newRefreshToken)
+		val tokenDto = jwtProvider.generateToken(principal).copy(refreshToken = newRefreshToken)
+		val jwtExpired =
+			LocalDateTime.ofInstant(Instant.ofEpochMilli(tokenDto.expiryDate!!), TimeZone.getDefault().toZoneId())
+		refreshToken = refreshToken.copy(token = newRefreshToken, expiryDate = jwtExpired)
+		refreshTokenRepository.save(refreshToken)
+		return tokenDto
 	}
 
 	@Transactional
 	override fun signOut(refreshToken: String, accessToken: String) {
-		val refreshTokenData = refreshTokenRepository.findByToken(refreshToken)
+		refreshTokenRepository.findByToken(refreshToken)
 			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
 		refreshTokenRepository.deleteByToken(refreshToken)
 		val blockToken = BlockAccessToken(token = accessToken)

@@ -18,7 +18,7 @@ class JwtProviderImpl(
 	@Value("\${app.security.refreshExpirationDateInMs}") val refreshExpirationDateInMs: Long
 ) : JwtProvider {
 	override fun generateToken(authentication: Authentication): TokenDto {
-		val userPrincipal = authentication.principal as UserPrincipal
+			val userPrincipal = authentication.principal as UserPrincipal
 		return generateToken(userPrincipal)
 	}
 

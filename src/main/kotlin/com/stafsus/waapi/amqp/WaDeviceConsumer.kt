@@ -37,18 +37,26 @@ class WaDeviceConsumer(
 		log.info("Data Received : $data")
 		val deviceId = data["deviceId"] as String
 		val deviceInfo = data["deviceInfo"] as String
-		val device = waDeviceService.findByDeviceId(deviceId = deviceId).orElse(null)
 		val currentInfo = DeviceInfo.valueOf(deviceInfo)
-		val message = mapOf<String, Any>(
-			"message" to translateService.toLocale(currentInfo.display),
-			"info" to currentInfo.name
-		)
+		val newData = data.toMutableMap()
+		newData["deviceInfo"] = currentInfo
+		sendDeviceInfo(deviceId, newData)
+		waDeviceService.updateDeviceInfo(deviceId, currentInfo)
+		if (currentInfo != DeviceInfo.ACTIVE) {
+			waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.PHONE_OFFLINE)
+
+			newData["status"] = DeviceStatus.PHONE_OFFLINE
+			sendStatus(deviceId, data)
+		}
+	}
+
+	private fun sendDeviceInfo(deviceId: String, data: Map<String, Any>) {
+		val device = waDeviceService.findByDeviceId(deviceId = deviceId).orElse(null)
 		messagingTemplate.convertAndSendToUser(
 			device.user!!.email,
 			"/queue/device",
-			message
+			data
 		)
-		waDeviceService.updateDeviceInfo(deviceId, currentInfo)
 	}
 
 	@Throws(ValidationException::class)

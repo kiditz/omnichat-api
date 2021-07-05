@@ -44,7 +44,7 @@ class AuthenticationController(
 	@PostMapping("/auth/refresh-token")
 	@Operation(summary = "Get jwt token by refresh token")
 	fun refresh(@Valid @RequestBody request: RefreshTokenRequest): ResponseDto {
-		val userDto = authenticationService.refreshToken(request.refreshToken!!)
+		val userDto = authenticationService.refreshToken(request.refreshToken)
 		return ResponseDto(payload = userDto)
 	}
 

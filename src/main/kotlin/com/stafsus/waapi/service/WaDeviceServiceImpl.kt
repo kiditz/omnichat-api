@@ -29,8 +29,6 @@ class WaDeviceServiceImpl(
 	private val rabbitTemplate: RabbitTemplate,
 	private val deviceRepository: WaDeviceRepository,
 	private val userRepository: UserRepository,
-//	private val waDeviceClient: WaDeviceClient,
-//	private val translateService: TranslateService,
 	private val qrCodeRepository: QrCodeRepository,
 	@Value("\${app.device.period}") val period: Long,
 
@@ -39,6 +37,7 @@ class WaDeviceServiceImpl(
 
 	@Transactional(readOnly = true)
 	override fun getQrCode(deviceId: String): QrCode {
+		validateDevice(deviceId)
 		return qrCodeRepository.findById(deviceId).orElseThrow { ValidationException(MessageKey.QR_NOT_READY) }
 	}
 
@@ -47,6 +46,9 @@ class WaDeviceServiceImpl(
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		if (device.deviceInfo != DeviceInfo.ACTIVE) {
 			throw ValidationException(MessageKey.INACTIVE_DEVICE)
+		}
+		if (device.deviceStatus != DeviceStatus.PHONE_ONLINE) {
+			throw ValidationException(MessageKey.PHONE_ALREADY_ONLINE)
 		}
 		return device
 	}
@@ -88,11 +90,17 @@ class WaDeviceServiceImpl(
 	override fun startTrial(principal: Principal): DeviceDto {
 		val user = userRepository.findByEmail(principal.name)
 			.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+		if (isTrialExpired(user)) {
+			throw ValidationException(MessageKey.TRIAL_EXPIRED)
+		}
 		user.startTrialAt = LocalDateTime.now()
 		user.endTrialAt = LocalDateTime.now().plusDays(period)
 		userRepository.save(user)
 		return install(user)
 	}
+
+	private fun isTrialExpired(user: User) =
+		user.endTrialAt != null && LocalDateTime.now().isAfter(user.endTrialAt)
 
 	@Transactional(readOnly = true)
 	override fun uninstall(deviceId: String, email: String) {

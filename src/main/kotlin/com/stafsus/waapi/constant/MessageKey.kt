@@ -19,8 +19,10 @@ class MessageKey {
 		const val DEVICE_ON_ACTIVE = "active.device"
 		const val DEVICE_ON_INACTIVE = "inactive.device"
 		const val PHONE_ONLINE = "phone.online"
+		const val PHONE_ALREADY_ONLINE = "phone.already.online"
 		const val PHONE_OFFLINE = "phone.offline"
 		const val QR_NOT_READY = "qr.not.ready"
 		const val QR_SUCCESS = "qr.successfully.loaded"
+		const val TRIAL_EXPIRED = "trial.expired"
 	}
 }
