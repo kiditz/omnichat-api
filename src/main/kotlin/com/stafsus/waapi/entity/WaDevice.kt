@@ -14,6 +14,8 @@ data class WaDevice(
 	@Column(nullable = false, columnDefinition = "varchar(12) default ''")
 	var deviceId: String,
 	var phone: String? = null,
+	@Column(nullable = false, columnDefinition = "boolean default false")
+	var isTrial: Boolean? = null,
 	@ManyToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	var user: User? = null,
