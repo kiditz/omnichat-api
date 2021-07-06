@@ -37,7 +37,10 @@ class WaDeviceServiceImpl(
 
 	@Transactional(readOnly = true)
 	override fun getQrCode(deviceId: String): QrCode {
-		validateDevice(deviceId)
+		val device = validateDevice(deviceId)
+		if (device.deviceStatus == DeviceStatus.PHONE_ONLINE) {
+			throw ValidationException(MessageKey.PHONE_ALREADY_ONLINE)
+		}
 		return qrCodeRepository.findById(deviceId).orElseThrow { ValidationException(MessageKey.QR_NOT_READY) }
 	}
 
@@ -46,9 +49,6 @@ class WaDeviceServiceImpl(
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		if (device.deviceInfo != DeviceInfo.ACTIVE) {
 			throw ValidationException(MessageKey.INACTIVE_DEVICE)
-		}
-		if (device.deviceStatus != DeviceStatus.PHONE_ONLINE) {
-			throw ValidationException(MessageKey.PHONE_ALREADY_ONLINE)
 		}
 		return device
 	}
