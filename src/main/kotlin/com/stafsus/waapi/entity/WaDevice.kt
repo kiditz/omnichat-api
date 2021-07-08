@@ -24,7 +24,8 @@ data class WaDevice(
 	@Enumerated(EnumType.STRING)
 	var deviceStatus: DeviceStatus? = null,
 	@Enumerated(EnumType.STRING)
-	var deviceInfo: DeviceInfo? = null
+	var deviceInfo: DeviceInfo? = null,
+	var session: String? = null
 ) : Auditable()
 
 enum class DeviceStatus(@JsonValue val display: String) {

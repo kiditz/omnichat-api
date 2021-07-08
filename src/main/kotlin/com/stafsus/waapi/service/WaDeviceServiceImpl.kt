@@ -129,8 +129,18 @@ class WaDeviceServiceImpl(
 	@Transactional
 	override fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo) {
 		val device =
-			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+			deviceRepository.findByDeviceId(deviceId)
+				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceInfo = deviceInfo
+		deviceRepository.save(device)
+	}
+
+	@Transactional
+	override fun authenticatedSession(deviceId: String, session: String) {
+		val device =
+			deviceRepository.findByDeviceId(deviceId)
+				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		device.session = session
 		deviceRepository.save(device)
 	}
 
@@ -142,7 +152,8 @@ class WaDeviceServiceImpl(
 	@Transactional
 	override fun updateDeviceStatus(deviceId: String, phone: String, deviceStatus: DeviceStatus) {
 		val device =
-			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+			deviceRepository.findByDeviceId(deviceId)
+				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
 		if (StringUtils.hasText(phone))
 			device.phone = phone
@@ -151,6 +162,7 @@ class WaDeviceServiceImpl(
 
 	@Transactional(readOnly = true)
 	override fun findDevices(email: String, page: Int, size: Int): Page<WaDeviceDto> {
-		return deviceRepository.findByUserEmail(email, PageRequest.of(page, size, Sort.by("id").descending()))
+		return deviceRepository
+			.findByUserEmail(email, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
 }

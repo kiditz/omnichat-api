@@ -22,4 +22,5 @@ interface WaDeviceService {
 	fun updateDeviceStatus(deviceId: String, deviceStatus: DeviceStatus)
 	fun findDevices(email: String, page: Int, size: Int): Page<WaDeviceDto>
 	fun updateDeviceStatus(deviceId: String, phone: String, deviceStatus: DeviceStatus)
+	fun authenticatedSession(deviceId: String, session: String)
 }

@@ -8,7 +8,6 @@ import com.stafsus.waapi.entity.DeviceStatus
 import com.stafsus.waapi.entity.QrCode
 import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.repository.QrCodeRepository
-import com.stafsus.waapi.service.TranslateService
 import com.stafsus.waapi.service.WaDeviceService
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Message
@@ -25,7 +24,7 @@ class WaDeviceConsumer(
 	private val waDeviceService: WaDeviceService,
 	private val objectMapper: ObjectMapper,
 	private val messagingTemplate: SimpMessagingTemplate,
-	private val translateService: TranslateService,
+//	private val translateService: TranslateService,
 	private val qrCodeRepository: QrCodeRepository
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
@@ -80,6 +79,15 @@ class WaDeviceConsumer(
 		val deviceStatus = data["status"] as String
 		waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.valueOf(deviceStatus))
 		sendStatus(deviceId, data)
+	}
+
+	@Throws(ValidationException::class)
+	@RabbitListener(queues = [RabbitConfig.AUTHENTICATION_Q])
+	fun authenticationSuccess(message: Message) {
+		val data = objectMapper.readValue<Map<String, Any>>(message.body)
+		val deviceId = data["deviceId"] as String
+		val session = data["session"] as String
+		waDeviceService.authenticatedSession(deviceId, session)
 	}
 
 	private fun sendStatus(deviceId: String, data: Map<String, Any>) {

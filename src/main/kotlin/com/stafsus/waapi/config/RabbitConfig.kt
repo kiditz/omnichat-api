@@ -26,6 +26,7 @@ class RabbitConfig {
         const val LOGS_Q = "logs_q"
         const val READY_Q = "ready_q"
         const val AUTHENTICATION_FAILURE_Q = "auth_failure_q"
+        const val AUTHENTICATION_Q = "authentication_q"
         const val ERROR_Q = "error_q"
         const val QR_Q = "qr_q"
 
@@ -34,6 +35,11 @@ class RabbitConfig {
     @Bean
     fun installQueue(): Queue {
         return Queue(INSTALL_Q, true)
+    }
+
+    @Bean
+    fun authenticationQueue(): Queue {
+        return Queue(AUTHENTICATION_Q, true)
     }
 
     @Bean
