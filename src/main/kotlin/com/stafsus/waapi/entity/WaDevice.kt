@@ -25,6 +25,7 @@ data class WaDevice(
 	var deviceStatus: DeviceStatus? = null,
 	@Enumerated(EnumType.STRING)
 	var deviceInfo: DeviceInfo? = null,
+	@Column(columnDefinition = "text")
 	var session: String? = null
 ) : Auditable()
 

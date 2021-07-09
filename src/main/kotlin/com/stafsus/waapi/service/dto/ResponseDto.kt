@@ -10,6 +10,8 @@ data class ResponseDto(
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	var payload: Any? = null,
 	@JsonInclude(JsonInclude.Include.NON_NULL)
+	var errors: Any? = null,
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	var totalPage: Int? = null,
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	var size: Int? = null,

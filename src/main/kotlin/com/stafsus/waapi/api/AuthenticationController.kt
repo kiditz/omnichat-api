@@ -60,10 +60,7 @@ class AuthenticationController(
 	}
 
 	@GetMapping("/auth/user")
-	@Operation(
-		security = [SecurityRequirement(name = "bearer-key")],
-		summary = "Get User By jwt token"
-	)
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get User By jwt token")
 	fun getUser(principal: Principal): ResponseDto {
 		val userDto = authenticationService.findUser(principal.name)
 		return ResponseDto(payload = userDto)

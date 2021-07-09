@@ -86,8 +86,8 @@ class WaDeviceConsumer(
 	fun authenticationSuccess(message: Message) {
 		val data = objectMapper.readValue<Map<String, Any>>(message.body)
 		val deviceId = data["deviceId"] as String
-		val session = data["session"] as String
-		waDeviceService.authenticatedSession(deviceId, session)
+		val session = data["session"] as Map<*, *>
+		waDeviceService.authenticatedSession(deviceId, objectMapper.writeValueAsString(session))
 	}
 
 	private fun sendStatus(deviceId: String, data: Map<String, Any>) {

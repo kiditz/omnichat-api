@@ -55,6 +55,6 @@ feign:
     config:
       wa-device:
         url: http://localhost:8081
-        connectTimeout: 5000
-        readTimeout: 5000
+        connectTimeout: 30000
+        readTimeout: 60000
         loggerLevel: basic

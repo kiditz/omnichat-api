@@ -73,7 +73,8 @@ class WaDeviceServiceImpl(
 			deviceId = Random.stringLowerOnly(10),
 			startAt = startAt,
 			endAt = endAt,
-			deviceStatus = DeviceStatus.PHONE_OFFLINE
+			deviceStatus = DeviceStatus.PHONE_OFFLINE,
+			isTrial = true
 		)
 		device.user = user
 		deviceRepository.save(device)
@@ -155,6 +156,9 @@ class WaDeviceServiceImpl(
 			deviceRepository.findByDeviceId(deviceId)
 				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
+		if (deviceStatus == DeviceStatus.PHONE_OFFLINE) {
+			device.session = null
+		}
 		if (StringUtils.hasText(phone))
 			device.phone = phone
 		deviceRepository.save(device)
