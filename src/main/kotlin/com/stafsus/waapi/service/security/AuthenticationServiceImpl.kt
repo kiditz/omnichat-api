@@ -88,7 +88,7 @@ class AuthenticationServiceImpl(
 			refreshTokenRepository.deleteByToken(token)
 			throw ValidationException(MessageKey.INVALID_REFRESH_TOKEN)
 		}
-		var refreshToken = refreshTokenRepository.findByToken(token)
+		val refreshToken = refreshTokenRepository.findByToken(token)
 			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
 		val user = userRepository.findById(refreshToken?.user?.id!!)
 			.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
