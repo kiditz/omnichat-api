@@ -24,9 +24,4 @@ class DeviceApiController(private val deviceApiService: DeviceApiService) {
 	fun getChat(@RequestParam deviceId: String): ResponseDto {
 		return deviceApiService.getChat(deviceId)
 	}
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Logout from whats app web")
-	@DeleteMapping("/logout")
-	fun logout(@RequestParam deviceId: String): ResponseDto {
-		return deviceApiService.logout(deviceId)
-	}
 }

@@ -4,10 +4,12 @@ import com.stafsus.waapi.config.RabbitConfig
 import com.stafsus.waapi.constant.MessageKey
 import com.stafsus.waapi.entity.*
 import com.stafsus.waapi.exception.ValidationException
+import com.stafsus.waapi.feign.WaDeviceClient
 import com.stafsus.waapi.repository.QrCodeRepository
 import com.stafsus.waapi.repository.UserRepository
 import com.stafsus.waapi.repository.WaDeviceRepository
 import com.stafsus.waapi.service.dto.DeviceDto
+import com.stafsus.waapi.service.dto.ResponseDto
 import com.stafsus.waapi.service.dto.WaDeviceDto
 import com.stafsus.waapi.utils.Random
 import org.slf4j.LoggerFactory
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.net.URI
 import java.security.Principal
 import java.time.LocalDateTime
 import java.util.*
@@ -29,7 +32,9 @@ class WaDeviceServiceImpl(
 	private val deviceRepository: WaDeviceRepository,
 	private val userRepository: UserRepository,
 	private val qrCodeRepository: QrCodeRepository,
-	@Value("\${app.device.period}") val period: Long,
+	private val waDeviceClient: WaDeviceClient,
+	@Value("\${app.device.period}")
+	val period: Long,
 
 	) : WaDeviceService {
 	private val log = LoggerFactory.getLogger(javaClass)
@@ -149,9 +154,16 @@ class WaDeviceServiceImpl(
 		return updateDeviceStatus(deviceId, "", deviceStatus)
 	}
 
+	override fun logout(deviceId: String): ResponseDto {
+		val device =
+			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		return waDeviceClient.logout(URI.create("http://wa-${device.deviceId}"))
+	}
+
 	@Transactional
 	override fun updateDeviceStatus(deviceId: String, phone: String, deviceStatus: DeviceStatus) {
-		val device = deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		val device =
+			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
 		if (deviceStatus == DeviceStatus.PHONE_OFFLINE) {
 			device.session = null

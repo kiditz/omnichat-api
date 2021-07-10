@@ -13,4 +13,5 @@ data class WaDeviceDto(
 	var startAt: LocalDateTime? = null,
 	var endAt: LocalDateTime? = null,
 	var isTrial: Boolean? = null,
+	var session: String? = null,
 )

@@ -31,6 +31,19 @@ class DeviceController(
 		return ResponseDto.fromPage(devices)
 	}
 
+	@GetMapping("{id}")
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Get devices by id"
+	)
+	fun findDevice(@PathVariable("id") deviceId: String): ResponseDto {
+		val device = waDeviceService.findByDeviceId(deviceId)
+		return ResponseDto(
+			payload = device
+		)
+	}
+
+
 	@PostMapping("/trial")
 	@Operation(
 		security = [SecurityRequirement(name = "bearer-key")],
@@ -90,5 +103,11 @@ class DeviceController(
 	fun getQrCode(@Valid @RequestBody deviceRequest: DeviceRequest, principal: Principal): ResponseDto {
 		val qrCode = waDeviceService.getQrCode(deviceRequest.deviceId)
 		return ResponseDto(payload = qrCode, message = translateService.toLocale(MessageKey.QR_SUCCESS))
+	}
+
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Logout from whats app web")
+	@DeleteMapping("/logout")
+	fun logout(@RequestParam deviceId: String): ResponseDto {
+		return waDeviceService.logout(deviceId)
 	}
 }

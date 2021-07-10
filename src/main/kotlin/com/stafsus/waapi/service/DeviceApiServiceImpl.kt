@@ -24,10 +24,6 @@ class DeviceApiServiceImpl(
 		return waDeviceClient.getChat(URI.create("http://wa-${device.deviceId}"))
 	}
 
-	override fun logout(deviceId: String): ResponseDto {
-		val device = getDevice(deviceId)
-		return waDeviceClient.logout(URI.create("http://wa-${device.deviceId}"))
-	}
 
 	private fun getDevice(deviceId: String): WaDevice {
 		return waDeviceRepository.findByDeviceId(deviceId)

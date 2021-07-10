@@ -25,7 +25,7 @@ class JwtAuthenticationFilter(
 		if (StringUtils.hasText(token) && jwtProvider.validateToken(token) && !securityUserService.isBlocked(token!!)) {
 			val userId = jwtProvider.getUserIdFromToken(token)
 			if (userId != null) {
-				val userDetails = securityUserService.loadUserId(userId!!)
+				val userDetails = securityUserService.loadUserId(userId)
 					.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
 				val authentication = UsernamePasswordAuthenticationToken(userDetails, null, userDetails.authorities)
 				authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
