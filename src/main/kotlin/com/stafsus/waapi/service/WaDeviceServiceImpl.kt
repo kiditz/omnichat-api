@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.util.StringUtils
 import java.security.Principal
 import java.time.LocalDateTime
 import java.util.*
@@ -74,6 +73,7 @@ class WaDeviceServiceImpl(
 			startAt = startAt,
 			endAt = endAt,
 			deviceStatus = DeviceStatus.PHONE_OFFLINE,
+			deviceInfo = DeviceInfo.ON_INSTALL,
 			isTrial = true
 		)
 		device.user = user
@@ -120,6 +120,7 @@ class WaDeviceServiceImpl(
 		log.info("Restart Device :${deviceId}:${email}")
 		deviceRepository.findByDeviceIdAndUserEmail(deviceId, email)
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		qrCodeRepository.deleteById(deviceId)
 		val result = mutableMapOf(
 			"deviceId" to deviceId,
 			"deviceInfo" to DeviceInfo.ON_RESTART.name
@@ -129,18 +130,16 @@ class WaDeviceServiceImpl(
 
 	@Transactional
 	override fun updateDeviceInfo(deviceId: String, deviceInfo: DeviceInfo) {
-		val device =
-			deviceRepository.findByDeviceId(deviceId)
-				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		val device = deviceRepository.findByDeviceId(deviceId)
+			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceInfo = deviceInfo
 		deviceRepository.save(device)
 	}
 
 	@Transactional
 	override fun authenticatedSession(deviceId: String, session: String) {
-		val device =
-			deviceRepository.findByDeviceId(deviceId)
-				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		val device = deviceRepository.findByDeviceId(deviceId)
+			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.session = session
 		deviceRepository.save(device)
 	}
@@ -152,15 +151,14 @@ class WaDeviceServiceImpl(
 
 	@Transactional
 	override fun updateDeviceStatus(deviceId: String, phone: String, deviceStatus: DeviceStatus) {
-		val device =
-			deviceRepository.findByDeviceId(deviceId)
-				.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		val device = deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
 		if (deviceStatus == DeviceStatus.PHONE_OFFLINE) {
 			device.session = null
+			device.phone = null
 		}
-		if (StringUtils.hasText(phone))
-			device.phone = phone
+		if (deviceStatus == DeviceStatus.PHONE_ONLINE) device.phone = phone
+
 		deviceRepository.save(device)
 	}
 

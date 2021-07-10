@@ -24,7 +24,6 @@ class WaDeviceConsumer(
 	private val waDeviceService: WaDeviceService,
 	private val objectMapper: ObjectMapper,
 	private val messagingTemplate: SimpMessagingTemplate,
-//	private val translateService: TranslateService,
 	private val qrCodeRepository: QrCodeRepository
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
@@ -39,14 +38,9 @@ class WaDeviceConsumer(
 		val currentInfo = DeviceInfo.valueOf(deviceInfo)
 		val newData = data.toMutableMap()
 		newData["deviceInfo"] = currentInfo
-		sendDeviceInfo(deviceId, newData)
 		waDeviceService.updateDeviceInfo(deviceId, currentInfo)
-		if (currentInfo != DeviceInfo.ACTIVE) {
-			waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.PHONE_OFFLINE)
+		sendDeviceInfo(deviceId, newData)
 
-			newData["status"] = DeviceStatus.PHONE_OFFLINE
-			sendStatus(deviceId, data)
-		}
 	}
 
 	private fun sendDeviceInfo(deviceId: String, data: Map<String, Any>) {
