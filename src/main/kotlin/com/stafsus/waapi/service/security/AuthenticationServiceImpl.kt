@@ -84,13 +84,12 @@ class AuthenticationServiceImpl(
 
 	@Transactional
 	override fun refreshToken(token: String): TokenDto {
-
-		var refreshToken = refreshTokenRepository.findByToken(token)
-			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
 		if (!jwtProvider.validateToken(token)) {
-			refreshTokenRepository.delete(refreshToken)
+			refreshTokenRepository.deleteByToken(token)
 			throw ValidationException(MessageKey.INVALID_REFRESH_TOKEN)
 		}
+		var refreshToken = refreshTokenRepository.findByToken(token)
+			.orElseThrow { ValidationException(MessageKey.INVALID_REFRESH_TOKEN) }
 		val user = userRepository.findById(refreshToken?.user?.id!!)
 			.orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
 		val principal = UserPrincipal(user = user)
@@ -98,7 +97,8 @@ class AuthenticationServiceImpl(
 		val tokenDto = jwtProvider.generateToken(principal).copy(refreshToken = newRefreshToken)
 		val jwtExpired =
 			LocalDateTime.ofInstant(Instant.ofEpochMilli(tokenDto.expiryDate!!), TimeZone.getDefault().toZoneId())
-		refreshToken = refreshToken.copy(token = newRefreshToken, expiryDate = jwtExpired)
+		refreshToken.token = newRefreshToken
+		refreshToken.expiryDate = jwtExpired
 		refreshTokenRepository.save(refreshToken)
 		return tokenDto
 	}

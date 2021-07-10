@@ -10,8 +10,8 @@ data class RefreshToken(
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long? = null,
 	@Column(nullable = false)
-	val token: String,
-	val expiryDate: LocalDateTime? = null,
+	var token: String,
+	var expiryDate: LocalDateTime? = null,
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	var user: User? = null,

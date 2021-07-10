@@ -29,6 +29,10 @@ spring:
     username: ${DB_USER:wa}
     password: ${DB_PASSWORD:wa123}
     driverClassName: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 60000
+      maxLifetime: 180000
 
 app:
   device:

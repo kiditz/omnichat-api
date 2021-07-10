@@ -77,7 +77,7 @@ class WebSecurityConfig(
             .and()
             .authorizeRequests()
             .antMatchers("/api/auth/refresh-token","/api/auth/sign-in", "/api/auth/sign-up", "/api/auth/sign-out", "/api/health").permitAll()
-            .antMatchers("/api/device/logout").permitAll()
+            .antMatchers("/api/device/*").permitAll()
             .anyRequest().authenticated()
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
     }
