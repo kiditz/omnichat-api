@@ -123,12 +123,13 @@ class WaDeviceServiceImpl(
 	@Transactional(readOnly = true)
 	override fun restart(deviceId: String, email: String) {
 		log.info("Restart Device :${deviceId}:${email}")
-		deviceRepository.findByDeviceIdAndUserEmail(deviceId, email)
+		val device = deviceRepository.findByDeviceIdAndUserEmail(deviceId, email)
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		qrCodeRepository.deleteById(deviceId)
 		val result = mutableMapOf(
 			"deviceId" to deviceId,
-			"deviceInfo" to DeviceInfo.ON_RESTART.name
+			"deviceInfo" to DeviceInfo.ON_RESTART.name,
+			"session" to device.session
 		)
 		rabbitTemplate.convertAndSend(RabbitConfig.RESTART_EX, RabbitConfig.RESTART_RK, result)
 	}

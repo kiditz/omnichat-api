@@ -1,6 +1,7 @@
 package com.stafsus.waapi.service
 
 import com.stafsus.waapi.constant.MessageKey
+import com.stafsus.waapi.entity.DeviceStatus
 import com.stafsus.waapi.entity.WaDevice
 import com.stafsus.waapi.exception.ValidationException
 import com.stafsus.waapi.feign.WaDeviceClient
@@ -10,10 +11,10 @@ import org.springframework.stereotype.Service
 import java.net.URI
 
 @Service
-class DeviceApiServiceImpl(
+class WhatsApiServiceImpl(
 	private val waDeviceRepository: WaDeviceRepository,
 	private val waDeviceClient: WaDeviceClient
-) : DeviceApiService {
+) : WhatsApiService {
 	override fun getContacts(deviceId: String): ResponseDto {
 		val device = getDevice(deviceId)
 		return waDeviceClient.getContacts(URI.create("http://wa-${device.deviceId}"))
@@ -26,7 +27,11 @@ class DeviceApiServiceImpl(
 
 
 	private fun getDevice(deviceId: String): WaDevice {
-		return waDeviceRepository.findByDeviceId(deviceId)
+		val device = waDeviceRepository.findByDeviceId(deviceId)
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		if (device.deviceStatus == DeviceStatus.PHONE_OFFLINE) {
+			throw ValidationException(MessageKey.DEVICE_OFFLINE)
+		}
+		return device
 	}
 }
