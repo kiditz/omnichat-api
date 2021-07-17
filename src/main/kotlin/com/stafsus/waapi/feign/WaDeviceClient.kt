@@ -13,7 +13,7 @@ interface WaDeviceClient {
 	@GetMapping("/api/contacts")
 	fun getContacts(baseUri: URI): ResponseDto
 
-	@GetMapping("/api/chat")
+	@GetMapping("/api/chats")
 	fun getChat(baseUri: URI): ResponseDto
 
 	@DeleteMapping("/api/logout")

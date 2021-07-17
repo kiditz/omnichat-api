@@ -120,7 +120,7 @@ class WaDeviceServiceImpl(
 		rabbitTemplate.convertAndSend(RabbitConfig.UNINSTALL_EX, RabbitConfig.UNINSTALL_RK, result)
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	override fun restart(deviceId: String, email: String) {
 		log.info("Restart Device :${deviceId}:${email}")
 		val device = deviceRepository.findByDeviceIdAndUserEmail(deviceId, email)
