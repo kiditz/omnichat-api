@@ -125,7 +125,9 @@ class WaDeviceServiceImpl(
 		log.info("Restart Device :${deviceId}:${email}")
 		val device = deviceRepository.findByDeviceIdAndUserEmail(deviceId, email)
 			.orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
-		qrCodeRepository.deleteById(deviceId)
+		if (qrCodeRepository.existsById(deviceId)) {
+			qrCodeRepository.deleteById(deviceId)
+		}
 		val result = mutableMapOf(
 			"deviceId" to deviceId,
 			"deviceInfo" to DeviceInfo.ON_RESTART.name,
@@ -155,9 +157,12 @@ class WaDeviceServiceImpl(
 		return updateDeviceStatus(deviceId, "", deviceStatus)
 	}
 
+	@Transactional
 	override fun logout(deviceId: String): ResponseDto {
 		val device =
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
+		device.session = null
+		deviceRepository.save(device)
 		return waDeviceClient.logout(URI.create("http://wa-${device.deviceId}"))
 	}
 
@@ -166,10 +171,6 @@ class WaDeviceServiceImpl(
 		val device =
 			deviceRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.INVALID_DEVICE_ID) }
 		device.deviceStatus = deviceStatus
-		if (deviceStatus == DeviceStatus.PHONE_OFFLINE) {
-			device.session = null
-			device.phone = null
-		}
 		if (deviceStatus == DeviceStatus.PHONE_ONLINE) device.phone = phone
 
 		deviceRepository.save(device)

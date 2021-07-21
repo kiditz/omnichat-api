@@ -25,6 +25,11 @@ class WhatsApiServiceImpl(
 		return waDeviceClient.getChat(URI.create("http://wa-${device.deviceId}"))
 	}
 
+	override fun getChatDetail(deviceId: String, chatId: String): ResponseDto {
+		val device = getDevice(deviceId)
+		return waDeviceClient.getChatDetail(URI.create("http://wa-${device.deviceId}"), chatId)
+	}
+
 
 	private fun getDevice(deviceId: String): WaDevice {
 		val device = waDeviceRepository.findByDeviceId(deviceId)

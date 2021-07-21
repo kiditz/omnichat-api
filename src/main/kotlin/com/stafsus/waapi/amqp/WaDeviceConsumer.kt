@@ -39,6 +39,7 @@ class WaDeviceConsumer(
 		val newData = data.toMutableMap()
 		newData["deviceInfo"] = currentInfo
 		waDeviceService.updateDeviceInfo(deviceId, currentInfo)
+		waDeviceService.updateDeviceStatus(deviceId, DeviceStatus.PHONE_OFFLINE)
 		sendDeviceInfo(deviceId, newData)
 
 	}

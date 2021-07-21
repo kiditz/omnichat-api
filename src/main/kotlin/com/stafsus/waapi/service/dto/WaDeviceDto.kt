@@ -1,5 +1,6 @@
 package com.stafsus.waapi.service.dto
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.stafsus.waapi.entity.DeviceInfo
 import com.stafsus.waapi.entity.DeviceStatus
 import java.time.LocalDateTime
@@ -13,5 +14,6 @@ data class WaDeviceDto(
 	var startAt: LocalDateTime? = null,
 	var endAt: LocalDateTime? = null,
 	var isTrial: Boolean? = null,
+	@JsonIgnore
 	var session: String? = null,
 )

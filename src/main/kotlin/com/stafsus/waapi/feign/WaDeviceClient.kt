@@ -5,6 +5,7 @@ import com.stafsus.waapi.service.dto.ResponseDto
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import java.net.URI
 
 
@@ -15,6 +16,9 @@ interface WaDeviceClient {
 
 	@GetMapping("/api/chats")
 	fun getChat(baseUri: URI): ResponseDto
+
+	@GetMapping("/api/chats/{id}")
+	fun getChatDetail(baseUri: URI, @PathVariable id: String): ResponseDto
 
 	@DeleteMapping("/api/logout")
 	fun logout(baseUri: URI): ResponseDto

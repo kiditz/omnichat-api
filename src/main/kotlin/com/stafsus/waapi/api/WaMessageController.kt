@@ -25,4 +25,10 @@ class WaMessageController(private val whatsApiService: WhatsApiService) {
 	fun getChat(@RequestParam deviceId: String): ResponseDto {
 		return whatsApiService.getChat(deviceId)
 	}
+
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats contact chat")
+	@GetMapping("/chats/{chatId}")
+	fun getChatById(@RequestParam deviceId: String, @PathVariable chatId: String): ResponseDto {
+		return whatsApiService.getChatDetail(deviceId, chatId)
+	}
 }
