@@ -8,7 +8,7 @@ image:
   repository: asia.gcr.io/stafsus-35cc5/wa-api
   pullPolicy: Always #IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "v1"
+  tag: "0.0.1"
 
 imagePullSecrets:
   - name: gcr-json-key
@@ -83,17 +83,14 @@ affinity: {}
 
 env:
  - name: "DB_HOST"
-   value: "wa-db-postgresql"
+   value: "postgres-postgresql"
  - name: "DB_PORT"
    value: "5432"
  - name: "DB_USER"
-   value: "postgres"
+   value: "wa"
  - name: "DB_PASSWORD"
-   value: "tLAnVFvZOB"
+   value: "wa123"
  - name: "DB_NAME"
    value: "wa"
  - name: "AMQP_ADDRESS"
-   value: "amqps://kxaihelk:p_vOwOpE5TEjqmXbjM7tg7Y35fpfeFs0@snake.rmq2.cloudamqp.com/kxaihelk"
-
-
-
+   value: "amqp://admin:admin@rabbitmq:5672"
