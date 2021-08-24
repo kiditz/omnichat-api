@@ -18,6 +18,9 @@ interface WaDeviceClient {
 	@GetMapping("/api/chats")
 	fun getChat(baseUri: URI): ResponseDto
 
+	@GetMapping("/api/info")
+	fun getInfo(baseUri: URI): ResponseDto
+
 	@GetMapping("/api/chats/{id}")
 	fun getChatDetail(baseUri: URI, @PathVariable id: String): ResponseDto
 

@@ -7,4 +7,5 @@ interface WhatsMessageService {
 	fun getChat(deviceId: String): ResponseDto
 	fun getChatDetail(deviceId: String, chatId: String): ResponseDto
 	fun downloadMedia(deviceId: String, chatId: String, messageId: String): ResponseDto
+	fun getInfo(deviceId: String): ResponseDto
 }

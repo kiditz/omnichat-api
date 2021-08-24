@@ -26,6 +26,12 @@ class WaMessageController(private val whatsMessageService: WhatsMessageService) 
 		return whatsMessageService.getChat(deviceId)
 	}
 
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats app device info")
+	@GetMapping("/info")
+	fun getInfo(@RequestParam deviceId: String): ResponseDto {
+		return whatsMessageService.getInfo(deviceId)
+	}
+
 	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Download whats app media")
 	@GetMapping("/media")
 	fun downloadMedia(

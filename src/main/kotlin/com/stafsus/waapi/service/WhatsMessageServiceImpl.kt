@@ -25,6 +25,11 @@ class WhatsMessageServiceImpl(
 		return waDeviceClient.getChat(URI.create("http://wa-${device.deviceId}"))
 	}
 
+	override fun getInfo(deviceId: String): ResponseDto {
+		val device = getDevice(deviceId)
+		return waDeviceClient.getInfo(URI.create("http://wa-${device.deviceId}"))
+	}
+
 	override fun downloadMedia(deviceId: String, chatId:String, messageId:String): ResponseDto {
 		val device = getDevice(deviceId)
 		return waDeviceClient.downloadMedia(URI.create("http://wa-${device.deviceId}"), chatId, messageId)
