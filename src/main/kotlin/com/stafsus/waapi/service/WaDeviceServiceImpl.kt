@@ -174,7 +174,6 @@ class WaDeviceServiceImpl(
 		if (deviceStatus == DeviceStatus.PHONE_ONLINE) device.phone = phone
 		else if (deviceStatus == DeviceStatus.PHONE_OFFLINE) {
 			device.session = ""
-//			restart(device.deviceId, device.createdBy!!)
 		}
 		deviceRepository.save(device)
 	}
