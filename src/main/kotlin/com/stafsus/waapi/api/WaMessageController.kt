@@ -1,6 +1,6 @@
 package com.stafsus.waapi.api
 
-import com.stafsus.waapi.service.WhatsApiService
+import com.stafsus.waapi.service.WhatsMessageService
 import com.stafsus.waapi.service.dto.ResponseDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -12,23 +12,36 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/wa")
 @Validated
 @Tag(name = "Chat Api", description = "Call whats app api")
-class WaMessageController(private val whatsApiService: WhatsApiService) {
+class WaMessageController(private val whatsMessageService: WhatsMessageService) {
 	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats app contact list")
 	@GetMapping("/contacts")
 	fun getContacts(@RequestParam deviceId: String): ResponseDto {
 
-		return whatsApiService.getContacts(deviceId)
+		return whatsMessageService.getContacts(deviceId)
 	}
 
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats contact chat")
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats app chat list")
 	@GetMapping("/chats")
 	fun getChat(@RequestParam deviceId: String): ResponseDto {
-		return whatsApiService.getChat(deviceId)
+		return whatsMessageService.getChat(deviceId)
 	}
 
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get whats contact chat")
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Download whats app media")
+	@GetMapping("/media")
+	fun downloadMedia(
+		@RequestParam deviceId: String,
+		@RequestParam chatId: String,
+		@RequestParam messageId: String
+	): ResponseDto {
+		return whatsMessageService.downloadMedia(deviceId, chatId, messageId)
+	}
+
+	@Operation(
+		security = [SecurityRequirement(name = "bearer-key")],
+		summary = "Get detail or chats from whats app web"
+	)
 	@GetMapping("/chats/{chatId}")
 	fun getChatById(@RequestParam deviceId: String, @PathVariable chatId: String): ResponseDto {
-		return whatsApiService.getChatDetail(deviceId, chatId)
+		return whatsMessageService.getChatDetail(deviceId, chatId)
 	}
 }

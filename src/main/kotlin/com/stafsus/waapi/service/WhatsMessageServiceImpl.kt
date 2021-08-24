@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service
 import java.net.URI
 
 @Service
-class WhatsApiServiceImpl(
+class WhatsMessageServiceImpl(
 	private val waDeviceRepository: WaDeviceRepository,
 	private val waDeviceClient: WaDeviceClient
-) : WhatsApiService {
+) : WhatsMessageService {
 	override fun getContacts(deviceId: String): ResponseDto {
 		val device = getDevice(deviceId)
 		return waDeviceClient.getContacts(URI.create("http://wa-${device.deviceId}"))
@@ -23,6 +23,11 @@ class WhatsApiServiceImpl(
 	override fun getChat(deviceId: String): ResponseDto {
 		val device = getDevice(deviceId)
 		return waDeviceClient.getChat(URI.create("http://wa-${device.deviceId}"))
+	}
+
+	override fun downloadMedia(deviceId: String, chatId:String, messageId:String): ResponseDto {
+		val device = getDevice(deviceId)
+		return waDeviceClient.downloadMedia(URI.create("http://wa-${device.deviceId}"), chatId, messageId)
 	}
 
 	override fun getChatDetail(deviceId: String, chatId: String): ResponseDto {

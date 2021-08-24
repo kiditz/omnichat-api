@@ -6,6 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestParam
 import java.net.URI
 
 
@@ -19,6 +20,9 @@ interface WaDeviceClient {
 
 	@GetMapping("/api/chats/{id}")
 	fun getChatDetail(baseUri: URI, @PathVariable id: String): ResponseDto
+
+	@GetMapping("/api/media")
+	fun downloadMedia(baseUri: URI, @RequestParam chatId: String, @RequestParam messageId: String): ResponseDto
 
 	@DeleteMapping("/api/logout")
 	fun logout(baseUri: URI): ResponseDto
