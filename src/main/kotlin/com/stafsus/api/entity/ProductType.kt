@@ -1,0 +1,10 @@
+package com.stafsus.api.entity
+
+enum class ProductType {
+	UNOFFICIAL_WHATSAPP,
+	TELEGRAM_BOT,
+	FACEBOOK_MESSENGER,
+	INSTAGRAM_DIRECT,
+	QUOTA,
+	ADDITIONAL_USER,
+}

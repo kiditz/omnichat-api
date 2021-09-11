@@ -1,0 +1,65 @@
+spring:
+  rabbitmq:
+    addresses: ${AMQP_ADDRESS:amqp://admin:admin@localhost:5672}
+    listener:
+      concurrency: 5
+      max-concurrency: 10
+    simple:
+      retry:
+        enabled: true
+        initial-interval: 3s
+        max-attempts: 3
+        max-interval: 10s
+        multiplier: 2
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 5MB
+  jpa:
+    show-sql: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: false
+        enable_lazy_load_no_trans: true
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:wa}
+    username: ${DB_USER:wa}
+    password: ${DB_PASSWORD:wa123}
+    driverClassName: org.postgresql.Driver
+    hikari:
+      connectionTimeout: 30000
+      idleTimeout: 60000
+      maxLifetime: 180000
+security:
+  jwtSecret: myv3ryv3ryv3rys3cr3t4pi
+  jwtExpirationInMs: 3600000
+  refreshExpirationDateInMs: 604800000
+
+
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    tagsSorter: alpha
+    operationsSorter: alpha
+
+firebase:
+  bucket-name: stafsus-35cc5.appspot.com
+  root: dev
+  image-url: https://firebasestorage.googleapis.com/v0/b/${firebase.bucket-name}/o
+
+midtrans:
+  serverKey: SB-Mid-server-UySPGS0XmbAZ-ZOp9Oaav1IK
+  baseUrl: https://app.sandbox.midtrans.com/snap/v1
+  merchantName: "StaffSus"
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 30000
+        readTimeout: 60000
+        loggerLevel: full

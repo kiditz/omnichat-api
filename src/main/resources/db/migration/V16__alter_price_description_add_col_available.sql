@@ -1,0 +1,1 @@
+ALTER TABLE price_description ADD COLUMN is_available boolean NOT NULL DEFAULT TRUE;

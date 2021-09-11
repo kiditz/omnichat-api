@@ -1,0 +1,1 @@
+ALTER TABLE transaction ADD COLUMN status character varying(30) NOT NULL DEFAULT 'PENDING';
