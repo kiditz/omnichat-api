@@ -16,5 +16,8 @@ class MessageKey {
 		const val UNAUTHORIZED_ERROR = "unauthorized.error"
 		const val EMAIL_EXISTS = "email.exists"
 		const val INVALID_REFRESH_TOKEN = "invalid.refresh.token"
+		const val TRIAL_TIME_IS_UP = "trial.time.is.up"
+		const val MAXIMUM_CHANNEL_HAS_BEEN_REACHED = "maximum.channel.has.been.reached"
+
 	}
 }
