@@ -2,6 +2,7 @@ package com.stafsus.api.dto
 
 import com.stafsus.api.entity.Channel
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.lang3.StringUtils
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Positive
@@ -18,9 +19,10 @@ data class ChannelDto(
 		return Channel(
 			name = name!!,
 			phone = phone,
-			deviceId = RandomStringUtils.randomAlphabetic(8).toLowerCase(),
+			deviceId = StringUtils.lowerCase(RandomStringUtils.randomAlphabetic(8)),
 			isOnline = false,
 			isActive = false,
+			isPending = true,
 		)
 	}
 }
