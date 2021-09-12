@@ -16,6 +16,22 @@ import org.springframework.context.annotation.Configuration
 class AmqpConfig {
 	companion object {
 		const val UNOFFICIAL_WHATSAPP = "unofficial_whatsapp"
+		const val UPDATE_CHANNEL = "update_channel"
+	}
+
+	@Bean
+	fun updateChannelQueue(): Queue {
+		return Queue("${UPDATE_CHANNEL}_q", true)
+	}
+
+	@Bean
+	fun updateChannelExchange(): DirectExchange {
+		return DirectExchange("${UPDATE_CHANNEL}_ex")
+	}
+
+	@Bean
+	fun bindUpdateChannel(): Binding {
+		return BindingBuilder.bind(updateChannelExchange()).to(updateChannelExchange()).withQueueName()
 	}
 
 	@Bean
@@ -38,13 +54,18 @@ class AmqpConfig {
 	@Bean
 	fun rabbitTemplate(connectionFactory: ConnectionFactory): RabbitTemplate {
 		val rabbitTemplate = RabbitTemplate(connectionFactory)
-		val mapper = ObjectMapper().findAndRegisterModules()
-		rabbitTemplate.messageConverter = Jackson2JsonMessageConverter(mapper)
+		rabbitTemplate.messageConverter = producerJackson2MessageConverter()
 		return rabbitTemplate
 	}
 
 	@Bean
 	fun rabbitAdmin(connectionFactory: ConnectionFactory): AmqpAdmin {
 		return RabbitAdmin(connectionFactory)
+	}
+
+	@Bean
+	fun producerJackson2MessageConverter(): Jackson2JsonMessageConverter {
+		val mapper = ObjectMapper().findAndRegisterModules()
+		return Jackson2JsonMessageConverter(mapper)
 	}
 }

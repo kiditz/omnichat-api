@@ -16,10 +16,12 @@ data class Channel(
 	var deviceId: String,
 	@Column(length = 20)
 	var phone: String? = null,
-	@Column(nullable = false, length = 8)
+	@Column(nullable = false)
 	var isOnline: Boolean,
-	@Column(nullable = false, length = 8)
+	@Column(nullable = false)
 	var isActive: Boolean,
+	@Column(nullable = false)
+	var isPending: Boolean,
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
