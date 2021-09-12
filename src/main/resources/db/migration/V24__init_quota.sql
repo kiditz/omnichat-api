@@ -1,0 +1,2 @@
+INSERT INTO public.quota VALUES (1, 4, 2, 1000, '2021-09-25 22:26:43.974343', '2021-09-11 22:26:44.021343', NULL, '2021-09-11 22:26:44.021343', NULL, 0);
+SELECT pg_catalog.setval('public.quota_id_seq', 1, true);

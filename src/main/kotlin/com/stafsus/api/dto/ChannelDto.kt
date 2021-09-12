@@ -5,11 +5,13 @@ import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.StringUtils
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
+import javax.validation.constraints.Pattern
 import javax.validation.constraints.Positive
 
 data class ChannelDto(
 	@field:NotBlank
 	var name: String? = null,
+	@field:Pattern(regexp = "^[62][0-9]{0,20}\$")
 	var phone: String? = null,
 	@field:NotNull
 	@field:Positive

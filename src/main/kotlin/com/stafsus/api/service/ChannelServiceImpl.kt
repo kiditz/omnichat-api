@@ -26,7 +26,7 @@ class ChannelServiceImpl(
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
 
-		if (userPrincipal.quota!!.maxChannel > channelRepository.countByUserId(userPrincipal.id!!)) {
+		if (userPrincipal.quota!!.maxChannel < channelRepository.countByUserId(userPrincipal.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 
@@ -37,4 +37,5 @@ class ChannelServiceImpl(
 		rabbitService.sendInstall(product.type!!, channel)
 		return channel
 	}
+
 }

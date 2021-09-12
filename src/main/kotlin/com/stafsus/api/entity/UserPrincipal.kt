@@ -27,7 +27,7 @@ data class UserPrincipal(
 	@Column(name = "parent_id")
 	var parentId: Long? = null,
 	@OneToOne(cascade = [CascadeType.ALL])
-	@JoinColumn(name = "quota_id")
+	@JoinColumn(name = "quota_id", nullable = true)
 //	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var quota: Quota? = null,
 ) : Auditable()

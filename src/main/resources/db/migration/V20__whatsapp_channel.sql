@@ -3,11 +3,12 @@ CREATE TABLE whatsapp_channel(
     push_name character varying(225),
     phone character varying(20),
     browser_session text,
+    qr_code text,
     channel_id bigint NOT NULL,
-    CONSTRAINT quota_pkey PRIMARY KEY (id),
+    CONSTRAINT whatsapp_channel_pkey PRIMARY KEY (id),
     created_at timestamp without time zone NOT NULL,
     created_by character varying(255) ,
     updated_at timestamp without time zone,
     updated_by character varying(255) ,
     version bigint NOT NULL
-)
+);

@@ -17,22 +17,12 @@ class AmqpConfig {
 	companion object {
 		const val UNOFFICIAL_WHATSAPP = "unofficial_whatsapp"
 		const val UPDATE_CHANNEL = "update_channel"
+		const val WA_SYNC_CONTACT_Q = "wa_sync_contact_q"
+		const val WA_READY_Q = "wa_ready_q"
+		const val WA_QR_Q = "wa_qr_q"
+		const val WA_AUTHENTICATION_Q = "wa_authentication_q"
 	}
 
-	@Bean
-	fun updateChannelQueue(): Queue {
-		return Queue("${UPDATE_CHANNEL}_q", true)
-	}
-
-	@Bean
-	fun updateChannelExchange(): DirectExchange {
-		return DirectExchange("${UPDATE_CHANNEL}_ex")
-	}
-
-	@Bean
-	fun bindUpdateChannel(): Binding {
-		return BindingBuilder.bind(updateChannelExchange()).to(updateChannelExchange()).withQueueName()
-	}
 
 	@Bean
 	fun installUnofficialWhatsApp(): Queue {
