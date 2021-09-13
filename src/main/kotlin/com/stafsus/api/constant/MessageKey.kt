@@ -5,6 +5,7 @@ class MessageKey {
 		const val USER_NOT_FOUND = "user.not_found"
 		const val PRODUCT_NOT_FOUND = "product.not_found"
 		const val PRICE_NOT_FOUND = "price.not_found"
+		const val SYNC_CONTACT_FAILED = "sync.contact.failed"
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
 		const val PRICE_MUST_GREATER_THAN_ZERO = "price.greater_than_zero"
 		const val INVALID_VERSION = "invalid.version"
