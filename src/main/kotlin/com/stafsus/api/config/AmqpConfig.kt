@@ -24,6 +24,7 @@ class AmqpConfig(
 		const val WA_AUTHENTICATION_Q = "wa_authentication_q"
 		const val WA_DISCONNECT_Q = "wa_disconnect_q"
 		const val WA_AUTH_FAILURE_Q = "wa_auth_failure_q"
+//		const val UNOFFICIAL_WHATSAPP_RESTART = "unofficial_whatsapp_restart"
 	}
 
 

@@ -5,6 +5,7 @@ import com.stafsus.api.dto.ChannelDto
 import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.execption.QuotaLimitException
+import com.stafsus.api.execption.ValidationException
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
 import org.springframework.stereotype.Service
@@ -36,6 +37,16 @@ class ChannelServiceImpl(
 		channelRepository.save(channel)
 		rabbitService.sendInstall(product.type!!, channel)
 		return channel
+	}
+
+	@Transactional
+	override fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel {
+		val channel = channelRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
+		channel.isActive = false
+		channel.isPending = true
+		channel.isOnline = false
+		rabbitService.sendRestart(channel!!.product!!.type!!, channel)
+		return channelRepository.save(channel)
 	}
 
 }

@@ -30,4 +30,6 @@ data class Channel(
 	@JoinColumn(name = "product_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var product: Product? = null,
+	@OneToOne(mappedBy = "channel")
+	var whatsApp: WhatsAppChannel? = null
 ) : Auditable()

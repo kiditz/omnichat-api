@@ -24,7 +24,6 @@ class WhatsAppChannelServiceImpl(
 			waChannel.pushName = channelDto.pushName ?: waChannel.pushName
 			waChannel.qrCode = channelDto.qrCode ?: waChannel.qrCode
 			waChannel.channel = channel
-
 			channel.isOnline = channelDto.isOnline ?: channel.isOnline
 			channel.isPending = channelDto.isPending ?: channel.isPending
 			channel.isActive = channelDto.isActive ?: channel.isActive

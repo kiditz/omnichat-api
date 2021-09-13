@@ -9,6 +9,8 @@ CREATE TABLE message
     broadcast boolean,
     is_status  boolean,
     "from" character varying(255),
+    "to" character varying(255),
+    "deviceType" character varying(255),
     from_me boolean,
     has_media boolean,
     has_quoted_message boolean,

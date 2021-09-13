@@ -6,4 +6,5 @@ import com.stafsus.api.entity.UserPrincipal
 
 interface ChannelService {
 	fun install(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel
+	fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel
 }

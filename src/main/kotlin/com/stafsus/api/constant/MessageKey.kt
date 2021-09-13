@@ -4,6 +4,7 @@ class MessageKey {
 	companion object {
 		const val USER_NOT_FOUND = "user.not_found"
 		const val PRODUCT_NOT_FOUND = "product.not_found"
+		const val CHANNEL_NOT_FOUND = "channel.not_found"
 		const val PRICE_NOT_FOUND = "price.not_found"
 		const val SYNC_CONTACT_FAILED = "sync.contact.failed"
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
