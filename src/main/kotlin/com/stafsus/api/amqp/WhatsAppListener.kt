@@ -34,15 +34,16 @@ class WhatsAppListener(
 	fun whatsAppAuthenticated(channelDto: WhatsAppChannelDto) {
 		log.info("Authenticated : {}", channelDto)
 		channelDto.isOnline = true
-		channelDto.qrCode = null
+		channelDto.qrCode = ""
 		whatsAppChannelService.save(channelDto)
 	}
 
 	@RabbitListener(queues = [AmqpConfig.WA_DISCONNECT_Q, AmqpConfig.WA_AUTH_FAILURE_Q])
 	fun whatsAppExit(channelDto: WhatsAppChannelDto) {
 		log.trace("Disconnect : {}", channelDto)
-		channelDto.qrCode = null
-		channelDto.browserSession = null
+		channelDto.phone = ""
+		channelDto.qrCode = ""
+		channelDto.browserSession = ""
 		whatsAppChannelService.save(channelDto)
 	}
 

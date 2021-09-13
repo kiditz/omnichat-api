@@ -1,7 +1,7 @@
 package com.stafsus.api.dto
 
 data class WhatsAppChannelDto(
-	val phone: String? = null,
+	var phone: String? = null,
 	var browserSession: String? = null,
 	var qrCode: String? = null,
 	var deviceId: String? = null,
