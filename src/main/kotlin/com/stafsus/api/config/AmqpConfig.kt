@@ -13,14 +13,17 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @EnableRabbit
-class AmqpConfig {
+class AmqpConfig(
+	private val objectMapper: ObjectMapper
+) {
 	companion object {
 		const val UNOFFICIAL_WHATSAPP = "unofficial_whatsapp"
-		const val UPDATE_CHANNEL = "update_channel"
 		const val WA_SYNC_CONTACT_Q = "wa_sync_contact_q"
 		const val WA_READY_Q = "wa_ready_q"
 		const val WA_QR_Q = "wa_qr_q"
 		const val WA_AUTHENTICATION_Q = "wa_authentication_q"
+		const val WA_DISCONNECT_Q = "wa_disconnect_q"
+		const val WA_AUTH_FAILURE_Q = "wa_auth_failure_q"
 	}
 
 
@@ -55,7 +58,7 @@ class AmqpConfig {
 
 	@Bean
 	fun producerJackson2MessageConverter(): Jackson2JsonMessageConverter {
-		val mapper = ObjectMapper().findAndRegisterModules()
+		val mapper = objectMapper.findAndRegisterModules()
 		return Jackson2JsonMessageConverter(mapper)
 	}
 }

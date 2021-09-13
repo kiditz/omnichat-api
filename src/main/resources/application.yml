@@ -1,4 +1,7 @@
 spring:
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
   rabbitmq:
     addresses: ${AMQP_ADDRESS:amqp://admin:admin@localhost:5672}
     listener:
