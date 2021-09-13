@@ -40,7 +40,7 @@ class WhatsAppListener(
 
 	@RabbitListener(queues = [AmqpConfig.WA_DISCONNECT_Q, AmqpConfig.WA_AUTH_FAILURE_Q])
 	fun whatsAppExit(channelDto: WhatsAppChannelDto) {
-		log.info("Disconnect : {}", channelDto)
+		log.trace("Disconnect : {}", channelDto)
 		channelDto.qrCode = null
 		channelDto.browserSession = null
 		whatsAppChannelService.save(channelDto)
