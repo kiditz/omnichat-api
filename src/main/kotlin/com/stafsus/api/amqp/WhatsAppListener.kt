@@ -1,8 +1,10 @@
 package com.stafsus.api.amqp
 
 import com.stafsus.api.config.AmqpConfig
+import com.stafsus.api.dto.WaSyncChatDto
 import com.stafsus.api.dto.WhatsAppChannelDto
-import com.stafsus.api.dto.WhatsAppContacts
+import com.stafsus.api.dto.WaSyncContactDto
+import com.stafsus.api.service.ChatService
 import com.stafsus.api.service.ContactService
 import com.stafsus.api.service.WhatsAppChannelService
 import org.slf4j.LoggerFactory
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component
 class WhatsAppListener(
 	private val whatsAppChannelService: WhatsAppChannelService,
 	private val contactService: ContactService,
+	private val chatService: ChatService,
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -40,7 +43,7 @@ class WhatsAppListener(
 
 	@RabbitListener(queues = [AmqpConfig.WA_DISCONNECT_Q, AmqpConfig.WA_AUTH_FAILURE_Q])
 	fun whatsAppExit(channelDto: WhatsAppChannelDto) {
-		log.trace("Disconnect : {}", channelDto)
+		log.info("Disconnect : {}", channelDto)
 		channelDto.phone = ""
 		channelDto.qrCode = ""
 		channelDto.browserSession = ""
@@ -48,7 +51,15 @@ class WhatsAppListener(
 	}
 
 	@RabbitListener(queues = [AmqpConfig.WA_SYNC_CONTACT_Q])
-	fun whatsAppSyncContact(contacts: WhatsAppContacts) {
-		contactService.syncFromWhatsApp(contacts)
+	fun whatsAppSyncContact(contactDto: WaSyncContactDto) {
+		log.info("Sync Contact : {}", contactDto.deviceId)
+		contactService.syncFromWhatsApp(contactDto)
+	}
+
+
+	@RabbitListener(queues = [AmqpConfig.WA_SYNC_CHAT_Q])
+	fun whatsAppSyncChatList(chatDto: WaSyncChatDto) {
+		log.info("Sync Chat : {}", chatDto.deviceId)
+		chatService.syncFromWhatsApp(chatDto)
 	}
 }

@@ -1,6 +1,5 @@
 package com.stafsus.api.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 
@@ -9,11 +8,9 @@ import javax.persistence.*
 data class Contact(
 	@Id
 	@Column(nullable = false)
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	val id: Long? = null,
-	@Column(length = 20)
+	val id: String? = null,
 	var number: String? = null,
-	@Column(length = 60)
+	var server: String? = null,
 	var name: String? = null,
 	var picture: String? = null,
 	@Enumerated(EnumType.STRING)

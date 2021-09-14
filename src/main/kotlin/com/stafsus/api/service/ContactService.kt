@@ -1,7 +1,7 @@
 package com.stafsus.api.service
 
-import com.stafsus.api.dto.WhatsAppContacts
+import com.stafsus.api.dto.WaSyncContactDto
 
 interface ContactService {
-	fun syncFromWhatsApp(waContacts: WhatsAppContacts)
+	fun syncFromWhatsApp(waContactDto: WaSyncContactDto)
 }
