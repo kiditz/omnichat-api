@@ -12,6 +12,7 @@ class Participant(
 	val id: Long? = null,
 	var number: String? = null,
 	var server: String? = null,
+	@JsonProperty("isAdmin")
 	@Column(name = "is_admin")
 	var admin: Boolean? = null,
 	@ManyToOne
