@@ -13,6 +13,7 @@ CREATE TABLE chat
     mute_expiration timestamp without time zone,
     "timestamp" timestamp without time zone,
     group_id character varying(255),
+    source character varying(255),
     user_id bigint NOT NULL,
     CONSTRAINT chat_pkey PRIMARY KEY (id),
     created_at timestamp without time zone NOT NULL,

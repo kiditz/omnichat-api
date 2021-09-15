@@ -31,6 +31,9 @@ class ChatServiceImpl(
 				chat.groupMetadata?.participants?.forEach { participant ->
 					participant.groupMetadata = chat.groupMetadata
 				}
+				chat.messages?.forEach { message ->
+					message.chat = chat
+				}
 			}
 			chatRepository.saveAll(chats)
 		} catch (ex: Exception) {

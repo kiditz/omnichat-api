@@ -16,17 +16,18 @@ data class Chat(
 	val number: String? = null,
 	val name: String? = null,
 	val server: String? = null,
+	val source: String? = null,
 	val archived: Boolean? = null,
-	@JsonProperty("isGroup")
+	@field:JsonProperty("isGroup")
 	@Column(name = "is_group", nullable = false)
 	val group: Boolean? = null,
-	@JsonProperty("isReadOnly")
+	@field:JsonProperty("isReadOnly")
 	@Column(name = "is_read_only", nullable = false)
 	val readOnly: Boolean? = null,
-	@JsonProperty("pinned")
+	@field:JsonProperty("pinned")
 	@Column(name = "pinned", nullable = false)
 	val pinned: Boolean? = null,
-	@JsonProperty("isMuted")
+	@field:JsonProperty("isMuted")
 	@Column(name = "is_muted", nullable = false)
 	val muted: Boolean? = null,
 	val unreadCount: Long? = null,
@@ -42,4 +43,6 @@ data class Chat(
 	@JoinColumn(name = "user_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var user: UserPrincipal? = null,
+	@OneToMany(mappedBy = "chat", cascade = [CascadeType.ALL])
+	var messages: List<Message>? = null
 ) : Auditable()
