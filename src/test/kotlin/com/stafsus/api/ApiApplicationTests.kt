@@ -1,13 +1,16 @@
 package com.stafsus.api
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
+import org.slf4j.LoggerFactory
+import java.time.Instant
 
-@SpringBootTest
+//@SpringBootTest
 class ApiApplicationTests {
+	private val log = LoggerFactory.getLogger(javaClass)
 
 	@Test
 	fun contextLoads() {
+		log.info("Res:{}", Instant.ofEpochMilli(1631654136))
 	}
 
 }
