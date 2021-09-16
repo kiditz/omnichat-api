@@ -63,6 +63,7 @@ class SecurityConfig(
 				"${UrlPath.PRICE}/**",
 				"${UrlPath.TRANSACTION}/**",
 				"${UrlPath.CHANNEL}/**",
+				"${UrlPath.CHAT}/**",
 			)
 			.and()
 			.cors().and()

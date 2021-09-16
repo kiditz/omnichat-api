@@ -29,6 +29,8 @@ class ContactServiceImpl(
 				.filterNot { x -> existingContactsIds.any { m -> m.id == x.id } }
 			newContacts.forEach {
 				it.user = channel.user
+				it.createdBy = channel.user?.email
+				it.updatedBy = channel.user?.email
 			}
 			log.info("New Contacts: {}", newContacts.size)
 			contactRepository.saveAll(newContacts)

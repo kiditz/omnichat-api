@@ -4,8 +4,10 @@ import com.stafsus.api.config.AmqpConfig
 import com.stafsus.api.dto.WaSyncChatDto
 import com.stafsus.api.dto.WhatsAppChannelDto
 import com.stafsus.api.dto.WaSyncContactDto
+import com.stafsus.api.dto.WaSyncMessageDto
 import com.stafsus.api.service.ChatService
 import com.stafsus.api.service.ContactService
+import com.stafsus.api.service.MessageService
 import com.stafsus.api.service.WhatsAppChannelService
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.rabbit.annotation.RabbitListener
@@ -16,6 +18,7 @@ class WhatsAppListener(
 	private val whatsAppChannelService: WhatsAppChannelService,
 	private val contactService: ContactService,
 	private val chatService: ChatService,
+	private val messageService: MessageService,
 ) {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -54,6 +57,13 @@ class WhatsAppListener(
 	fun whatsAppSyncContact(contactDto: WaSyncContactDto) {
 		log.info("Sync Contact : {}", contactDto.deviceId)
 		contactService.syncFromWhatsApp(contactDto)
+	}
+
+
+	@RabbitListener(queues = [AmqpConfig.WA_SYNC_MESSAGE_Q])
+	fun whatsAppSyncMessage(messageDto: WaSyncMessageDto) {
+		log.info("Sync Message : {}", messageDto.message.from)
+		messageService.syncFromWhatsApp(messageDto)
 	}
 
 

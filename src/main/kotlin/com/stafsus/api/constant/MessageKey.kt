@@ -9,6 +9,7 @@ class MessageKey {
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
 		const val SYNC_CONTACT_FAILED = "sync.contact.failed"
 		const val SYNC_CHAT_FAILED = "sync.chat.failed"
+		const val SYNC_MESSAGE_FAILED = "sync.message.failed"
 		const val PRICE_MUST_GREATER_THAN_ZERO = "price.greater_than_zero"
 		const val INVALID_VERSION = "invalid.version"
 		const val INVALID_SIGNATURE_KEY = "invalid.signature_key"

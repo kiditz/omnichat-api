@@ -19,6 +19,7 @@ class AmqpConfig(
 	companion object {
 		const val UNOFFICIAL_WHATSAPP = "unofficial_whatsapp"
 		const val WA_SYNC_CONTACT_Q = "wa_sync_contact_q"
+		const val WA_SYNC_MESSAGE_Q = "wa_sync_message_q"
 		const val WA_READY_Q = "wa_ready_q"
 		const val WA_QR_Q = "wa_qr_q"
 		const val WA_AUTHENTICATION_Q = "wa_authentication_q"

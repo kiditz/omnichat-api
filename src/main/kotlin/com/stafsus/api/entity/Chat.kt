@@ -40,6 +40,10 @@ data class Chat(
 	@JoinColumn(name = "group_id")
 	val groupMetadata: GroupMetadata? = null,
 	@OneToOne
+	@JoinColumn(name = "id")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	var contact: Contact? = null,
+	@OneToOne
 	@JoinColumn(name = "user_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var user: UserPrincipal? = null,

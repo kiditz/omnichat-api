@@ -13,6 +13,7 @@ data class Contact(
 	var server: String? = null,
 	var name: String? = null,
 	var picture: String? = null,
+	var about: String? = null,
 	@Enumerated(EnumType.STRING)
 	var source: ContactSource,
 	var isGroup: Boolean? = null,
