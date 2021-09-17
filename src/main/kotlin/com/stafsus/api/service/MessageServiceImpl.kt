@@ -38,6 +38,26 @@ class MessageServiceImpl(
 		}
 	}
 
+	override fun revokedFromWhatsApp(waMessageDto: WaSyncMessageDto) {
+		try {
+			val channel = channelRepository.findByDeviceId(waMessageDto.deviceId)
+				.orElseThrow { ValidationException(MessageKey.SYNC_CHAT_FAILED) }
+			val message =
+				messageRepository.findByFromAndTimestamp(waMessageDto.message.from, waMessageDto.message.timestamp)
+			message.ifPresent {
+				waMessageDto.message.version = it.version
+				waMessageDto.message.id = it.id
+				waMessageDto.message.chat?.version = it.chat!!.version
+				waMessageDto.message.chat?.user = channel.user
+				messageRepository.save(waMessageDto.message)
+			}
+		} catch (ex: Exception) {
+			log.error("Exception: {}", ex.message)
+			throw AmqpRejectAndDontRequeueException(ex.message)
+		}
+
+	}
+
 	private fun saveChat(
 		chat: Chat?,
 		channel: Channel,

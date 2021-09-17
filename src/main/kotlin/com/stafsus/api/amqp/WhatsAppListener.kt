@@ -67,6 +67,13 @@ class WhatsAppListener(
 	}
 
 
+	@RabbitListener(queues = [AmqpConfig.WA_SYNC_MESSAGE_REVOKED_Q])
+	fun whatsAppSyncRevokedMessage(messageDto: WaSyncMessageDto) {
+		log.info("Sync Message : {}", messageDto.message.from)
+		messageService.revokedFromWhatsApp(messageDto)
+	}
+
+
 	@RabbitListener(queues = [AmqpConfig.WA_SYNC_CHAT_Q])
 	fun whatsAppSyncChatList(chatDto: WaSyncChatDto) {
 		log.info("Sync Chat : {}", chatDto.deviceId)
