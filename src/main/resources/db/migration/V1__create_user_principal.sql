@@ -7,8 +7,8 @@ CREATE TABLE user_principal
     status character varying(20)  NOT NULL,
     parent_id bigint,
     quota_id bigint,
+    image_url text NOT NULL DEFAULT '',
     CONSTRAINT user_principal_pkey PRIMARY KEY (id),
-
     created_at timestamp without time zone NOT NULL,
     created_by character varying(255) ,
     updated_at timestamp without time zone,

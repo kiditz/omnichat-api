@@ -1,7 +1,6 @@
 package com.stafsus.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.service.JwtService
 import com.stafsus.api.service.UserService
 import org.springframework.context.annotation.Bean
@@ -55,18 +54,18 @@ class SecurityConfig(
 	override fun configure(http: HttpSecurity) {
 		http
 			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-			.requestMatchers().antMatchers(
-				"${UrlPath.API_AUTH}/**",
-				"${UrlPath.DEPARTMENT}/**",
-				"${UrlPath.TAG}/**",
-				"${UrlPath.PRODUCT}/**",
-				"${UrlPath.PRICE}/**",
-				"${UrlPath.TRANSACTION}/**",
-				"${UrlPath.CHANNEL}/**",
-				"${UrlPath.CHAT}/**",
-				"${UrlPath.STAFF}/**",
-			)
-			.and()
+			.antMatcher("/api/**")
+//			.requestMatchers().antMatchers(
+//				"${UrlPath.API_AUTH}/**",
+//				"${UrlPath.DEPARTMENT}/**",
+//				"${UrlPath.TAG}/**",
+//				"${UrlPath.PRODUCT}/**",
+//				"${UrlPath.PRICE}/**",
+//				"${UrlPath.TRANSACTION}/**",
+//				"${UrlPath.CHANNEL}/**",
+//				"${UrlPath.CHAT}/**",
+//				"${UrlPath.STAFF}/**",
+//			)
 			.cors().and()
 			.csrf().disable()
 			.logout().disable()

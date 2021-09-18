@@ -17,6 +17,8 @@ data class UserPrincipal(
 	@Column(nullable = false, length = 60)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var password: String,
+	@Column(nullable = false)
+	var imageUrl: String? = null,
 	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	var status: Status,
