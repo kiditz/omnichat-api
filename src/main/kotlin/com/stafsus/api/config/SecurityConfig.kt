@@ -55,6 +55,7 @@ class SecurityConfig(
 	@Throws(Exception::class)
 	override fun configure(http: HttpSecurity) {
 		http
+			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 			.requestMatchers().antMatchers(
 				"${UrlPath.API_AUTH}/**",
 				"${UrlPath.DEPARTMENT}/**",
@@ -86,6 +87,5 @@ class SecurityConfig(
 			.anyRequest().authenticated()
 			.and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 	}
 }

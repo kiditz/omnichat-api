@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 
 @Order(2)
 @Configuration
-class WebSecurityConfiguration : WebSecurityConfigurerAdapter() {
+class GlobalSecurityConfig : WebSecurityConfigurerAdapter() {
 	override fun configure(http: HttpSecurity) {
 		http.exceptionHandling().accessDeniedPage("/403")
 		http
