@@ -8,6 +8,7 @@ class UrlPath {
 		const val REFRESH = "/refresh-token"
 		const val PRICE = "/api/price"
 		const val CHAT = "/api/chat"
+		const val STAFF = "/api/staff"
 		const val USER = "/user"
 		const val DEPARTMENT = "/api/department"
 		const val CHANNEL = "/api/channel"
