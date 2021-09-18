@@ -69,7 +69,7 @@ class WhatsAppListener(
 
 	@RabbitListener(queues = [AmqpConfig.WA_SYNC_MESSAGE_REVOKED_Q])
 	fun whatsAppSyncRevokedMessage(messageDto: WaSyncMessageDto) {
-		log.info("Sync Message : {}", messageDto.message.from)
+		log.info("Revoked Message : {}", messageDto.message.from)
 		messageService.revokedFromWhatsApp(messageDto)
 	}
 
