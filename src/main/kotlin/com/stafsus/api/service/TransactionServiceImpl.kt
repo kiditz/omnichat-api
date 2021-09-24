@@ -15,8 +15,8 @@ import com.stafsus.api.entity.ItemDetails
 import com.stafsus.api.entity.Transaction
 import com.stafsus.api.entity.TransactionStatus
 import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.MidtransException
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.MidtransException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.PriceRepository
 import com.stafsus.api.repository.TransactionRepository
 import feign.FeignException

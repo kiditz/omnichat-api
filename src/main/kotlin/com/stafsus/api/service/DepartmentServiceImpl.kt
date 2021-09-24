@@ -4,17 +4,17 @@ import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.DepartmentFilterDto
 import com.stafsus.api.entity.Department
 import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.DepartmentRepository
+import com.stafsus.api.repository.StaffRepository
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DepartmentServiceImpl(
-	private val departmentRepository: DepartmentRepository
+	private val departmentRepository: DepartmentRepository,
+	private val staffRepository: StaffRepository
 ) : DepartmentService {
 
 	@Transactional
@@ -32,13 +32,15 @@ class DepartmentServiceImpl(
 	}
 
 	override fun findByName(departmentFilterDto: DepartmentFilterDto): Page<Department> {
-		val userId =
-			if (departmentFilterDto.userPrincipal.parentId != null) departmentFilterDto.userPrincipal.parentId else departmentFilterDto.userPrincipal.id
-		val newName = departmentFilterDto.name ?: ""
-		return departmentRepository.findByNameContainingAndUserId(
-			newName, userId!!, PageRequest.of(departmentFilterDto.page, departmentFilterDto.size).withSort(
-				Sort.by("name").ascending()
-			)
-		)
+		val userPrincipal = departmentFilterDto.userPrincipal
+//		val staff = staffRepository.findByUserId(userPrincipal.id!!)
+//		val userId = (if (staff.isPresent) staff.get().company!!.id else userPrincipal.id)!!
+//		val newName = departmentFilterDto.name ?: ""
+//		return departmentRepository.findByNameContainingAndUserId(
+//			newName, userId, PageRequest.of(departmentFilterDto.page, departmentFilterDto.size).withSort(
+//				Sort.by("name").ascending()
+//			)
+//		)
+		return Page.empty()
 	}
 }

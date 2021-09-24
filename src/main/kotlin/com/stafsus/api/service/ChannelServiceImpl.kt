@@ -4,9 +4,10 @@ import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.ChannelDto
 import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.QuotaLimitException
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.QuotaLimitException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.ChannelRepository
+import com.stafsus.api.repository.CompanyRepository
 import com.stafsus.api.repository.ProductRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,8 +18,8 @@ class ChannelServiceImpl(
 	private val channelRepository: ChannelRepository,
 	private val productRepository: ProductRepository,
 	private val rabbitService: RabbitService,
-
-	) : ChannelService {
+	private val companyRepository: CompanyRepository
+) : ChannelService {
 	@Transactional
 	override fun install(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel {
 		val product = productRepository.findById(channelDto.productId!!)
@@ -27,12 +28,11 @@ class ChannelServiceImpl(
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
 
-		if (userPrincipal.quota!!.maxChannel < channelRepository.countByUserId(userPrincipal.id!!)) {
+		if (userPrincipal.quota!!.maxChannel < channelRepository.countByCompanyId(userPrincipal.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
-
 		val channel = channelDto.toEntity()
-		channel.user = userPrincipal
+//		channel.company = userPrincipal.companies
 		channel.product = product
 		channelRepository.save(channel)
 		rabbitService.sendInstall(product.type!!, channel)
@@ -41,7 +41,8 @@ class ChannelServiceImpl(
 
 	@Transactional
 	override fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel {
-		val channel = channelRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
+		val channel =
+			channelRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
 		channel.isActive = false
 		channel.isPending = true
 		channel.isOnline = false

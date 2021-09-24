@@ -15,34 +15,43 @@ import org.springframework.web.method.HandlerMethod
 
 @Configuration
 class OpenApiConfig {
-    @Bean
-    fun customOpenAPI(): OpenAPI {
-        return OpenAPI()
-            .components(
-                Components().addSecuritySchemes(
-                    "bearer-key",
-                    SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
-                )
-            ).info(
-                Info()
-                    .description("Layani API")
-                    .termsOfService("http://swagger.io/terms/")
-                    .license(
-                        License().name("Apache 2.0").url("http://springdoc.org")
-                    )
-            )
-    }
+	@Bean
+	fun customOpenAPI(): OpenAPI {
+		return OpenAPI()
+			.components(
+				Components().addSecuritySchemes(
+					"bearer-key",
+					SecurityScheme().type(SecurityScheme.Type.HTTP).scheme("bearer").bearerFormat("JWT")
+				)
+			).info(
+				Info()
+					.description("Layani API")
+					.termsOfService("http://swagger.io/terms/")
+					.license(
+						License().name("Apache 2.0").url("http://springdoc.org")
+					)
+			)
+	}
 
-    @Bean
-    fun customGlobalHeaders(): OperationCustomizer? {
-        return OperationCustomizer { operation: Operation, _: HandlerMethod? ->
-            operation.addParametersItem(
-                Parameter()
-                    .`in`("header")
-                    .required(false)
-                    .description("Language")
-                    .name("Accept-Language")
-            )
-        }
-    }
+	@Bean
+	fun customGlobalHeaders(): OperationCustomizer? {
+		return OperationCustomizer { operation: Operation, _: HandlerMethod? ->
+			operation.addParametersItem(
+				Parameter()
+					.`in`("header")
+					.required(false)
+					.description("Language")
+					.name("Accept-Language")
+
+			)
+			operation.addParametersItem(
+				Parameter()
+					.`in`("header")
+					.required(false)
+					.description("Company Id")
+					.name("X-CompanyID")
+
+			)
+		}
+	}
 }

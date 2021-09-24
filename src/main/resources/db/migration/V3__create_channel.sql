@@ -6,7 +6,7 @@ CREATE TABLE channel
     phone character varying(20),
     is_online boolean NOT NULL DEFAULT FALSE,
     is_active boolean NOT NULL DEFAULT FALSE,
-    user_id bigint NOT NULL,
+    company_id bigint NOT NULL,
     product_id bigint NOT NULL,
     CONSTRAINT channel_pkey PRIMARY KEY (id),
 
@@ -18,6 +18,6 @@ CREATE TABLE channel
 );
 
 
-CREATE INDEX idx_channel_user_id ON channel(user_id);
-CREATE INDEX idx_channel_product_id ON channel(user_id);
-CREATE INDEX idx_channel_user_product_id ON channel(user_id, product_id);
+CREATE INDEX idx_channel_company_id ON channel(company_id);
+CREATE INDEX idx_channel_product_id ON channel(product_id);
+CREATE INDEX idx_channel_company_product_id ON channel(company_id, product_id);

@@ -12,7 +12,7 @@ data class EmailVerification(
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long? = null,
 	var email: String,
-	var verificationToken: String,
+	var verificationCode: String,
 	var expireAt: LocalDateTime,
 	@OneToOne
 	@JoinColumn(name = "user_id")

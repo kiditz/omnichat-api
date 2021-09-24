@@ -23,9 +23,9 @@ data class Channel(
 	@Column(nullable = false)
 	var isPending: Boolean,
 	@ManyToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	var company: Company? = null,
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

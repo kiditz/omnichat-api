@@ -20,5 +20,5 @@ data class Contact(
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	var company: Company? = null,
 ) : Auditable()

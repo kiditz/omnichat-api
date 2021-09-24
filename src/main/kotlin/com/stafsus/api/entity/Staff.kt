@@ -1,6 +1,5 @@
 package com.stafsus.api.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import javax.persistence.*
 
 @Entity
@@ -15,8 +14,13 @@ data class Staff(
 	@Column(name = "last_name")
 	var lastName: String,
 	var phone: String,
+	var email: String,
+	var invitationCode: String,
+	var authority: String,
+	@Enumerated(EnumType.STRING)
+	var status: StaffStatus,
 	@OneToOne
-	@JoinColumn(name = "user_id")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	@JoinColumn(name = "company_id")
+//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	var company: Company? = null,
 ) : Auditable()

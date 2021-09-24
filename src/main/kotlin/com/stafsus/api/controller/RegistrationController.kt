@@ -24,7 +24,7 @@ class RegistrationController(
 	@PostMapping(UrlPath.SIGN_UP)
 	@Operation(summary = "Register user as admin")
 	fun register(@Valid @RequestBody request: SignUpDto): ResponseDto {
-		val userDto = userService.save(request.toUserAdmin())
+		val userDto = userService.signUp(request)
 		return ResponseDto(payload = userDto)
 	}
 }

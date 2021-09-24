@@ -1,34 +1,35 @@
 package com.stafsus.api.dto
 
-import com.stafsus.api.entity.Authority
-import com.stafsus.api.entity.Staff
-import com.stafsus.api.entity.UserPrincipal
-import javax.validation.constraints.Email
-import javax.validation.constraints.NotBlank
-import javax.validation.constraints.NotNull
+import com.stafsus.api.entity.*
+import com.stafsus.api.validation.ValidAuthority
+import org.apache.commons.lang3.RandomStringUtils
+import javax.validation.constraints.*
 
 data class StaffDto(
-	@field:NotNull
 	@field:NotBlank
 	val firstName: String? = null,
-	@field:NotNull
 	@field:NotBlank
 	val lastName: String? = null,
 	@field:NotNull
 	@field:NotBlank
 	val phone: String? = null,
-	@field:NotNull
 	@field:Email
+	@field:NotBlank
+	@field:Size(max = 100)
 	val email: String? = null,
-	@field:NotNull
-	val authority: Authority? = null
+	@field:ValidAuthority
+	val authority: List<String>? = null,
 ) {
-	fun toEntity(userPrincipal: UserPrincipal): Staff {
+	fun toEntity(company: Company): Staff {
 		return Staff(
 			firstName = firstName!!,
 			lastName = lastName!!,
+			email = email!!,
 			phone = phone!!,
-			user = userPrincipal
+			company = company,
+			status = StaffStatus.INVITED,
+			authority = authority!!.joinToString(","),
+			invitationCode = RandomStringUtils.randomAlphabetic(10)
 		)
 	}
 }

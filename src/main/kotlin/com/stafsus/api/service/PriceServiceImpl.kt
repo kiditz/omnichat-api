@@ -5,7 +5,7 @@ import com.stafsus.api.dto.PriceDto
 import com.stafsus.api.entity.Price
 import com.stafsus.api.entity.PriceDescription
 import com.stafsus.api.entity.PriceType
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.PriceRepository
 import com.stafsus.api.repository.ProductRepository
 import org.springframework.data.domain.Page

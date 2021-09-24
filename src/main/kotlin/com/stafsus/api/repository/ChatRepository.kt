@@ -10,5 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ChatRepository : JpaRepository<Chat, String> {
 	fun findByIdIn(ids: List<String?>): List<Chat>
-	fun findByUserId(userId: Long, pageable: Pageable): Page<ChatProjection>
+	fun findByCompanyId(companyId: Long, pageable: Pageable): Page<ChatProjection>
 }

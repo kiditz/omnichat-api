@@ -3,7 +3,6 @@ package com.stafsus.api.entity
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.stafsus.api.utils.UnixToInstantConverter
-import java.time.Instant
 import java.time.OffsetDateTime
 import javax.persistence.*
 
@@ -44,9 +43,9 @@ data class Chat(
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var contact: Contact? = null,
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	var company: Company? = null,
 	@OneToMany(mappedBy = "chat", cascade = [CascadeType.ALL])
 	var messages: List<Message>? = null
 ) : Auditable()

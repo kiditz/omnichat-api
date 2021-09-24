@@ -2,11 +2,11 @@ package com.stafsus.api.service
 
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.WaSyncChatDto
-import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.projection.ChatProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ChatRepository
+import com.stafsus.api.repository.StaffRepository
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.AmqpRejectAndDontRequeueException
 import org.springframework.data.domain.Page
@@ -18,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ChatServiceImpl(
 	private val chatRepository: ChatRepository,
-	private val channelRepository: ChannelRepository
+	private val channelRepository: ChannelRepository,
+	private val staffRepository: StaffRepository
 ) : ChatService {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -32,7 +33,7 @@ class ChatServiceImpl(
 			val existingChatIds = chatRepository.findByIdIn(idsOnly)
 			val chats = waChatDto.chats.filterNot { x -> existingChatIds.any { m -> m.id == x.id } }
 			chats.forEach { chat ->
-				chat.user = channel.user
+				chat.company = channel.company
 				chat.groupMetadata?.participants?.forEach { participant ->
 					participant.groupMetadata = chat.groupMetadata
 				}
@@ -47,10 +48,12 @@ class ChatServiceImpl(
 		}
 	}
 
-	override fun findChats(page: Int, size: Int, userPrincipal: UserPrincipal): Page<ChatProjection> {
-		val userId: Long = (userPrincipal.parentId ?: userPrincipal.id) as Long
-		return chatRepository.findByUserId(
-			userId,
+	override fun findChats(page: Int, size: Int, companyId: Long): Page<ChatProjection> {
+//		val userId: Long = (userPrincipal.parentId ?: userPrincipal.id) as Long
+//		val staff = staffRepository.findByUserId(userPrincipal.id!!)
+//		val userId = (if (staff.isPresent) staff.get().company!!.id else userPrincipal.id)!!
+		return chatRepository.findByCompanyId(
+			companyId,
 			PageRequest.of(page, size).withSort(Sort.by("timestamp").descending())
 		)
 	}

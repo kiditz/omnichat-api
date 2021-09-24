@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import javax.validation.Valid
 
 @RestController
 @RequestMapping(UrlPath.STAFF)
@@ -26,7 +27,7 @@ class StaffController(
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
-	fun addStaff(authentication: Authentication, @RequestBody staffDto: StaffDto): ResponseDto {
+	fun addStaff(authentication: Authentication,  @Valid @RequestBody staffDto: StaffDto): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
 		val staff = staffService.addStaff(staffDto, user)
 		return ResponseDto(payload = staff)

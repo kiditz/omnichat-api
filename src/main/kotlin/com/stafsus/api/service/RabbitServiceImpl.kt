@@ -1,5 +1,7 @@
 package com.stafsus.api.service
 
+import com.stafsus.api.config.AmqpConfig
+import com.stafsus.api.dto.MailMessageDto
 import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.ProductType
 import org.apache.commons.lang3.StringUtils
@@ -19,6 +21,10 @@ class RabbitServiceImpl(
 	override fun sendRestart(productType: ProductType, channel: Channel) {
 		log.info("Restart: {}", "${lower(productType)}_restart")
 		rabbitTemplate.convertAndSend("${lower(productType)}_restart_ex", "${lower(productType)}_restart_rk", channel)
+	}
+
+	override fun sendEmail(mailMessageDto: MailMessageDto) {
+		rabbitTemplate.convertAndSend("${AmqpConfig.SEND_EMAIL}_q", mailMessageDto)
 	}
 
 	private fun lower(productType: ProductType): String {

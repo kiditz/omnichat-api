@@ -2,7 +2,7 @@ package com.stafsus.api.service
 
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.WaSyncContactDto
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ContactRepository
 import org.slf4j.LoggerFactory
@@ -28,9 +28,9 @@ class ContactServiceImpl(
 			val newContacts = waContactDto.contacts
 				.filterNot { x -> existingContactsIds.any { m -> m.id == x.id } }
 			newContacts.forEach {
-				it.user = channel.user
-				it.createdBy = channel.user?.email
-				it.updatedBy = channel.user?.email
+				it.company = channel.company
+//				it.createdBy = channel.company?.email
+//				it.updatedBy = channel.company?.user?.email
 			}
 			log.info("New Contacts: {}", newContacts.size)
 			contactRepository.saveAll(newContacts)

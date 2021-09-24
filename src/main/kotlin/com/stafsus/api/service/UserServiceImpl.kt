@@ -1,13 +1,13 @@
 package com.stafsus.api.service
 
+import com.stafsus.api.config.ThreadLocalStorage
 import com.stafsus.api.constant.MessageKey
+import com.stafsus.api.dto.SignUpDto
 import com.stafsus.api.dto.UserDetailDto
-import com.stafsus.api.entity.Price
-import com.stafsus.api.entity.Quota
-import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.ValidationException
-import com.stafsus.api.repository.PriceRepository
-import com.stafsus.api.repository.UserRepository
+import com.stafsus.api.entity.*
+import com.stafsus.api.exception.ValidationException
+import com.stafsus.api.repository.*
+import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -18,21 +18,26 @@ import java.time.LocalDateTime
 @Service
 class UserServiceImpl(
 	private val userRepository: UserRepository,
-	private val passwordEncoder: PasswordEncoder,
 	private val priceRepository: PriceRepository,
+	private val industryRepository: IndustryRepository,
+	private val companyRepository: CompanyRepository,
+	private val userAuthorityRepository: UserAuthorityRepository,
+	private val userCompanyRepository: UserCompanyRepository,
+	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
-	private val fileService: FileService
-) : UserService {
+	private val fileService: FileService,
+
+	) : UserService {
+	private val log = LoggerFactory.getLogger(javaClass)
+
 	@Transactional
-	override fun save(userPrincipal: UserPrincipal): UserPrincipal {
+	override fun signUp(signUpDto: SignUpDto): UserPrincipal {
+		val userPrincipal = signUpDto.toUserAdmin()
 		if (userRepository.existsByEmail(userPrincipal.email)) {
 			throw ValidationException(MessageKey.EMAIL_EXISTS)
 		}
 		userPrincipal.password = passwordEncoder.encode(userPrincipal.password)
-		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))
-		val destination = "profile"
-		val image = fileService.saveOriginal(userPrincipal.email, destination, MediaType.IMAGE_PNG_VALUE, icon)
-		userPrincipal.imageUrl = fileService.getImageUrl(image, destination)
+		setProfilePicture(userPrincipal)
 		val price =
 			priceRepository.findByName(Price.TRIAL).orElseThrow { ValidationException(MessageKey.PRICE_NOT_FOUND) }
 		userPrincipal.quota = Quota(
@@ -41,16 +46,45 @@ class UserServiceImpl(
 			monthlyActiveVisitor = price.monthlyActiveVisitor,
 			expiredAt = LocalDateTime.now().plusDays(price.accessTime)
 		)
-		return userRepository.save(userPrincipal)
+		userRepository.save(userPrincipal)
+		val industry = industryRepository.findById(signUpDto.industryId!!)
+			.orElseThrow { ValidationException(MessageKey.INDUSTRY_NOT_FOUND) }
+		val company = Company(
+			name = signUpDto.companyName!!,
+			industry = industry,
+			user = userPrincipal
+		)
+		companyRepository.save(company)
+		val userAuthority =
+			userAuthorityRepository.findByAuthority(Authority.ADMIN.name).orElseThrow { ValidationException("") }
+		val userCompany = UserCompany(
+			userPrincipal = userPrincipal,
+			userAuthority = userAuthority,
+			company = company
+		)
+		userCompanyRepository.save(userCompany)
+		return userPrincipal
+	}
+
+	private fun setProfilePicture(userPrincipal: UserPrincipal) {
+		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))
+		val destination = "profile"
+		val image = fileService.saveOriginal(userPrincipal.email, destination, MediaType.IMAGE_PNG_VALUE, icon)
+		userPrincipal.imageUrl = fileService.getImageUrl(image, destination)
 	}
 
 	override fun loadUserByUsername(username: String): UserDetails {
 		val user = userRepository.findByEmail(username).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
-		return UserDetailDto(user)
+		return UserDetailDto(user, setOf())
 	}
 
 	override fun loadUserById(id: Long): UserDetails {
 		val user = userRepository.findById(id).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
-		return UserDetailDto(user)
+		log.info("Tenant ID: {}", ThreadLocalStorage.getTenantId())
+		val tenantId = ThreadLocalStorage.getTenantId() ?: -99
+		val userCompanies =
+			userCompanyRepository.getByUserPrincipalIdAndCompanyId(user.id!!, tenantId)
+		val authorities = userCompanies.map { Authority.valueOf(it.userAuthority!!.authority) }.toSet()
+		return UserDetailDto(user, authorities)
 	}
 }

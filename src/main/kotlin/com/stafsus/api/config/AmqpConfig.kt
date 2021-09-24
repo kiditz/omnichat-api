@@ -27,9 +27,26 @@ class AmqpConfig(
 		const val WA_AUTH_FAILURE_Q = "wa_auth_failure_q"
 		const val WA_SYNC_CHAT_Q = "wa_sync_chat_q"
 		const val WA_SYNC_MESSAGE_REVOKED_Q = "wa_sync_message_revoked_q"
+		const val SEND_EMAIL = "send_email"
 //		const val UNOFFICIAL_WHATSAPP_RESTART = "unofficial_whatsapp_restart"
 	}
 
+	@Bean
+	fun sendEmailApp(): Queue {
+		return Queue("${SEND_EMAIL}_q", true)
+	}
+
+
+	@Bean
+	fun sendEmailAppExchange(): DirectExchange {
+		return DirectExchange("${SEND_EMAIL}_ex")
+	}
+
+	@Bean
+	fun sendEmailBinding(): Binding {
+		return BindingBuilder.bind(sendEmailApp()).to(sendEmailAppExchange())
+			.withQueueName()
+	}
 
 	@Bean
 	fun installUnofficialWhatsApp(): Queue {

@@ -9,6 +9,7 @@ import com.stafsus.api.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.Authentication
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
@@ -21,6 +22,8 @@ import javax.validation.Valid
 class AuthenticationController(
 	private val authenticationService: AuthenticationService
 ) {
+	private val log = LoggerFactory.getLogger(javaClass)
+
 	@PostMapping(UrlPath.SIGN_IN)
 	@Operation(summary = "Get access token")
 	fun signIn(@Valid @RequestBody request: SignInDto): ResponseDto {
@@ -39,6 +42,7 @@ class AuthenticationController(
 	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get User By jwt token")
 	fun getUser(authentication: Authentication): ResponseDto {
 		val userPrincipal = authentication.principal as UserDetailDto
+		log.info("Authorities: {}", userPrincipal.getAuthorities())
 		return ResponseDto(payload = userPrincipal.user)
 	}
 }

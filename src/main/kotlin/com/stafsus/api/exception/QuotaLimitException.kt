@@ -1,4 +1,4 @@
-package com.stafsus.api.execption
+package com.stafsus.api.exception
 
 import java.lang.RuntimeException
 

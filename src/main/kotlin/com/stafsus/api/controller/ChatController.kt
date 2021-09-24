@@ -20,15 +20,15 @@ class ChatController(
 	private val chatService: ChatService
 ) {
 
-	@GetMapping
+	@GetMapping("{company}")
 	@Operation(summary = "Get chats", security = [SecurityRequirement(name = "bearer-key")])
 	fun findChat(
-		authentication: Authentication,
+		@PathVariable company: Long,
 		@RequestParam page: Int,
 		@RequestParam size: Int,
 	): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		val chatPage = chatService.findChats(page, size, user)
+//		val user = (authentication.principal as UserDetailDto).user
+		val chatPage = chatService.findChats(page, size, company)
 		return ResponseDto.fromPage(chatPage)
 	}
 

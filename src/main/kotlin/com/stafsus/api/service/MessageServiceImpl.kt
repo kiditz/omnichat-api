@@ -6,7 +6,7 @@ import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.Chat
 import com.stafsus.api.entity.Contact
 import com.stafsus.api.entity.Message
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ChatRepository
 import com.stafsus.api.repository.ContactRepository
@@ -31,7 +31,7 @@ class MessageServiceImpl(
 			val chat = waMessageDto.message.chat
 			val contact = waMessageDto.contact
 			saveContact(contact, channel)
-			saveChat(chat, channel, message)
+			saveChat(chat!!, channel, message)
 		} catch (ex: Exception) {
 			log.error("Exception: {}", ex.message)
 			throw AmqpRejectAndDontRequeueException(ex.message)
@@ -48,7 +48,7 @@ class MessageServiceImpl(
 				waMessageDto.message.version = it.version
 				waMessageDto.message.id = it.id
 				waMessageDto.message.chat?.version = it.chat!!.version
-				waMessageDto.message.chat?.user = channel.user
+				waMessageDto.message.chat?.company = channel.company
 				messageRepository.save(waMessageDto.message)
 			}
 		} catch (ex: Exception) {
@@ -59,11 +59,11 @@ class MessageServiceImpl(
 	}
 
 	private fun saveChat(
-		chat: Chat?,
+		chat: Chat,
 		channel: Channel,
 		message: Message
 	) {
-		chat?.user = channel.user
+		chat?.company = channel.company
 		val existingChat = chatRepository.findById(chat?.id!!)
 		existingChat.ifPresent {
 			chat.version = it.version
@@ -74,7 +74,7 @@ class MessageServiceImpl(
 
 	private fun saveContact(contact: Contact?, channel: Channel) {
 		if (contact != null) {
-			contact.user = channel.user
+			contact.company = channel.company
 			val existingContact = contactRepository.findById(contact.id!!)
 			existingContact.ifPresent {
 				contact.version = it.version

@@ -1,4 +1,4 @@
-package com.stafsus.api.execption
+package com.stafsus.api.exception
 
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.ResponseDto
@@ -26,6 +26,7 @@ class GlobalExceptionHandler(
 
 	@ExceptionHandler(value = [ValidationException::class])
 	fun handleValidationException(ex: ValidationException): ResponseEntity<ResponseDto> {
+		log.info("handleValidationException: {}", ex.message)
 		return ResponseEntity(
 			ResponseDto(false, translateService.toLocale(ex.message!!), ex.message),
 			HttpStatus.INTERNAL_SERVER_ERROR
@@ -34,6 +35,7 @@ class GlobalExceptionHandler(
 
 	@ExceptionHandler(value = [MidtransException::class])
 	fun handleMidtransException(ex: MidtransException): ResponseEntity<ResponseDto> {
+		log.info("handleMidtransException: {}", ex.message)
 		return ResponseEntity(
 			ResponseDto(false, errors = ex.messages),
 			HttpStatus.BAD_REQUEST
@@ -42,6 +44,7 @@ class GlobalExceptionHandler(
 
 	@ExceptionHandler(value = [QuotaLimitException::class])
 	fun handleQuotaLimitException(ex: QuotaLimitException): ResponseEntity<ResponseDto> {
+		log.info("handleQuotaLimitException: {}", ex.message)
 		return ResponseEntity(
 			ResponseDto(false, translateService.toLocale(ex.message!!), ex.message),
 			HttpStatus.NOT_ACCEPTABLE,
@@ -73,12 +76,14 @@ class GlobalExceptionHandler(
 		status: HttpStatus,
 		request: WebRequest
 	): ResponseEntity<Any> {
-		val errors: MutableMap<String, String> = HashMap()
+		log.info("handleMethodArgumentNotValid: {}", ex.message)
+		val errors: MutableMap<String, Map<String, String>> = mutableMapOf()
 		ex.bindingResult.allErrors.forEach { error ->
 			val field = (error as FieldError)
-//            val errorMessage: String = error.defaultMessage!!
-//            val args = error.arguments!!.drop(1).toTypedArray()
-			errors[field.field] = translateService.getMessage(field)
+			errors[field.field] = mapOf(
+				"code" to error.code!!,
+				"message" to error.defaultMessage!!,
+			)
 		}
 		return ResponseEntity(ResponseDto(false, errors = errors), HttpStatus.BAD_REQUEST)
 	}
@@ -90,7 +95,8 @@ class GlobalExceptionHandler(
 		status: HttpStatus,
 		request: WebRequest
 	): ResponseEntity<Any> {
-		return super.handleHttpMessageNotReadable(ex, headers, status, request)
+		log.info("handleHttpMessageNotReadable: {}", ex.message)
+		return ResponseEntity(ResponseDto(false, message = ex.message), HttpStatus.BAD_REQUEST)
 	}
 
 	@ExceptionHandler(ConstraintViolationException::class)
