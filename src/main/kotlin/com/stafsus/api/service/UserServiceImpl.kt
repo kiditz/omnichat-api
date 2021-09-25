@@ -72,8 +72,10 @@ class UserServiceImpl(
 		val company = Company(
 			name = signUpDto.companyName!!,
 			industry = industry,
-			user = userPrincipal
+			user = userPrincipal,
 		)
+		company.createdBy = userPrincipal.email
+		company.updatedBy = userPrincipal.email
 		companyRepository.save(company)
 		return company
 	}
