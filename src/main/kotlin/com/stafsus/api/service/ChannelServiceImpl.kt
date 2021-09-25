@@ -27,11 +27,11 @@ class ChannelServiceImpl(
 		val product = productRepository
 			.findById(channelDto.productId!!)
 			.orElseThrow { QuotaLimitException(MessageKey.PRODUCT_NOT_FOUND) }
-		if (LocalDateTime.now().isAfter(userPrincipal.quota!!.expiredAt)) {
+		val company = getCompany()
+		if (LocalDateTime.now().isAfter(company!!.user!!.quota!!.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
-		val company = getCompany()
-		if (userPrincipal.quota!!.maxChannel < channelRepository.countByCompanyId(company!!.id!!)) {
+		if (company.user!!.quota!!.maxChannel < channelRepository.countByCompanyId(company.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 		val channel = channelDto.toEntity()
