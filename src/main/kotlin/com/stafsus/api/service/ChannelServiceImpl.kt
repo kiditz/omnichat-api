@@ -1,15 +1,12 @@
 package com.stafsus.api.service
 
-import com.stafsus.api.config.ThreadLocalStorage
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.ChannelDto
 import com.stafsus.api.entity.Channel
-import com.stafsus.api.entity.Company
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.ChannelRepository
-import com.stafsus.api.repository.CompanyRepository
 import com.stafsus.api.repository.ProductRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,15 +17,15 @@ class ChannelServiceImpl(
 	private val channelRepository: ChannelRepository,
 	private val productRepository: ProductRepository,
 	private val rabbitService: RabbitService,
-	private val companyRepository: CompanyRepository
+	private val companyService: CompanyService
 ) : ChannelService {
 	@Transactional
 	override fun install(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel {
 		val product = productRepository
 			.findById(channelDto.productId!!)
 			.orElseThrow { QuotaLimitException(MessageKey.PRODUCT_NOT_FOUND) }
-		val company = getCompany()
-		if (LocalDateTime.now().isAfter(company!!.user!!.quota!!.expiredAt)) {
+		val company = companyService.getCompany()
+		if (LocalDateTime.now().isAfter(company.user!!.quota!!.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
 		if (company.user!!.quota!!.maxChannel < channelRepository.countByCompanyId(company.id!!)) {
@@ -42,11 +39,6 @@ class ChannelServiceImpl(
 		return channel
 	}
 
-	private fun getCompany(): Company? {
-		val companyId = ThreadLocalStorage.getTenantId()
-			?: throw ValidationException(MessageKey.COMPANY_REQUIRED)
-		return companyRepository.findById(companyId).orElseThrow { ValidationException(MessageKey.COMPANY_NOT_FOUND) }
-	}
 
 	@Transactional
 	override fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel {
