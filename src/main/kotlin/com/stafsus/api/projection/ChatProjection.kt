@@ -1,6 +1,7 @@
 package com.stafsus.api.projection
 
 import org.springframework.beans.factory.annotation.Value
+import java.time.OffsetDateTime
 
 interface ChatProjection {
 	fun getId(): String
@@ -13,6 +14,9 @@ interface ChatProjection {
 	fun isReadOnly(): Boolean
 	fun isPinned(): Boolean
 	fun isMuted(): Boolean
+	fun getUnreadCount(): Long
+	fun getMuteExpiration(): OffsetDateTime
+
 	@Value("#{target.contact.picture}")
 	fun getPicture(): String
 }
