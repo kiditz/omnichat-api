@@ -18,7 +18,7 @@ data class Contact(
 	var source: ContactSource,
 	var isGroup: Boolean? = null,
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var company: Company? = null,
 ) : Auditable()

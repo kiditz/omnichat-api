@@ -13,6 +13,7 @@ class WhatsAppChannelServiceImpl(
 	private val whatsAppChannelRepository: WhatsAppChannelRepository,
 	private val channelRepository: ChannelRepository
 ) : WhatsAppChannelService {
+
 	@Transactional
 	override fun save(channelDto: WhatsAppChannelDto): Optional<WhatsAppChannel> {
 		val channelOpt = channelRepository.findByDeviceId(channelDto.deviceId!!)
@@ -28,7 +29,8 @@ class WhatsAppChannelServiceImpl(
 			channel.isPending = channelDto.isPending ?: channel.isPending
 			channel.isActive = channelDto.isActive ?: channel.isActive
 			channelRepository.save(channel)
-			return Optional.of(whatsAppChannelRepository.save(waChannel))
+			whatsAppChannelRepository.save(waChannel)
+			return Optional.of(waChannel)
 		}
 		return Optional.empty()
 	}
