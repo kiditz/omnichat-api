@@ -26,7 +26,7 @@ class DepartmentController(
 	private val translateService: TranslateService
 ) {
 	@PostMapping
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add Department", security = [SecurityRequirement(name = "bearer-key")])
 	fun addDepartment(@Valid @RequestBody request: DepartmentDto, authentication: Authentication): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
@@ -48,15 +48,14 @@ class DepartmentController(
 	}
 
 	@GetMapping
-	@Operation(summary = "Find Department", security = [SecurityRequirement(name = "bearer-key")])
+	@Operation(summary = "Get All Department", security = [SecurityRequirement(name = "bearer-key")])
 	fun findDepartment(
 		@RequestParam(required = false) name: String?,
 		@RequestParam page: Int,
 		@RequestParam size: Int,
 		authentication: Authentication
 	): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		val departmentPage = departmentService.findByName(DepartmentFilterDto(user, name, page, size))
+		val departmentPage = departmentService.findByName(DepartmentFilterDto(name, page, size))
 		return ResponseDto.fromPage(departmentPage)
 	}
 

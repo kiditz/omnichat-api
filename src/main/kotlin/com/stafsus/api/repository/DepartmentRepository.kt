@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface DepartmentRepository : JpaRepository<Department, Long> {
-	fun findByNameContainingAndUserId(name: String?, userId: Long, pageable: Pageable): Page<Department>
+	fun findByNameContainingIgnoreCaseAndCompanyId(name: String?, userId: Long, pageable: Pageable): Page<Department>
 }

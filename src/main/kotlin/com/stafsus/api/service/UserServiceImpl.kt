@@ -83,6 +83,11 @@ class UserServiceImpl(
 	private fun addAuthority(userPrincipal: UserPrincipal, company: Company) {
 		val userAuthority = userAuthorityRepository.findByAuthority(Authority.ADMIN.name).orElse(null)
 		val userCompany = UserCompany(
+			UserCompanyId(
+				userPrincipalId = userPrincipal.id,
+				userAuthorityId = userAuthority.id,
+				companyId = company.id,
+			),
 			userPrincipal = userPrincipal,
 			userAuthority = userAuthority,
 			company = company
@@ -102,6 +107,7 @@ class UserServiceImpl(
 		setProfilePicture(userPrincipal)
 		userRepository.saveAndFlush(userPrincipal)
 		val authorities = staff.authority.split(",")
+		val userCompanies = mutableListOf<UserCompany>()
 		authorities.forEach {
 			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
 			if (authority != null) {
@@ -115,9 +121,10 @@ class UserServiceImpl(
 					company = staff.company,
 					userPrincipal = userPrincipal
 				)
-				userCompanyRepository.save(userCompany)
+				userCompanies.add(userCompany)
 			}
 		}
+		userCompanyRepository.saveAll(userCompanies)
 		staff.status = StaffStatus.ACTIVE
 		staffRepository.save(staff)
 		return userPrincipal

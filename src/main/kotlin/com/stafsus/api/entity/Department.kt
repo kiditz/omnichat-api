@@ -16,7 +16,7 @@ data class Department(
 	@Enumerated(EnumType.STRING)
 	var status: Status,
 	@OneToOne
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	var company: Company? = null,
 ) : Auditable()
