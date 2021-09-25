@@ -23,7 +23,9 @@ class JwtAuthenticationFilter(
 	) {
 		val token = getJwtFromRequest(request)
 		val tenantId = request.getHeader("X-CompanyID")
-		ThreadLocalStorage.setTenant(tenantId?.toLong())
+		if (StringUtils.isNotEmpty(tenantId)) {
+			ThreadLocalStorage.setTenant(tenantId.toLong())
+		}
 		if (StringUtils.isNotEmpty(token) && jwtService.validateToken(token)) {
 			val userId = jwtService.getUserIdFromToken(token)
 			if (userId != null) {
