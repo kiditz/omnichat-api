@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface TagRepository : JpaRepository<Tag, Long> {
-	fun findByNameContainingAndUserId(name: String?, userId: Long, pageable: Pageable): Page<Tag>
+	fun findByNameContainingAndCompanyId(name: String?, companyId: Long, pageable: Pageable): Page<Tag>
 }
