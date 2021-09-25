@@ -3,6 +3,7 @@ package com.stafsus.api.service
 import com.stafsus.api.config.ThreadLocalStorage
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.SignUpDto
+import com.stafsus.api.dto.StaffSignUpDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
@@ -25,6 +26,7 @@ class UserServiceImpl(
 	private val userCompanyRepository: UserCompanyRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
+	private val staffRepository: StaffRepository,
 	private val fileService: FileService,
 
 	) : UserService {
@@ -32,12 +34,26 @@ class UserServiceImpl(
 
 	@Transactional
 	override fun signUp(signUpDto: SignUpDto): UserPrincipal {
-		val userPrincipal = signUpDto.toUserAdmin()
+		val userPrincipal = signUpDto.toUser()
 		if (userRepository.existsByEmail(userPrincipal.email)) {
 			throw ValidationException(MessageKey.EMAIL_EXISTS)
 		}
-		userPrincipal.password = passwordEncoder.encode(userPrincipal.password)
+		setPassword(userPrincipal)
 		setProfilePicture(userPrincipal)
+		setQuota(userPrincipal)
+		userRepository.save(userPrincipal)
+		val industry = industryRepository.findById(signUpDto.industryId!!)
+			.orElseThrow { ValidationException(MessageKey.INDUSTRY_NOT_FOUND) }
+		val company = addCompany(signUpDto, industry, userPrincipal)
+		addAuthority(userPrincipal, company)
+		return userPrincipal
+	}
+
+	private fun setPassword(userPrincipal: UserPrincipal) {
+		userPrincipal.password = passwordEncoder.encode(userPrincipal.password)
+	}
+
+	private fun setQuota(userPrincipal: UserPrincipal) {
 		val price =
 			priceRepository.findByName(Price.TRIAL).orElseThrow { ValidationException(MessageKey.PRICE_NOT_FOUND) }
 		userPrincipal.quota = Quota(
@@ -46,25 +62,65 @@ class UserServiceImpl(
 			monthlyActiveVisitor = price.monthlyActiveVisitor,
 			expiredAt = LocalDateTime.now().plusDays(price.accessTime)
 		)
-		userRepository.save(userPrincipal)
-		val industry = industryRepository.findById(signUpDto.industryId!!)
-			.orElseThrow { ValidationException(MessageKey.INDUSTRY_NOT_FOUND) }
+	}
+
+	private fun addCompany(
+		signUpDto: SignUpDto,
+		industry: Industry?,
+		userPrincipal: UserPrincipal
+	): Company {
 		val company = Company(
 			name = signUpDto.companyName!!,
 			industry = industry,
 			user = userPrincipal
 		)
 		companyRepository.save(company)
-		val userAuthority =
-			userAuthorityRepository.findByAuthority(Authority.ADMIN.name).orElseThrow { ValidationException("") }
+		return company
+	}
+
+	private fun addAuthority(userPrincipal: UserPrincipal, company: Company) {
+		val userAuthority = userAuthorityRepository.findByAuthority(Authority.ADMIN.name).orElse(null)
 		val userCompany = UserCompany(
 			userPrincipal = userPrincipal,
 			userAuthority = userAuthority,
 			company = company
 		)
 		userCompanyRepository.save(userCompany)
+	}
+
+	@Transactional
+	override fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal {
+		val staff = staffRepository.findByInvitationCode(signUpDto.invitationCode!!)
+			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
+		val userPrincipal = signUpDto.toUser(staff.email)
+		if (userRepository.existsByEmail(userPrincipal.email)) {
+			throw ValidationException(MessageKey.EMAIL_EXISTS)
+		}
+		setPassword(userPrincipal)
+		setProfilePicture(userPrincipal)
+		userRepository.saveAndFlush(userPrincipal)
+		val authorities = staff.authority.split(",")
+		authorities.forEach {
+			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
+			if (authority != null) {
+				val userCompany = UserCompany(
+					id = UserCompanyId(
+						userPrincipal.id,
+						staff.company!!.id,
+						authority.id
+					),
+					userAuthority = authority,
+					company = staff.company,
+					userPrincipal = userPrincipal
+				)
+				userCompanyRepository.save(userCompany)
+			}
+		}
+		staff.status = StaffStatus.ACTIVE
+		staffRepository.save(staff)
 		return userPrincipal
 	}
+
 
 	private fun setProfilePicture(userPrincipal: UserPrincipal) {
 		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))

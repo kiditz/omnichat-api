@@ -77,10 +77,11 @@ class SecurityConfig(
 			.and() // we don't need CSRF because our token is invulnerable
 			.authorizeRequests()
 			.antMatchers(
-				HttpMethod.POST,
 				"/api/auth/refresh-token",
 				"/api/auth/sign-in",
-				"/api/auth/sign-up",
+				"/api/admin/sign-up",
+				"/api/staff/sign-up",
+				"/api/staff/check-staff",
 				"/api/auth/sign-out",
 			).permitAll()
 			.anyRequest().authenticated()

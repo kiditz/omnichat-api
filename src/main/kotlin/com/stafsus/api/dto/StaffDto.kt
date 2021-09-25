@@ -8,7 +8,7 @@ import javax.validation.constraints.*
 data class StaffDto(
 	@field:NotBlank
 	val firstName: String? = null,
-	@field:NotBlank
+	@field:NotNull
 	val lastName: String? = null,
 	@field:NotNull
 	@field:NotBlank

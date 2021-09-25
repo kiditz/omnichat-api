@@ -4,23 +4,17 @@ import com.stafsus.api.entity.Status
 import com.stafsus.api.entity.UserPrincipal
 import javax.validation.constraints.*
 
-data class SignUpDto(
-	@field:Email
-	@field:NotBlank
-	@field:Size(max = 100)
-	val email: String? = null,
-	@field:NotBlank
-	val companyName: String? = null,
-	@field:NotNull
-	@field:Positive
-	val industryId: Long? = null,
+data class StaffSignUpDto(
 	@field:NotBlank
 	@field:Size(min = 8)
 	val password: String? = null,
-	) {
-	fun toUser(): UserPrincipal {
+	@field:NotNull
+	@field:NotBlank
+	val invitationCode: String? = null,
+) {
+	fun toUser(email: String): UserPrincipal {
 		return UserPrincipal(
-			email = email!!,
+			email = email,
 			password = password!!,
 			status = Status.ACTIVE,
 			isVerified = false

@@ -33,6 +33,15 @@ class GlobalExceptionHandler(
 		)
 	}
 
+	@ExceptionHandler(value = [AccessDeniedException::class])
+	fun handleAccessDeniedException(ex: AccessDeniedException): ResponseEntity<ResponseDto> {
+		log.info("handleAccessDeniedException: {}", ex.message)
+		return ResponseEntity(
+			ResponseDto(false, translateService.toLocale(String.format(ex.message!!, ex.args)), ex.message),
+			HttpStatus.INTERNAL_SERVER_ERROR
+		)
+	}
+
 	@ExceptionHandler(value = [MidtransException::class])
 	fun handleMidtransException(ex: MidtransException): ResponseEntity<ResponseDto> {
 		log.info("handleMidtransException: {}", ex.message)
