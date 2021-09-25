@@ -6,7 +6,6 @@ import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.projection.ChatProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ChatRepository
-import com.stafsus.api.repository.StaffRepository
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.AmqpRejectAndDontRequeueException
 import org.springframework.data.domain.Page
@@ -19,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional
 class ChatServiceImpl(
 	private val chatRepository: ChatRepository,
 	private val channelRepository: ChannelRepository,
-	private val staffRepository: StaffRepository
+	private val companyService: CompanyService,
 ) : ChatService {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -48,14 +47,13 @@ class ChatServiceImpl(
 		}
 	}
 
-	override fun findChats(page: Int, size: Int, companyId: Long): Page<ChatProjection> {
-//		val userId: Long = (userPrincipal.parentId ?: userPrincipal.id) as Long
-//		val staff = staffRepository.findByUserId(userPrincipal.id!!)
-//		val userId = (if (staff.isPresent) staff.get().company!!.id else userPrincipal.id)!!
+	override fun findChats(page: Int, size: Int): Page<ChatProjection> {
+		val company = companyService.getCompany()
 		return chatRepository.findByCompanyId(
-			companyId,
+			company.id!!,
 			PageRequest.of(page, size).withSort(Sort.by("timestamp").descending())
 		)
 	}
+
 
 }

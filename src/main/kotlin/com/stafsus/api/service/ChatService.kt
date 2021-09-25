@@ -6,5 +6,5 @@ import org.springframework.data.domain.Page
 
 interface ChatService {
 	fun syncFromWhatsApp(waChatDto: WaSyncChatDto)
-	fun findChats(page: Int, size: Int, companyId: Long): Page<ChatProjection>
+	fun findChats(page: Int, size: Int): Page<ChatProjection>
 }

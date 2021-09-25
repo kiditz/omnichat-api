@@ -6,4 +6,5 @@ import com.stafsus.api.entity.UserPrincipal
 
 interface CompanyService {
 	fun getCompaniesByUser(userPrincipal: UserPrincipal): List<Company>
+	fun getCompany(): Company
 }
