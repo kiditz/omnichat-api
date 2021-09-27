@@ -63,10 +63,11 @@ class MessageServiceImpl(
 		channel: Channel,
 		message: Message
 	) {
-		chat?.company = channel.company
-		val existingChat = chatRepository.findById(chat?.id!!)
+		chat.company = channel.company
+		val existingChat = chatRepository.findById(chat.id!!)
 		existingChat.ifPresent {
 			chat.version = it.version
+			chat.groupMetadata!!.version = it.groupMetadata!!.version
 		}
 		message.chat = chat
 		messageRepository.save(message)
