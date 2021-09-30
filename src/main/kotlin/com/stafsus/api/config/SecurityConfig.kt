@@ -83,6 +83,7 @@ class SecurityConfig(
 				"/api/staff/sign-up",
 				"/api/staff/check-staff",
 				"/api/auth/sign-out",
+				"/api/industry",
 			).permitAll()
 			.anyRequest().authenticated()
 			.and()

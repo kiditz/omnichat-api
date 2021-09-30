@@ -44,7 +44,9 @@ security:
   jwtExpirationInMs: 3600000
   refreshExpirationDateInMs: 604800000
 
-
+server:
+  forward-headers-strategy: FRAMEWORK
+  
 springdoc:
   use-fqn: true
   swagger-ui:

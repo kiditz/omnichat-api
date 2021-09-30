@@ -14,6 +14,7 @@ class UrlPath {
 		const val DEPARTMENT = "/api/department"
 		const val CHANNEL = "/api/channel"
 		const val COMPANY = "/api/company"
+		const val INDUSTRY = "/api/industry"
 		const val TAG = "/api/tag"
 		const val TRANSACTION = "/api/transaction"
 		const val PRODUCT = "/api/product"
