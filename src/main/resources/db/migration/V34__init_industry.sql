@@ -6,7 +6,6 @@ INSERT INTO public.industry(name, created_at, version) VALUES ('Energy', now(), 
 INSERT INTO public.industry(name, created_at, version) VALUES ('Mining', now(), 0);
 INSERT INTO public.industry(name, created_at, version) VALUES ('Government', now(), 0);
 INSERT INTO public.industry(name, created_at, version) VALUES ('Healthcare', now(), 0);
-INSERT INTO public.industry(name, created_at, version) VALUES ('Insurance', now(), 0);
 INSERT INTO public.industry(name, created_at, version) VALUES ('Manufacturing', now(), 0);
 INSERT INTO public.industry(name, created_at, version) VALUES ('Insurance', now(), 0);
 INSERT INTO public.industry(name, created_at, version) VALUES ('Media & Entertainment', now(), 0);

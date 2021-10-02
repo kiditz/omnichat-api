@@ -11,6 +11,6 @@ class IndustryServiceImpl(
 ) : IndustryService {
 	@Transactional(readOnly = true)
 	override fun getAll(): List<IndustryProjection> {
-		return industryRepository.findByOrderByName()
+		return industryRepository.findByOrderById()
 	}
 }

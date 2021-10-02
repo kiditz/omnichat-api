@@ -17,10 +17,11 @@ data class SignUpDto(
 	@field:NotBlank
 	@field:Size(min = 8)
 	val password: String? = null,
-	) {
+) {
 	fun toUser(): UserPrincipal {
 		return UserPrincipal(
 			email = email!!,
+			name = email.split("@")[0],
 			password = password!!,
 			status = Status.ACTIVE,
 			isVerified = false

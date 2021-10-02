@@ -18,6 +18,8 @@ data class UserPrincipal(
 	val id: Long? = null,
 	@Column(nullable = false, length = 60)
 	var email: String,
+	@Column(nullable = false, length = 100)
+	var name: String,
 	@Column(nullable = false, length = 60)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var password: String,

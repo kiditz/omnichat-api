@@ -100,6 +100,7 @@ class UserServiceImpl(
 		val staff = staffRepository.findByInvitationCode(signUpDto.invitationCode!!)
 			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
 		val userPrincipal = signUpDto.toUser(staff.email)
+		userPrincipal.name = "${staff.firstName} ${staff.lastName}"
 		if (userRepository.existsByEmail(userPrincipal.email)) {
 			throw ValidationException(MessageKey.EMAIL_EXISTS)
 		}

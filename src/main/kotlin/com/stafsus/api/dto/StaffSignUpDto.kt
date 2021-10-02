@@ -15,6 +15,7 @@ data class StaffSignUpDto(
 	fun toUser(email: String): UserPrincipal {
 		return UserPrincipal(
 			email = email,
+			name = "",
 			password = password!!,
 			status = Status.ACTIVE,
 			isVerified = false
