@@ -41,7 +41,7 @@ class ChannelController(
 
 	@GetMapping
 	@Operation(summary = "Get Active Channels", security = [SecurityRequirement(name = "bearer-key")])
-	fun findProductChannel(
+	fun findChannel(
 		@RequestParam page: Int,
 		@RequestParam size: Int,
 	): ResponseDto {

@@ -6,6 +6,7 @@ import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
+import com.stafsus.api.projection.ChannelProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
 import org.springframework.data.domain.Page
@@ -54,7 +55,7 @@ class ChannelServiceImpl(
 		return channelRepository.save(channel)
 	}
 
-	override fun findChannels(page: Int, size: Int): Page<Channel> {
+	override fun findChannels(page: Int, size: Int): Page<ChannelProjection> {
 		val company = companyService.getCompany()
 		return channelRepository.findByCompanyId(company.id!!, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
