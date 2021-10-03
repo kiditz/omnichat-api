@@ -63,6 +63,7 @@ class GlobalExceptionHandler(
 
 	@ExceptionHandler(value = [UsernameNotFoundException::class])
 	fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<ResponseDto> {
+		log.info("handleUsernameNotFoundException: {}", ex)
 		return ResponseEntity(
 			ResponseDto(false, translateService.toLocale(ex.message!!), ex.message),
 			HttpStatus.INTERNAL_SERVER_ERROR
@@ -71,7 +72,7 @@ class GlobalExceptionHandler(
 
 	@ExceptionHandler(value = [StaleObjectStateException::class])
 	fun handleStaleObjectStateException(ex: StaleObjectStateException): ResponseEntity<ResponseDto> {
-		log.error("Ex: ", ex)
+		log.info("handleStaleObjectStateException: {}", ex)
 		return ResponseEntity(
 			ResponseDto(false, translateService.toLocale(MessageKey.INVALID_VERSION), MessageKey.INVALID_VERSION),
 			HttpStatus.BAD_REQUEST
@@ -85,7 +86,7 @@ class GlobalExceptionHandler(
 		status: HttpStatus,
 		request: WebRequest
 	): ResponseEntity<Any> {
-		log.info("handleMethodArgumentNotValid: {}", ex.message)
+		log.info("handleMethodArgumentNotValid: {}", ex)
 		val errors: MutableMap<String, Map<String, String>> = mutableMapOf()
 		ex.bindingResult.allErrors.forEach { error ->
 			val field = (error as FieldError)
@@ -104,14 +105,14 @@ class GlobalExceptionHandler(
 		status: HttpStatus,
 		request: WebRequest
 	): ResponseEntity<Any> {
-		log.info("handleHttpMessageNotReadable: {}", ex.message)
+		log.info("handleHttpMessageNotReadable: {}", ex)
 		return ResponseEntity(ResponseDto(false, message = ex.message), HttpStatus.BAD_REQUEST)
 	}
 
 	@ExceptionHandler(ConstraintViolationException::class)
 	fun handleConstraintViolationException(ex: ConstraintViolationException): ResponseEntity<ResponseDto> {
 		val errors: MutableMap<String, String> = mutableMapOf()
-
+		log.info("handleConstraintViolationException: {}", ex)
 		ex.constraintViolations.forEach { err ->
 			val errorMessage: String = err.message!!
 			val args =

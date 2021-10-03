@@ -8,6 +8,9 @@ import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
@@ -50,5 +53,11 @@ class ChannelServiceImpl(
 		rabbitService.sendRestart(channel!!.product!!.type!!, channel)
 		return channelRepository.save(channel)
 	}
+
+	override fun findChannels(page: Int, size: Int): Page<Channel> {
+		val company = companyService.getCompany()
+		return channelRepository.findByCompanyId(company.id!!, PageRequest.of(page, size, Sort.by("id").descending()))
+	}
+
 
 }
