@@ -9,5 +9,5 @@ import org.springframework.data.domain.Page
 interface ChannelService {
 	fun install(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel
 	fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel
-	fun findChannels(page: Int, size: Int): Page<ChannelProjection>
+	fun findChannels(productId: Long, page: Int, size: Int): Page<ChannelProjection>
 }

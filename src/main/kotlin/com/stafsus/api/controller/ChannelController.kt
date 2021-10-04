@@ -42,10 +42,11 @@ class ChannelController(
 	@GetMapping
 	@Operation(summary = "Get Active Channels", security = [SecurityRequirement(name = "bearer-key")])
 	fun findChannel(
+		@RequestParam productId: Long,
 		@RequestParam page: Int,
 		@RequestParam size: Int,
 	): ResponseDto {
-		val channels = channelService.findChannels(page, size)
+		val channels = channelService.findChannels(productId, page, size)
 		return ResponseDto.fromPage(channels)
 	}
 }

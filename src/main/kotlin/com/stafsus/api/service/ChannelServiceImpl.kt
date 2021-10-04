@@ -55,9 +55,9 @@ class ChannelServiceImpl(
 		return channelRepository.save(channel)
 	}
 
-	override fun findChannels(page: Int, size: Int): Page<ChannelProjection> {
-		val company = companyService.getCompany()
-		return channelRepository.findByCompanyId(company.id!!, PageRequest.of(page, size, Sort.by("id").descending()))
+	override fun findChannels(productId: Long, page: Int, size: Int): Page<ChannelProjection> {
+//		val company = companyService.getCompany()
+		return channelRepository.findByProductId(productId, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
 
 

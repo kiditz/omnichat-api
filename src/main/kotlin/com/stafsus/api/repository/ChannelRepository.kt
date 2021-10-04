@@ -9,6 +9,6 @@ import java.util.*
 
 interface ChannelRepository : JpaRepository<Channel, Long> {
 	fun countByCompanyId(companyId: Long): Long
-	fun findByCompanyId(companyId: Long, pageable: Pageable): Page<ChannelProjection>
+	fun findByProductId(productId: Long, pageable: Pageable): Page<ChannelProjection>
 	fun findByDeviceId(deviceId: String): Optional<Channel>
 }
