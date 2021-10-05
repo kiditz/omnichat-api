@@ -14,14 +14,7 @@ data class Channel(
 	var name: String,
 	@Column(nullable = false, length = 8)
 	var deviceId: String,
-	@Column(length = 20)
-	var phone: String? = null,
-	@Column(nullable = false)
-	var isOnline: Boolean,
-	@Column(nullable = false)
-	var isActive: Boolean,
-	@Column(nullable = false)
-	var isPending: Boolean,
+	var imageUrl: String? = null,
 	@ManyToOne
 	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -31,5 +24,7 @@ data class Channel(
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var product: Product? = null,
 	@OneToOne(mappedBy = "channel")
-	var whatsApp: WhatsAppChannel? = null
+	var whatsApp: WhatsAppChannel? = null,
+	@OneToOne(mappedBy = "channel")
+	var telegram: TelegramChannel? = null
 ) : Auditable()

@@ -9,6 +9,7 @@ import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.projection.ChannelProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
+import org.apache.commons.lang3.StringUtils
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -36,8 +37,12 @@ class ChannelServiceImpl(
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 		val channel = channelDto.toEntity()
+		if (StringUtils.isEmpty(channelDto.name)) {
+			channel.name = product.name
+		}
 		channel.company = company
 		channel.product = product
+		channel.imageUrl = product.imageUrl
 		channelRepository.save(channel)
 		rabbitService.sendInstall(product.type!!, channel)
 		return channel
@@ -48,15 +53,11 @@ class ChannelServiceImpl(
 	override fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel {
 		val channel =
 			channelRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
-		channel.isActive = false
-		channel.isPending = true
-		channel.isOnline = false
 		rabbitService.sendRestart(channel!!.product!!.type!!, channel)
 		return channelRepository.save(channel)
 	}
 
 	override fun findChannels(productId: Long, page: Int, size: Int): Page<ChannelProjection> {
-//		val company = companyService.getCompany()
 		return channelRepository.findByProductId(productId, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
 

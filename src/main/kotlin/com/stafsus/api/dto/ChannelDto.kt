@@ -11,20 +11,15 @@ import javax.validation.constraints.Positive
 data class ChannelDto(
 	@field:NotBlank
 	var name: String? = null,
-	@field:Pattern(regexp = "^[62][0-9]{0,20}\$")
-	var phone: String? = null,
 	@field:NotNull
 	@field:Positive
 	var productId: Long? = null,
+	var botToken: String? = null,
 ) {
 	fun toEntity(): Channel {
 		return Channel(
 			name = name!!,
-			phone = phone,
 			deviceId = StringUtils.lowerCase(RandomStringUtils.randomAlphabetic(8)),
-			isOnline = false,
-			isActive = false,
-			isPending = true,
 		)
 	}
 }

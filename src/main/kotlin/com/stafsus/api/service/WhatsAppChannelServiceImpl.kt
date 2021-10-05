@@ -25,9 +25,8 @@ class WhatsAppChannelServiceImpl(
 			waChannel.pushName = channelDto.pushName ?: waChannel.pushName
 			waChannel.qrCode = channelDto.qrCode ?: waChannel.qrCode
 			waChannel.channel = channel
-			channel.isOnline = channelDto.isOnline ?: channel.isOnline
-			channel.isPending = channelDto.isPending ?: channel.isPending
-			channel.isActive = channelDto.isActive ?: channel.isActive
+			waChannel.status = channelDto.status ?: waChannel.status
+			waChannel.deviceStatus = channelDto.deviceStatus ?: waChannel.deviceStatus
 			channelRepository.save(channel)
 			whatsAppChannelRepository.save(waChannel)
 			return Optional.of(waChannel)

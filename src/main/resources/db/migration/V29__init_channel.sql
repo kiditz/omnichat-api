@@ -1,2 +1,0 @@
-INSERT INTO public.channel (id, name, device_id, phone, is_online, is_active, company_id, product_id, created_at, created_by, updated_at, updated_by, version, is_pending) VALUES (2, 'Raka', 'wvnxopri', '6285847452017', true, true, 2, 1, '2021-09-15 20:40:42.29216', 'raka@gmail.com', '2021-09-15 20:44:22.762219', 'raka@gmail.com', 2, false);
-SELECT pg_catalog.setval('public.channel_id_seq', 2, true);

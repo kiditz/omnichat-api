@@ -25,8 +25,6 @@ class WhatsAppListener(
 	@RabbitListener(queues = [AmqpConfig.WA_QR_Q])
 	fun whatsAppQr(channelDto: WhatsAppChannelDto) {
 		log.info("Qr : {}", channelDto)
-		channelDto.isActive = true
-		channelDto.isPending = false
 		whatsAppChannelService.save(channelDto)
 	}
 
@@ -39,8 +37,6 @@ class WhatsAppListener(
 	@RabbitListener(queues = [AmqpConfig.WA_AUTHENTICATION_Q])
 	fun whatsAppAuthenticated(channelDto: WhatsAppChannelDto) {
 		log.info("Authenticated : {}", channelDto)
-		channelDto.isOnline = true
-		channelDto.qrCode = ""
 		whatsAppChannelService.save(channelDto)
 	}
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import java.lang.Exception
 import javax.validation.ConstraintViolationException
 
 @ControllerAdvice
@@ -121,5 +122,15 @@ class GlobalExceptionHandler(
 			errors[err.propertyPath.last().name] = translateService.toLocale(errorMessage.trim(), args)
 		}
 		return ResponseEntity(ResponseDto(false, errors = errors), HttpStatus.BAD_REQUEST)
+	}
+
+	override fun handleExceptionInternal(
+		ex: Exception,
+		body: Any?,
+		headers: HttpHeaders,
+		status: HttpStatus,
+		request: WebRequest
+	): ResponseEntity<Any> {
+		return super.handleExceptionInternal(ex, body, headers, status, request)
 	}
 }
