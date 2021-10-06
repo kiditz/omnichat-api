@@ -3,16 +3,18 @@ package com.stafsus.api.controller
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ChannelDto
 import com.stafsus.api.dto.ResponseDto
-import com.stafsus.api.dto.RestartChannelDto
+import com.stafsus.api.dto.ControlChannelDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.service.ChannelService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping(UrlPath.CHANNEL)
@@ -21,21 +23,36 @@ import org.springframework.web.bind.annotation.*
 class ChannelController(
 	private val channelService: ChannelService
 ) {
-	@PostMapping
+	@PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Install Channel", security = [SecurityRequirement(name = "bearer-key")])
-	fun install(@RequestBody channelDto: ChannelDto, authentication: Authentication): ResponseDto {
+	fun install(
+		@RequestParam name: String,
+		@RequestParam productId: Long,
+		@RequestParam(required = false) telegramToken: String?,
+		@RequestParam(required = false) facebookToken: String?,
+		@RequestParam(required = false) instagramToken: String?,
+		@RequestParam(required = false) file: MultipartFile?,
+		authentication: Authentication,
+	): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
-		val channel = channelService.install(channelDto, user)
-		return ResponseDto(payload = channel)
+		val channelDto = ChannelDto(
+			name = name,
+			productId = productId,
+			facebookToken = facebookToken,
+			instagramToken = instagramToken,
+			telegramToken = telegramToken,
+			file = file,
+		)
+		return ResponseDto(payload = channelService.addChannel(channelDto, user))
 	}
 
-	@PostMapping("/restart")
+	@PostMapping("/control")
 	@PreAuthorize("hasAuthority('ADMIN')")
-	@Operation(summary = "Restart Channel", security = [SecurityRequirement(name = "bearer-key")])
-	fun restart(@RequestBody channelDto: RestartChannelDto, authentication: Authentication): ResponseDto {
+	@Operation(summary = "Enable/Disable Channel", security = [SecurityRequirement(name = "bearer-key")])
+	fun control(@RequestBody channelDto: ControlChannelDto, authentication: Authentication): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
-		val channel = channelService.restart(channelDto.deviceId!!, user)
+		val channel = channelService.controlChannel(channelDto, user)
 		return ResponseDto(payload = channel)
 	}
 

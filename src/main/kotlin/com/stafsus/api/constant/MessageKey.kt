@@ -10,6 +10,7 @@ class MessageKey {
 		const val COMPANY_NOT_FOUND = "company.not_found"
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
 		const val STAFF_NOT_FOUND = "staff.not_found"
+		const val TELEGRAM_TOKEN_REQUIRED = "telegram.token.required"
 		const val INVALID_USER_TO_VERIFY_STAFF = "invalid.user.to.verify.staff"
 		const val SYNC_CONTACT_FAILED = "sync.contact.failed"
 		const val SYNC_CHAT_FAILED = "sync.chat.failed"

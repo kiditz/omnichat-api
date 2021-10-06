@@ -1,6 +1,8 @@
 package com.stafsus.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.stafsus.api.entity.ProductType.TELEGRAM_BOT
+import com.stafsus.api.entity.ProductType.UNOFFICIAL_WHATSAPP
 import org.springframework.amqp.core.*
 import org.springframework.amqp.rabbit.annotation.EnableRabbit
 import org.springframework.amqp.rabbit.connection.ConnectionFactory
@@ -17,7 +19,6 @@ class AmqpConfig(
 	private val objectMapper: ObjectMapper
 ) {
 	companion object {
-		const val UNOFFICIAL_WHATSAPP = "unofficial_whatsapp"
 		const val WA_SYNC_CONTACT_Q = "wa_sync_contact_q"
 		const val WA_SYNC_MESSAGE_Q = "wa_sync_message_q"
 		const val WA_READY_Q = "wa_ready_q"
@@ -28,7 +29,6 @@ class AmqpConfig(
 		const val WA_SYNC_CHAT_Q = "wa_sync_chat_q"
 		const val WA_SYNC_MESSAGE_REVOKED_Q = "wa_sync_message_revoked_q"
 		const val SEND_EMAIL = "send_email"
-//		const val UNOFFICIAL_WHATSAPP_RESTART = "unofficial_whatsapp_restart"
 	}
 
 	@Bean
@@ -50,18 +50,34 @@ class AmqpConfig(
 
 	@Bean
 	fun installUnofficialWhatsApp(): Queue {
-		return Queue("${UNOFFICIAL_WHATSAPP}_q", true)
+		return Queue("${UNOFFICIAL_WHATSAPP.name}_q".toLowerCase(), true)
 	}
 
 	@Bean
 	fun installUnofficialWhatsAppExchange(): DirectExchange {
-		return DirectExchange("${UNOFFICIAL_WHATSAPP}_ex")
+		return DirectExchange("${UNOFFICIAL_WHATSAPP.name}_ex".toLowerCase())
 	}
 
 	@Bean
 	fun bindUnofficialWhatsApp(): Binding {
 		return BindingBuilder.bind(installUnofficialWhatsApp()).to(installUnofficialWhatsAppExchange())
-			.with("${UNOFFICIAL_WHATSAPP}_rk")
+			.with("${UNOFFICIAL_WHATSAPP.name}_rk".toLowerCase())
+	}
+
+	@Bean
+	fun installTelegram(): Queue {
+		return Queue("${TELEGRAM_BOT.name}_q".toLowerCase(), true)
+	}
+
+	@Bean
+	fun installTelegramAppExchange(): DirectExchange {
+		return DirectExchange("${TELEGRAM_BOT.name}_ex".toLowerCase())
+	}
+
+	@Bean
+	fun bindTelegram(): Binding {
+		return BindingBuilder.bind(installUnofficialWhatsApp()).to(installUnofficialWhatsAppExchange())
+			.with("${TELEGRAM_BOT.name}_rk".toLowerCase())
 	}
 
 

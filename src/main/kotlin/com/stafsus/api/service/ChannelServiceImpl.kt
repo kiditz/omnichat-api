@@ -2,58 +2,78 @@ package com.stafsus.api.service
 
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.ChannelDto
+import com.stafsus.api.dto.ControlChannelDto
 import com.stafsus.api.entity.Channel
+import com.stafsus.api.entity.ProductType
+import com.stafsus.api.entity.TelegramChannel
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.projection.ChannelProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.StringUtils.isEmpty
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 
 @Service
 class ChannelServiceImpl(
 	private val channelRepository: ChannelRepository,
 	private val productRepository: ProductRepository,
 	private val rabbitService: RabbitService,
-	private val companyService: CompanyService
+	private val companyService: CompanyService,
+	private val fileService: FileService
 ) : ChannelService {
+
 	@Transactional
-	override fun install(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel {
+	override fun addChannel(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel {
 		val product = productRepository
-			.findById(channelDto.productId!!)
+			.findById(channelDto.productId)
 			.orElseThrow { QuotaLimitException(MessageKey.PRODUCT_NOT_FOUND) }
 		val company = companyService.getCompany()
-		if (LocalDateTime.now().isAfter(company.user!!.quota!!.expiredAt)) {
+		if (now().isAfter(company.user!!.quota!!.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
 		if (company.user!!.quota!!.maxChannel < channelRepository.countByCompanyId(company.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 		val channel = channelDto.toEntity()
-		if (StringUtils.isEmpty(channelDto.name)) {
-			channel.name = product.name
+
+		channel.name = if (isEmpty(channelDto.name)) {
+			product.name
+		} else {
+			channelDto.name
 		}
+
+		channel.imageUrl = if (channelDto.file == null) {
+			product.imageUrl
+		} else {
+			val fileName = fileService.save(channelDto.file)
+			val imageUrl = fileService.getImageUrl(fileName)
+			imageUrl
+		}
+
 		channel.company = company
 		channel.product = product
 		channel.imageUrl = product.imageUrl
 		channelRepository.save(channel)
-		rabbitService.sendInstall(product.type!!, channel)
+		sendChannel(channel, channelDto)
 		return channel
 	}
 
 
 	@Transactional
-	override fun restart(deviceId: String, userPrincipal: UserPrincipal): Channel {
+	override fun controlChannel(control: ControlChannelDto, userPrincipal: UserPrincipal): Channel {
 		val channel =
-			channelRepository.findByDeviceId(deviceId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
-		rabbitService.sendRestart(channel!!.product!!.type!!, channel)
+			channelRepository.findByDeviceId(control.deviceId!!)
+				.orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
+		if (control.active) {
+			rabbitService.sendRestart(channel!!.product!!.type!!, channel)
+		}
 		return channelRepository.save(channel)
 	}
 
@@ -62,4 +82,37 @@ class ChannelServiceImpl(
 	}
 
 
+	private fun sendChannel(channel: Channel, channelDto: ChannelDto) {
+		when (channel.product?.type) {
+			ProductType.UNOFFICIAL_WHATSAPP -> sendInstallWa(channel)
+			ProductType.TELEGRAM_BOT -> sendInstallTelegram(channelDto, channel)
+			ProductType.FACEBOOK_MESSENGER -> sendInstallFacebook(channelDto, channel)
+			ProductType.INSTAGRAM_DIRECT -> sendInstallInstagram(channelDto, channel)
+			else -> {
+			}
+		}
+	}
+
+	private fun sendInstallInstagram(channelDto: ChannelDto, channel: Channel) {
+		TODO("Not yet implemented")
+	}
+
+	private fun sendInstallFacebook(channelDto: ChannelDto, channel: Channel) {
+		TODO("Not yet implemented")
+	}
+
+	private fun sendInstallTelegram(channelDto: ChannelDto, channel: Channel) {
+		if (isEmpty(channelDto.telegramToken)) {
+			throw ValidationException(MessageKey.TELEGRAM_TOKEN_REQUIRED)
+		}
+		channel.telegram = TelegramChannel(
+			botToken = channelDto.telegramToken
+		)
+		channelRepository.save(channel)
+		rabbitService.sendInstall(productType = ProductType.TELEGRAM_BOT, channel = channel)
+	}
+
+	private fun sendInstallWa(channel: Channel) {
+		rabbitService.sendInstall(productType = ProductType.UNOFFICIAL_WHATSAPP, channel = channel)
+	}
 }
