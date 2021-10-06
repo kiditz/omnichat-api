@@ -27,23 +27,10 @@ class ChannelController(
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Install Channel", security = [SecurityRequirement(name = "bearer-key")])
 	fun install(
-		@RequestParam name: String,
-		@RequestParam productId: Long,
-		@RequestParam(required = false) telegramToken: String?,
-		@RequestParam(required = false) facebookToken: String?,
-		@RequestParam(required = false) instagramToken: String?,
-		@RequestParam(required = false) file: MultipartFile?,
+		@RequestPart channelDto: ChannelDto,
 		authentication: Authentication,
 	): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
-		val channelDto = ChannelDto(
-			name = name,
-			productId = productId,
-			facebookToken = facebookToken,
-			instagramToken = instagramToken,
-			telegramToken = telegramToken,
-			file = file,
-		)
 		return ResponseDto(payload = channelService.addChannel(channelDto, user))
 	}
 
