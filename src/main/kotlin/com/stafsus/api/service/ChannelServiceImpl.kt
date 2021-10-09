@@ -49,13 +49,13 @@ class ChannelServiceImpl(
 			channelDto.name
 		}
 
-		channel.imageUrl = if (channelDto.file == null) {
-			product.imageUrl
-		} else {
-			val fileName = fileService.save(channelDto.file)
-			val imageUrl = fileService.getImageUrl(fileName)
-			imageUrl
-		}
+//		channel.imageUrl = if (channelDto.file == null) {
+//			product.imageUrl
+//		} else {
+//			val fileName = fileService.save(channelDto.file)
+//			val imageUrl = fileService.getImageUrl(fileName)
+//			imageUrl
+//		}
 
 		channel.company = company
 		channel.product = product
@@ -77,7 +77,7 @@ class ChannelServiceImpl(
 		return channelRepository.save(channel)
 	}
 
-	override fun findChannels(productId: Long, page: Int, size: Int): Page<ChannelProjection> {
+	override fun findChannels(productId: Long, page: Int, size: Int): Page<Channel> {
 		return channelRepository.findByProductId(productId, PageRequest.of(page, size, Sort.by("id").descending()))
 	}
 

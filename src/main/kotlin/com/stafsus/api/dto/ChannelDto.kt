@@ -18,7 +18,7 @@ data class ChannelDto(
 	val telegramToken: String?,
 	val facebookToken: String?,
 	val instagramToken: String?,
-	val file: MultipartFile?,
+	var file: MultipartFile?,
 ) {
 	fun toEntity(): Channel {
 		return Channel(

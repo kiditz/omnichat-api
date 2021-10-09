@@ -27,7 +27,7 @@ class ChannelController(
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Install Channel", security = [SecurityRequirement(name = "bearer-key")])
 	fun install(
-		@RequestPart channelDto: ChannelDto,
+		@ModelAttribute channelDto: ChannelDto,
 		authentication: Authentication,
 	): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user

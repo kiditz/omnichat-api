@@ -13,6 +13,7 @@ class MessageKey {
 		const val TELEGRAM_TOKEN_REQUIRED = "telegram.token.required"
 		const val INVALID_USER_TO_VERIFY_STAFF = "invalid.user.to.verify.staff"
 		const val SYNC_CONTACT_FAILED = "sync.contact.failed"
+		const val UNEXPECTED_EXCEPTION = "unexpected.exception"
 		const val SYNC_CHAT_FAILED = "sync.chat.failed"
 		const val PRICE_MUST_GREATER_THAN_ZERO = "price.greater_than_zero"
 		const val INVALID_VERSION = "invalid.version"
