@@ -9,7 +9,6 @@ import com.stafsus.api.entity.TelegramChannel
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
-import com.stafsus.api.projection.ChannelProjection
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
 import org.apache.commons.lang3.StringUtils.isEmpty
@@ -38,7 +37,7 @@ class ChannelServiceImpl(
 		if (now().isAfter(company.user!!.quota!!.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
-		if (company.user!!.quota!!.maxChannel < channelRepository.countByCompanyId(company.id!!)) {
+		if (company.user!!.quota!!.maxChannel <= channelRepository.countByCompanyId(company.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 		val channel = channelDto.toEntity()
@@ -49,13 +48,13 @@ class ChannelServiceImpl(
 			channelDto.name
 		}
 
-//		channel.imageUrl = if (channelDto.file == null) {
-//			product.imageUrl
-//		} else {
-//			val fileName = fileService.save(channelDto.file)
-//			val imageUrl = fileService.getImageUrl(fileName)
-//			imageUrl
-//		}
+		channel.imageUrl = if (channelDto.file == null) {
+			product.imageUrl
+		} else {
+			val fileName = fileService.save(channelDto.file!!)
+			val imageUrl = fileService.getImageUrl(fileName)
+			imageUrl
+		}
 
 		channel.company = company
 		channel.product = product
