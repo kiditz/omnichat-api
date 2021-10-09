@@ -58,7 +58,6 @@ class ChannelServiceImpl(
 
 		channel.company = company
 		channel.product = product
-		channel.imageUrl = product.imageUrl
 		channelRepository.save(channel)
 		sendChannel(channel, channelDto)
 		return channel
