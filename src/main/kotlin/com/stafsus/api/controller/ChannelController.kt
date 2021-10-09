@@ -2,8 +2,8 @@ package com.stafsus.api.controller
 
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ChannelDto
-import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.ControlChannelDto
+import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.service.ChannelService
 import io.swagger.v3.oas.annotations.Operation
@@ -14,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.Authentication
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 
 @RestController
 @RequestMapping(UrlPath.CHANNEL)
@@ -26,12 +25,20 @@ class ChannelController(
 	@PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add new channel", security = [SecurityRequirement(name = "bearer-key")])
-	fun install(
+	fun addChannel(
 		@ModelAttribute channelDto: ChannelDto,
-		authentication: Authentication,
 	): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		return ResponseDto(payload = channelService.addChannel(channelDto, user))
+		return ResponseDto(payload = channelService.addChannel(channelDto))
+	}
+
+	@PostMapping("/{id}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@Operation(summary = "Edit existing channel", security = [SecurityRequirement(name = "bearer-key")])
+	fun editChannel(
+		@PathVariable id: Long,
+		@ModelAttribute channelDto: ChannelDto,
+	): ResponseDto {
+		return ResponseDto(payload = channelService.editChannel(id, channelDto))
 	}
 
 	@PostMapping("/control")

@@ -29,10 +29,10 @@ class ChannelServiceImpl(
 ) : ChannelService {
 
 	@Transactional
-	override fun addChannel(channelDto: ChannelDto, userPrincipal: UserPrincipal): Channel {
+	override fun addChannel(channelDto: ChannelDto): Channel {
 		val product = productRepository
 			.findById(channelDto.productId)
-			.orElseThrow { QuotaLimitException(MessageKey.PRODUCT_NOT_FOUND) }
+			.orElseThrow { ValidationException(MessageKey.PRODUCT_NOT_FOUND) }
 		val company = companyService.getCompany()
 		if (now().isAfter(company.user!!.quota!!.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
@@ -61,6 +61,22 @@ class ChannelServiceImpl(
 		channelRepository.save(channel)
 		sendChannel(channel, channelDto)
 		return channel
+	}
+
+	@Transactional
+	override fun editChannel(channelId: Long, channelDto: ChannelDto): Channel {
+		val channel =
+			channelRepository.findById(channelId).orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND) }
+		channel.name = channelDto.name
+
+		channel.imageUrl = if (channelDto.file == null) {
+			channel.imageUrl
+		} else {
+			val fileName = fileService.save(channelDto.file!!)
+			val imageUrl = fileService.getImageUrl(fileName)
+			imageUrl
+		}
+		return channelRepository.save(channel)
 	}
 
 
