@@ -25,7 +25,7 @@ class ChannelController(
 ) {
 	@PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
 	@PreAuthorize("hasAuthority('ADMIN')")
-	@Operation(summary = "Install Channel", security = [SecurityRequirement(name = "bearer-key")])
+	@Operation(summary = "Add new channel", security = [SecurityRequirement(name = "bearer-key")])
 	fun install(
 		@ModelAttribute channelDto: ChannelDto,
 		authentication: Authentication,
