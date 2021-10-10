@@ -29,7 +29,7 @@ data class Channel(
 	@JoinColumn(name = "product_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var product: Product? = null,
-	@OneToOne(mappedBy = "channel")
+	@OneToOne(mappedBy = "channel", cascade = [CascadeType.ALL])
 	var whatsApp: WhatsAppChannel? = null,
 	@OneToOne(mappedBy = "channel")
 	var telegram: TelegramChannel? = null
