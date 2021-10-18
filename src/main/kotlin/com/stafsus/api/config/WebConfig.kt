@@ -6,13 +6,13 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class InterceptorConfig(
-	val tenantNameInterceptor: TenantNameInterceptor
+class WebConfig(
+	val clearTenantInterceptor: ClearTenantInterceptor
 ): WebMvcConfigurer {
 	override fun addCorsMappings(registry: CorsRegistry) {
 		registry.addMapping("/**").allowedMethods("*")
 	}
 	override fun addInterceptors(registry: InterceptorRegistry) {
-		registry.addInterceptor(tenantNameInterceptor)
+		registry.addInterceptor(clearTenantInterceptor)
 	}
 }
