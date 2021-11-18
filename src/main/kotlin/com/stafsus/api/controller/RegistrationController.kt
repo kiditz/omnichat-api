@@ -28,6 +28,7 @@ class RegistrationController(
 		val user = userService.signUp(request)
 		return ResponseDto(payload = user)
 	}
+
 	@PostMapping(UrlPath.STAFF_SIGN_UP)
 	@Operation(summary = "Register user with invitation code")
 	fun registerStaff(@Valid @RequestBody request: StaffSignUpDto): ResponseDto {

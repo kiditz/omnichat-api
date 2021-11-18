@@ -24,6 +24,6 @@ data class Company(
 	var user: UserPrincipal? = null,
 	@OneToOne
 	@JoinColumn(name = "industry_id")
-//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var industry: Industry? = null,
 ) : Auditable()

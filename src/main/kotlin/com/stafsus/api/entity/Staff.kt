@@ -1,6 +1,7 @@
 package com.stafsus.api.entity
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import javax.persistence.*
 
@@ -27,6 +28,6 @@ data class Staff(
 	var status: StaffStatus,
 	@OneToOne
 	@JoinColumn(name = "company_id")
-//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var company: Company? = null,
 ) : Auditable()

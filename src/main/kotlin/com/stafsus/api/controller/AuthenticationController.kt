@@ -1,10 +1,7 @@
 package com.stafsus.api.controller
 
 import com.stafsus.api.constant.UrlPath
-import com.stafsus.api.dto.RefreshTokenDto
-import com.stafsus.api.dto.ResponseDto
-import com.stafsus.api.dto.SignInDto
-import com.stafsus.api.dto.UserDetailDto
+import com.stafsus.api.dto.*
 import com.stafsus.api.service.AuthenticationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -29,6 +26,13 @@ class AuthenticationController(
 	fun signIn(@Valid @RequestBody request: SignInDto): ResponseDto {
 		val accessToken = authenticationService.signIn(request.email!!, request.password!!)
 		return ResponseDto(payload = accessToken)
+	}
+
+	@PutMapping(UrlPath.USER)
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Update user details")
+	fun editUser(@Valid @RequestBody request: EditUserDto): ResponseDto {
+		val userPrincipal = authenticationService.editUser(request)
+		return ResponseDto(payload = userPrincipal)
 	}
 
 	@PostMapping(UrlPath.REFRESH)

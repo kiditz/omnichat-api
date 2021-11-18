@@ -22,6 +22,7 @@ class MessageKey {
 		const val DEPARTMENT_NOT_FOUND = "department.not.found"
 		const val TAG_NOT_FOUND = "tag.not.found"
 		const val INVALID_EMAIL_OR_PASSWORD = "invalid.email.or.password"
+		const val OLD_PASSWORD_NOT_MATCHED = "old.password.not.matched"
 		const val UNAUTHORIZED_ERROR = "unauthorized.error"
 		const val EMAIL_EXISTS = "email.exists"
 		const val STAFF_EXISTS = "staff.exists"

@@ -28,10 +28,6 @@ data class UserPrincipal(
 	@Column(nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	var status: Status,
-//	@ElementCollection(fetch = FetchType.EAGER, targetClass = Authority::class)
-//	@CollectionTable(name = "user_authority", joinColumns = [JoinColumn(name = "user_id")])
-//	@Column(name = "authority")
-//	var authorities: Set<Authority>,
 	@Column(nullable = false)
 	var isVerified: Boolean,
 	@OneToOne(cascade = [CascadeType.ALL])
