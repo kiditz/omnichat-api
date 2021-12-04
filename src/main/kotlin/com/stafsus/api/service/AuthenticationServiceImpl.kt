@@ -81,9 +81,9 @@ class AuthenticationServiceImpl(
 	}
 
 	@Transactional
-	override fun editUser(editUserDto: EditUserDto): UserPrincipal {
-		val user = userRepository.findByEmail(editUserDto.email!!).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
-		user.email = editUserDto.email
+	override fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal {
+//		val user = userRepository.findByEmail(editUserDto.email!!).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
+		user.email = editUserDto.email!!
 		user.name = editUserDto.name!!
 		if (StringUtils.isNotEmpty(editUserDto.oldPassword) && StringUtils.isNotEmpty(editUserDto.newPassword)) {
 			if (!passwordEncoder.matches(editUserDto.oldPassword, user.password)) {

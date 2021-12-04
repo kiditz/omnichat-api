@@ -30,8 +30,9 @@ class AuthenticationController(
 
 	@PutMapping(UrlPath.USER)
 	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Update user details")
-	fun editUser(@Valid @RequestBody request: EditUserDto): ResponseDto {
-		val userPrincipal = authenticationService.editUser(request)
+	fun editUser(@Valid @RequestBody request: EditUserDto, authentication: Authentication): ResponseDto {
+		val userDetail = authentication.principal as UserDetailDto
+		val userPrincipal = authenticationService.editUser(request, userDetail.user)
 		return ResponseDto(payload = userPrincipal)
 	}
 
@@ -46,7 +47,6 @@ class AuthenticationController(
 	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get User By jwt token")
 	fun getUser(authentication: Authentication): ResponseDto {
 		val userPrincipal = authentication.principal as UserDetailDto
-		log.info("Authorities: {}", userPrincipal.getAuthorities())
 		return ResponseDto(payload = userPrincipal.user)
 	}
 }
