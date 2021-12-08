@@ -8,6 +8,7 @@ import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.*
+import org.apache.commons.lang3.RandomStringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UserDetails
@@ -27,6 +28,7 @@ class UserServiceImpl(
 	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
 	private val staffRepository: StaffRepository,
+	private val apiKeyRepository: ApiKeyRepository,
 	private val fileService: FileService,
 
 	) : UserService {
@@ -46,7 +48,17 @@ class UserServiceImpl(
 			.orElseThrow { ValidationException(MessageKey.INDUSTRY_NOT_FOUND) }
 		val company = addCompany(signUpDto, industry, userPrincipal)
 		addAuthority(userPrincipal, company)
+		addApiKey(company)
 		return userPrincipal
+	}
+
+	private fun addApiKey(company: Company) {
+		val apiKey = ApiKey(
+			serverKey = RandomStringUtils.randomAlphanumeric(60),
+			appId = RandomStringUtils.randomAlphanumeric(20),
+			company = company
+		)
+		apiKeyRepository.save(apiKey)
 	}
 
 	private fun setPassword(userPrincipal: UserPrincipal) {

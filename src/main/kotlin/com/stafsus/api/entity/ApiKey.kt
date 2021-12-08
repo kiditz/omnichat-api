@@ -11,18 +11,17 @@ import javax.persistence.*
 	property = "id"
 )
 @Table
-data class Company(
+data class ApiKey(
 	@Id
 	@Column(nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long? = null,
-	@Column(nullable = false, length = 100)
-	var name: String,
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	@Column(nullable = false, length = 60)
+	var serverKey: String,
+	@Column(nullable = false, length = 20)
+	var appId: String,
 	@OneToOne
-	@JoinColumn(name = "industry_id")
-	var industry: Industry? = null,
+	@JoinColumn(name = "company_id")
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	var company: Company? = null,
 ) : Auditable()
