@@ -4,7 +4,6 @@ import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.EditUserDto
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.UserDetailDto
-import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
