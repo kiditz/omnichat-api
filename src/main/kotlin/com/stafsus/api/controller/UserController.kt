@@ -4,13 +4,16 @@ import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.EditUserDto
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.UserDetailDto
+import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.MediaType
 import org.springframework.security.core.Authentication
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 
 @RestController
@@ -34,5 +37,15 @@ class UserController(
 		val userDetail = authentication.principal as UserDetailDto
 		val userPrincipal = userService.editUser(request, userDetail.user)
 		return ResponseDto(payload = userPrincipal)
+	}
+
+	@PutMapping(UrlPath.PHOTO, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Update user details")
+	fun updatePhoto(
+		authentication: Authentication,
+		@RequestParam file: MultipartFile,
+	): ResponseDto {
+		val userDetail = authentication.principal as UserDetailDto
+		return ResponseDto(payload = userService.updateImage(userDetail.user, file))
 	}
 }

@@ -7,11 +7,12 @@ import com.stafsus.api.entity.UserPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 interface UserService : UserDetailsService {
 	fun signUp(signUpDto: SignUpDto): UserPrincipal
 	fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal
 	fun loadUserById(id: Long): UserDetails
-	@Transactional
 	fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal
+	fun updateImage(user: UserPrincipal, multipartFile: MultipartFile): UserPrincipal
 }

@@ -3,6 +3,7 @@ package com.stafsus.api.constant
 class UrlPath {
 	companion object {
 		const val API_AUTH = "/api/auth"
+		const val PHOTO = "/photo"
 		const val ADMIN_SIGN_UP = "/api/admin/sign-up"
 		const val STAFF_SIGN_UP = "/api/staff/sign-up"
 		const val REFRESH = "/refresh-token"
