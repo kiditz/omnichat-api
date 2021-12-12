@@ -8,6 +8,7 @@ class MessageKey {
 		const val PRICE_NOT_FOUND = "price.not_found"
 		const val INDUSTRY_NOT_FOUND = "industry.not_found"
 		const val COMPANY_NOT_FOUND = "company.not_found"
+		const val API_KEY_NOT_FOUND = "api.key.not_found"
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
 		const val STAFF_NOT_FOUND = "staff.not_found"
 		const val TELEGRAM_TOKEN_REQUIRED = "telegram.token.required"

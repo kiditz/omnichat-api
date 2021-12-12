@@ -28,25 +28,11 @@ class AuthenticationController(
 		return ResponseDto(payload = accessToken)
 	}
 
-	@PutMapping(UrlPath.USER)
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Update user details")
-	fun editUser(@Valid @RequestBody request: EditUserDto, authentication: Authentication): ResponseDto {
-		val userDetail = authentication.principal as UserDetailDto
-		val userPrincipal = authenticationService.editUser(request, userDetail.user)
-		return ResponseDto(payload = userPrincipal)
-	}
 
 	@PostMapping(UrlPath.REFRESH)
 	@Operation(summary = "Renew access token by refresh token")
 	fun refresh(@Valid @RequestBody request: RefreshTokenDto): ResponseDto {
 		val accessToken = authenticationService.refresh(request.refresh!!)
 		return ResponseDto(payload = accessToken)
-	}
-
-	@GetMapping(UrlPath.USER)
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get User By jwt token")
-	fun getUser(authentication: Authentication): ResponseDto {
-		val userPrincipal = authentication.principal as UserDetailDto
-		return ResponseDto(payload = userPrincipal.user)
 	}
 }

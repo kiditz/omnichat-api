@@ -8,6 +8,4 @@ import org.springframework.transaction.annotation.Transactional
 interface AuthenticationService {
 	fun signIn(email: String, password: String): AccessTokenDto
 	fun refresh(token: String): AccessTokenDto
-//	fun editUser(editUserDto: EditUserDto): UserPrincipal
-	fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal
 }

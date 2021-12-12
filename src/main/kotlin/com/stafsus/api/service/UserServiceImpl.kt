@@ -2,6 +2,7 @@ package com.stafsus.api.service
 
 import com.stafsus.api.config.ThreadLocalStorage
 import com.stafsus.api.constant.MessageKey
+import com.stafsus.api.dto.EditUserDto
 import com.stafsus.api.dto.SignUpDto
 import com.stafsus.api.dto.StaffSignUpDto
 import com.stafsus.api.dto.UserDetailDto
@@ -9,6 +10,7 @@ import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.*
 import org.apache.commons.lang3.RandomStringUtils
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UserDetails
@@ -164,5 +166,19 @@ class UserServiceImpl(
 			userCompanyRepository.getByUserPrincipalIdAndCompanyId(user.id!!, tenantId)
 		val authorities = userCompanies.map { Authority.valueOf(it.userAuthority!!.authority) }.toSet()
 		return UserDetailDto(user, authorities)
+	}
+
+
+	@Transactional
+	override fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal {
+		user.email = editUserDto.email!!
+		user.name = editUserDto.name!!
+		if (StringUtils.isNotEmpty(editUserDto.oldPassword) && StringUtils.isNotEmpty(editUserDto.newPassword)) {
+			if (!passwordEncoder.matches(editUserDto.oldPassword, user.password)) {
+				throw ValidationException(MessageKey.INVALID_EMAIL_OR_PASSWORD)
+			}
+			user.password = passwordEncoder.encode(editUserDto.newPassword!!)
+		}
+		return userRepository.save(user)
 	}
 }
