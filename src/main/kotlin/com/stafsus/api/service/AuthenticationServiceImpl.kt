@@ -4,11 +4,14 @@ import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.AccessTokenDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.entity.RefreshToken
+import com.stafsus.api.entity.UserAuthority
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.RefreshTokenRepository
+import com.stafsus.api.repository.UserAuthorityRepository
 import com.stafsus.api.repository.UserRepository
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Sort
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
@@ -24,9 +27,8 @@ class AuthenticationServiceImpl(
 	private val jwtService: JwtService,
 	private val refreshTokenRepository: RefreshTokenRepository,
 	private val userRepository: UserRepository,
-
+	private val userAuthorityRepository: UserAuthorityRepository,
 	@Value("\${security.refreshExpirationDateInMs}") val refreshExpirationDateInMs: Long
-
 ) : AuthenticationService {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -74,6 +76,10 @@ class AuthenticationServiceImpl(
 		refreshToken.expiryDate = expireRefreshToken
 		refreshTokenRepository.save(refreshToken)
 		return jwtService.generate(user).copy(refreshToken = newRefreshToken)
+	}
+
+	override fun getAuthorities(): List<UserAuthority> {
+		return userAuthorityRepository.findAll(Sort.by("authority"))
 	}
 
 }

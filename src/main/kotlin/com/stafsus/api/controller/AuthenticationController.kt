@@ -35,4 +35,10 @@ class AuthenticationController(
 		val accessToken = authenticationService.refresh(request.refresh!!)
 		return ResponseDto(payload = accessToken)
 	}
+
+	@GetMapping(UrlPath.AUTHORITY)
+	@Operation(summary = "Get User Authorities")
+	fun getAuthorities(): ResponseDto {
+		return ResponseDto(payload = authenticationService.getAuthorities())
+	}
 }

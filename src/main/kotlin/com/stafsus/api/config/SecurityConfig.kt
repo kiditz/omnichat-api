@@ -55,17 +55,6 @@ class SecurityConfig(
 		http
 			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 			.antMatcher("/api/**")
-//			.requestMatchers().antMatchers(
-//				"${UrlPath.API_AUTH}/**",
-//				"${UrlPath.DEPARTMENT}/**",
-//				"${UrlPath.TAG}/**",
-//				"${UrlPath.PRODUCT}/**",
-//				"${UrlPath.PRICE}/**",
-//				"${UrlPath.TRANSACTION}/**",
-//				"${UrlPath.CHANNEL}/**",
-//				"${UrlPath.CHAT}/**",
-//				"${UrlPath.STAFF}/**",
-//			)
 			.cors().and()
 			.csrf().disable()
 			.logout().disable()
@@ -74,7 +63,7 @@ class SecurityConfig(
 			.and()
 			.headers()
 			.frameOptions().sameOrigin()
-			.and() // we don't need CSRF because our token is invulnerable
+			.and()
 			.authorizeRequests()
 			.antMatchers(
 				"/api/auth/refresh-token",
@@ -84,6 +73,7 @@ class SecurityConfig(
 				"/api/staff/check-staff",
 				"/api/auth/sign-out",
 				"/api/industry",
+				"/api/auth/authority"
 			).permitAll()
 			.anyRequest().authenticated()
 			.and()
