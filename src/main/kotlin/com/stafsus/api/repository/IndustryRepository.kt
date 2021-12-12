@@ -5,5 +5,5 @@ import com.stafsus.api.projection.IndustryProjection
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface IndustryRepository : JpaRepository<Industry, Long> {
-	fun findByOrderById(): List<IndustryProjection>
+	fun findByOrderByName(): List<IndustryProjection>
 }

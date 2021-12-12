@@ -19,7 +19,7 @@ class IndustryController(
 ) {
 	@GetMapping
 	@Operation(summary = "Get all industry")
-	fun getCompanies(): ResponseDto {
+	fun getIndustries(): ResponseDto {
 		val industries = industryService.getAll();
 		return ResponseDto(payload = industries)
 	}
