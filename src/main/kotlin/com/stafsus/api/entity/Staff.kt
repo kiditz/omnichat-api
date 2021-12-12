@@ -20,7 +20,6 @@ data class Staff(
 	var firstName: String,
 	@Column(name = "last_name")
 	var lastName: String,
-	var phone: String,
 	var email: String,
 	var invitationCode: String,
 	var authority: String,

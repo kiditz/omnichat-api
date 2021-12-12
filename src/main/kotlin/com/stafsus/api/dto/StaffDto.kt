@@ -10,13 +10,14 @@ data class StaffDto(
 	val firstName: String? = null,
 	@field:NotNull
 	val lastName: String? = null,
-	@field:NotNull
-	@field:NotBlank
-	val phone: String? = null,
+
 	@field:Email
 	@field:NotBlank
 	@field:Size(max = 100)
 	val email: String? = null,
+	@field:NotBlank
+	@field:Size(min = 8)
+	val password: String? = null,
 	@field:ValidAuthority
 	val authority: List<String>? = null,
 ) {
@@ -25,9 +26,8 @@ data class StaffDto(
 			firstName = firstName!!,
 			lastName = lastName!!,
 			email = email!!,
-			phone = phone!!,
 			company = company,
-			status = StaffStatus.INVITED,
+			status = StaffStatus.ACTIVE,
 			authority = authority!!.joinToString(","),
 			invitationCode = RandomStringUtils.randomAlphabetic(10)
 		)

@@ -1,21 +1,16 @@
 package com.stafsus.api.service
 
-import com.stafsus.api.constant.FtlTemplate
-import com.stafsus.api.constant.MessageKey
-import com.stafsus.api.dto.MailMessageDto
 import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.entity.Staff
-import com.stafsus.api.entity.StaffStatus
+import com.stafsus.api.entity.Status
 import com.stafsus.api.entity.UserCompany
 import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.exception.AccessDeniedException
-import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.StaffRepository
 import com.stafsus.api.repository.UserAuthorityRepository
 import com.stafsus.api.repository.UserCompanyRepository
 import com.stafsus.api.repository.UserRepository
-import org.apache.commons.lang3.RandomStringUtils
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.MediaType
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,41 +21,24 @@ class StaffServiceImpl(
 	private val userRepository: UserRepository,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userCompanyRepository: UserCompanyRepository,
-	@Value("\${app.invitationUrl}") val invitationUrl: String,
-	private val rabbitService: RabbitService,
+	private val passwordEncoder: PasswordEncoder,
+	private val identIconService: IdentIconService,
+	private val fileService: FileService,
 ) : StaffService {
 
 	@Transactional
 	override fun addStaff(staffDto: StaffDto, userPrincipal: UserPrincipal): Staff {
 		val company = companyService.getCompany()
-		val staff = staffRepository.findByEmailAndCompanyId(staffDto.email!!, company.id!!).orElse(staffDto.toEntity(company))
-		staff.invitationCode = getUniqueInvitationCode()
-
-		val map = mapOf(
-			"email" to staff.email,
-			"companyName" to company.name,
-			"actionUrl" to "${invitationUrl}?code=${staff.invitationCode}"
-		)
-		val mailMessage = MailMessageDto(
-			staffDto.email,
-			"Invitation | StafSus",
-			template = FtlTemplate.EMAIL_INVITATION,
-			message = map,
-			isHtml = true
-		)
-		rabbitService.sendEmail(mailMessage)
-		return staffRepository.save(staff)
+		var staff = staffRepository
+			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
+			.orElse(staffDto.toEntity(company))
+		val user = addUser(staffDto, userPrincipal)
+		staff = staffRepository.save(staff)
+		addAuthority(staff, user)
+		return staff
 	}
 
-	@Transactional
-	override fun acceptStaff(invitationCode: String, user: UserPrincipal): Staff {
-		val staff = staffRepository.findByInvitationCode(invitationCode)
-			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
-		val staffUser =
-			userRepository.findByEmail(staff.email).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
-		if (staffUser.email != user.email) {
-			throw AccessDeniedException(MessageKey.INVALID_USER_TO_VERIFY_STAFF, staff.email)
-		}
+	private fun addAuthority(staff: Staff, user: UserPrincipal) {
 		val authorities = staff.authority.split(",")
 		authorities.forEach {
 			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
@@ -68,38 +46,30 @@ class StaffServiceImpl(
 				val userCompany = UserCompany(
 					userAuthority = authority,
 					company = staff.company,
-					userPrincipal = staffUser
+					userPrincipal = user,
 				)
 				userCompanyRepository.save(userCompany)
 			}
 		}
-		staff.status = StaffStatus.ACTIVE
-		return staffRepository.save(staff)
 	}
 
-	@Transactional
-	override fun declineStaff(invitationCode: String): Staff {
-		val staff = staffRepository.findByInvitationCode(invitationCode)
-			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
-		staff.status = StaffStatus.DECLINED
-		return staffRepository.save(staff)
+	private fun addUser(staff: StaffDto, userPrincipal: UserPrincipal): UserPrincipal {
+		val user = UserPrincipal(
+			email = staff.email!!,
+			name = "${staff.firstName} ${staff.lastName}",
+			status = Status.ACTIVE,
+			password = passwordEncoder.encode(staff.password),
+			isVerified = false,
+			quota = userPrincipal.quota
+		)
+		setProfilePicture(user)
+		return userRepository.save(user)
 	}
 
-	@Transactional(readOnly = true)
-	override fun checkStaffAccount(invitationCode: String): Boolean {
-		val staff = staffRepository.findByInvitationCode(invitationCode)
-			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
-		return userRepository.existsByEmail(staff.email)
-	}
-
-	private fun getUniqueInvitationCode(): String {
-		var invitationCode: String
-		while (true) {
-			invitationCode = RandomStringUtils.randomAlphanumeric(10)
-			if (!staffRepository.existsByInvitationCode(invitationCode)) {
-				break
-			}
-		}
-		return invitationCode
+	private fun setProfilePicture(userPrincipal: UserPrincipal) {
+		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))
+		val destination = "profile"
+		val image = fileService.saveOriginal(userPrincipal.email, destination, MediaType.IMAGE_PNG_VALUE, icon)
+		userPrincipal.imageUrl = fileService.getImageUrl(image, destination)
 	}
 }
