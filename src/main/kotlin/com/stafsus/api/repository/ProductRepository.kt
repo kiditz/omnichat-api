@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface ProductRepository : JpaRepository<Product, Long> {
-	fun findByType(type: ProductType): Optional<Product>
 	fun findAllByType(type: ProductType, pageable: Pageable): Page<Product>
+	fun findByTypeIn(type: Set<ProductType>): List<Product>
 	fun findAllByTypeNot(type: ProductType, pageable: Pageable): Page<Product>
 }

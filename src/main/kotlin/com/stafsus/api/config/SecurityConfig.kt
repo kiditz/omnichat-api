@@ -68,7 +68,7 @@ class SecurityConfig(
 			.antMatchers(
 				"/api/auth/refresh-token",
 				"/api/auth/sign-in",
-				"/api/admin/sign-up",
+				"/api/auth/sign-up",
 				"/api/staff/sign-up",
 				"/api/staff/check-staff",
 				"/api/auth/sign-out",

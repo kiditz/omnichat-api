@@ -4,7 +4,6 @@ import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.dto.UserDetailDto
-import com.stafsus.api.dto.VerifyStaffDto
 import com.stafsus.api.service.StaffService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -31,24 +30,14 @@ class StaffController(
 		return ResponseDto(payload = staff)
 	}
 
-//	@PostMapping(UrlPath.ACCEPT_STAFF)
-//	@Operation(summary = "Accept invitation", security = [SecurityRequirement(name = "bearer-key")])
-//	fun acceptStaff(authentication: Authentication, @Valid @RequestBody verifyStaffDto: VerifyStaffDto): ResponseDto {
-//		val user = (authentication.principal as UserDetailDto).user
-//		val staff = staffService.acceptStaff(verifyStaffDto.invitationCode!!, user)
-//		return ResponseDto(payload = staff)
-//	}
-//
-//	@GetMapping(UrlPath.CHECK_STAFF)
-//	@Operation(summary = "Check staff account")
-//	fun checkStaffAccount(@RequestParam invitationCode: String): ResponseDto {
-//		return ResponseDto(payload = staffService.checkStaffAccount(invitationCode))
-//	}
-//
-//
-//	@GetMapping(UrlPath.DECLINE_STAFF)
-//	@Operation(summary = "Declined invitation", security = [SecurityRequirement(name = "bearer-key")])
-//	fun declineStaff(@RequestParam invitationCode: String): ResponseDto {
-//		return ResponseDto(payload = staffService.declineStaff(invitationCode))
-//	}
+	@GetMapping
+	@PreAuthorize("hasAuthority('ADMIN')")
+	@Operation(summary = "Staff list", security = [SecurityRequirement(name = "bearer-key")])
+	fun getStaffList(
+		@RequestParam page: Int,
+		@RequestParam size: Int,
+	): ResponseDto {
+		val staff = staffService.getStaffList(page, size)
+		return ResponseDto(payload = staff)
+	}
 }

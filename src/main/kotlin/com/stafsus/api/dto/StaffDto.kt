@@ -1,9 +1,14 @@
 package com.stafsus.api.dto
 
-import com.stafsus.api.entity.*
+import com.stafsus.api.entity.Company
+import com.stafsus.api.entity.ProductType
+import com.stafsus.api.entity.Staff
+import com.stafsus.api.entity.StaffStatus
 import com.stafsus.api.validation.ValidAuthority
-import org.apache.commons.lang3.RandomStringUtils
-import javax.validation.constraints.*
+import javax.validation.constraints.Email
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Size
 
 data class StaffDto(
 	@field:NotBlank
@@ -20,6 +25,7 @@ data class StaffDto(
 	val password: String? = null,
 	@field:ValidAuthority
 	val authority: List<String>? = null,
+	val products: Set<ProductType>? = null,
 ) {
 	fun toEntity(company: Company): Staff {
 		return Staff(
@@ -29,7 +35,6 @@ data class StaffDto(
 			company = company,
 			status = StaffStatus.ACTIVE,
 			authority = authority!!.joinToString(","),
-			invitationCode = RandomStringUtils.randomAlphabetic(10)
 		)
 	}
 }

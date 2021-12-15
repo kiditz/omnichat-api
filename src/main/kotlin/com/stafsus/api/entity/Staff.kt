@@ -21,7 +21,6 @@ data class Staff(
 	@Column(name = "last_name")
 	var lastName: String,
 	var email: String,
-	var invitationCode: String,
 	var authority: String,
 	@Enumerated(EnumType.STRING)
 	var status: StaffStatus,
@@ -29,4 +28,11 @@ data class Staff(
 	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var company: Company? = null,
+	@ManyToMany(cascade = [CascadeType.ALL])
+	@JoinTable(
+		name = "staff_assignment",
+		joinColumns = [JoinColumn(name = "staff_id")],
+		inverseJoinColumns = [JoinColumn(name = "product_id")]
+	)
+	var products: Set<Product>? = null
 ) : Auditable()

@@ -5,7 +5,6 @@ CREATE TABLE staff
     first_name character varying(60) NOT NULL,
     last_name character varying(100)  NOT NULL,
     status character varying(30) NOT NULL,
-    invitation_code character varying(10) NOT NULL,
     authority text NOT NULL,
     company_id bigint NOT NULL,
     CONSTRAINT staff_pkey PRIMARY KEY (id),

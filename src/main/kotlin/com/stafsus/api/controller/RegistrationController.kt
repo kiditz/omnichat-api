@@ -22,17 +22,4 @@ class RegistrationController(
 	private val userService: UserService
 ) {
 
-	@PostMapping(UrlPath.ADMIN_SIGN_UP)
-	@Operation(summary = "Register user as admin")
-	fun registerAdmin(@Valid @RequestBody request: SignUpDto): ResponseDto {
-		val user = userService.signUp(request)
-		return ResponseDto(payload = user)
-	}
-
-	@PostMapping(UrlPath.STAFF_SIGN_UP)
-	@Operation(summary = "Register user with invitation code")
-	fun registerStaff(@Valid @RequestBody request: StaffSignUpDto): ResponseDto {
-		val user = userService.invitationSignUp(request)
-		return ResponseDto(payload = user)
-	}
 }

@@ -22,4 +22,9 @@ class CompanyServiceImpl(
 		return companyRepository.findById(companyId)
 			.orElseThrow { ValidationException(MessageKey.COMPANY_NOT_FOUND) }
 	}
+
+	override fun getCompanyId(): Long {
+		return ThreadLocalStorage.getTenantId()
+			?: throw ValidationException(MessageKey.COMPANY_REQUIRED)
+	}
 }

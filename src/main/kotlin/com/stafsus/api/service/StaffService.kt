@@ -6,4 +6,5 @@ import com.stafsus.api.entity.UserPrincipal
 
 interface StaffService {
 	fun addStaff(staffDto: StaffDto, userPrincipal: UserPrincipal): Staff
+	fun getStaffList(page: Int, size: Int): List<Staff>
 }

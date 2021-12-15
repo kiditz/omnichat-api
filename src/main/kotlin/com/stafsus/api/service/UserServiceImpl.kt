@@ -4,7 +4,6 @@ import com.stafsus.api.config.ThreadLocalStorage
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.EditUserDto
 import com.stafsus.api.dto.SignUpDto
-import com.stafsus.api.dto.StaffSignUpDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
@@ -109,42 +108,42 @@ class UserServiceImpl(
 		)
 		userCompanyRepository.save(userCompany)
 	}
-
-	@Transactional
-	override fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal {
-		val staff = staffRepository.findByInvitationCode(signUpDto.invitationCode!!)
-			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
-		val userPrincipal = signUpDto.toUser(staff.email)
-		userPrincipal.name = "${staff.firstName} ${staff.lastName}"
-		if (userRepository.existsByEmail(userPrincipal.email)) {
-			throw ValidationException(MessageKey.EMAIL_EXISTS)
-		}
-		setPassword(userPrincipal)
-		setProfilePicture(userPrincipal)
-		userRepository.saveAndFlush(userPrincipal)
-		val authorities = staff.authority.split(",")
-		val userCompanies = mutableListOf<UserCompany>()
-		authorities.forEach {
-			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
-			if (authority != null) {
-				val userCompany = UserCompany(
-					id = UserCompanyId(
-						userPrincipal.id,
-						staff.company!!.id,
-						authority.id
-					),
-					userAuthority = authority,
-					company = staff.company,
-					userPrincipal = userPrincipal
-				)
-				userCompanies.add(userCompany)
-			}
-		}
-		userCompanyRepository.saveAll(userCompanies)
-		staff.status = StaffStatus.ACTIVE
-		staffRepository.save(staff)
-		return userPrincipal
-	}
+//
+//	@Transactional
+//	override fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal {
+//		val staff = staffRepository.findByInvitationCode(signUpDto.invitationCode!!)
+//			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
+//		val userPrincipal = signUpDto.toUser(staff.email)
+//		userPrincipal.name = "${staff.firstName} ${staff.lastName}"
+//		if (userRepository.existsByEmail(userPrincipal.email)) {
+//			throw ValidationException(MessageKey.EMAIL_EXISTS)
+//		}
+//		setPassword(userPrincipal)
+//		setProfilePicture(userPrincipal)
+//		userRepository.saveAndFlush(userPrincipal)
+//		val authorities = staff.authority.split(",")
+//		val userCompanies = mutableListOf<UserCompany>()
+//		authorities.forEach {
+//			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
+//			if (authority != null) {
+//				val userCompany = UserCompany(
+//					id = UserCompanyId(
+//						userPrincipal.id,
+//						staff.company!!.id,
+//						authority.id
+//					),
+//					userAuthority = authority,
+//					company = staff.company,
+//					userPrincipal = userPrincipal
+//				)
+//				userCompanies.add(userCompany)
+//			}
+//		}
+//		userCompanyRepository.saveAll(userCompanies)
+//		staff.status = StaffStatus.ACTIVE
+//		staffRepository.save(staff)
+//		return userPrincipal
+//	}
 
 
 	private fun setProfilePicture(userPrincipal: UserPrincipal) {

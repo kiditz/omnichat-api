@@ -30,9 +30,8 @@ data class UserPrincipal(
 	var status: Status,
 	@Column(nullable = false)
 	var isVerified: Boolean,
-	@OneToOne(cascade = [CascadeType.ALL])
+	@OneToOne(cascade = [CascadeType.MERGE])
 	@JoinColumn(name = "quota_id", nullable = true)
-//	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var quota: Quota? = null,
 
 	) : Auditable()

@@ -1,14 +1,10 @@
 package com.stafsus.api.service
 
 import com.stafsus.api.dto.StaffDto
-import com.stafsus.api.entity.Staff
-import com.stafsus.api.entity.Status
-import com.stafsus.api.entity.UserCompany
-import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.repository.StaffRepository
-import com.stafsus.api.repository.UserAuthorityRepository
-import com.stafsus.api.repository.UserCompanyRepository
-import com.stafsus.api.repository.UserRepository
+import com.stafsus.api.entity.*
+import com.stafsus.api.repository.*
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -22,6 +18,7 @@ class StaffServiceImpl(
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userCompanyRepository: UserCompanyRepository,
 	private val passwordEncoder: PasswordEncoder,
+	private val productRepository: ProductRepository,
 	private val identIconService: IdentIconService,
 	private val fileService: FileService,
 ) : StaffService {
@@ -33,9 +30,22 @@ class StaffServiceImpl(
 			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
 			.orElse(staffDto.toEntity(company))
 		val user = addUser(staffDto, userPrincipal)
+		addProduct(staff, staffDto.products!!)
 		staff = staffRepository.save(staff)
 		addAuthority(staff, user)
 		return staff
+	}
+
+	override fun getStaffList(page: Int, size: Int): List<Staff> {
+		val companyId = companyService.getCompanyId()
+		return staffRepository.findByCompanyId(
+			companyId,
+			PageRequest.of(page, size, Sort.Direction.DESC, "id")
+		)
+	}
+
+	private fun addProduct(staff: Staff, products: Set<ProductType>) {
+		staff.products = productRepository.findByTypeIn(products).toSet()
 	}
 
 	private fun addAuthority(staff: Staff, user: UserPrincipal) {
@@ -44,6 +54,11 @@ class StaffServiceImpl(
 			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
 			if (authority != null) {
 				val userCompany = UserCompany(
+					id = UserCompanyId(
+						userPrincipalId = user.id,
+						userAuthorityId = authority.id,
+						companyId = staff.company!!.id
+					),
 					userAuthority = authority,
 					company = staff.company,
 					userPrincipal = user,

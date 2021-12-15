@@ -10,6 +10,5 @@ import kotlin.reflect.KClass
 @Constraint(validatedBy = [ValidAuthorityValidator::class])
 annotation class ValidAuthority(
 	val message: String = "{${MessageKey.AUTHORITY_INVALID}}",
-	val groups: Array<KClass<*>> = [],
 	val payload: Array<KClass<out Payload>> = []
 )

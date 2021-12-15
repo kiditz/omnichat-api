@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile
 
 interface UserService : UserDetailsService {
 	fun signUp(signUpDto: SignUpDto): UserPrincipal
-	fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal
+//	fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal
 	fun loadUserById(id: Long): UserDetails
 	fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal
 	fun updateImage(user: UserPrincipal, multipartFile: MultipartFile): UserPrincipal
