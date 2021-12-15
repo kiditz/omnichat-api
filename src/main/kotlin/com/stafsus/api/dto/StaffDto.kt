@@ -5,6 +5,7 @@ import com.stafsus.api.entity.ProductType
 import com.stafsus.api.entity.Staff
 import com.stafsus.api.entity.StaffStatus
 import com.stafsus.api.validation.ValidAuthority
+import com.stafsus.api.validation.ValidProductType
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotNull
@@ -25,7 +26,8 @@ data class StaffDto(
 	val password: String? = null,
 	@field:ValidAuthority
 	val authority: List<String>? = null,
-	val products: Set<ProductType>? = null,
+	@field:ValidProductType
+	val products: List<String>? = null,
 ) {
 	fun toEntity(company: Company): Staff {
 		return Staff(

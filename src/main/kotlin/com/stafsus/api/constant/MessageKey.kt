@@ -33,5 +33,6 @@ class MessageKey {
 		const val ADMIN_ACCESS_DENIED="admin.access.denied"
 		const val COMPANY_REQUIRED="company.required"
 		const val AUTHORITY_INVALID="authority.invalid"
+		const val PRODUCT_TYPE_INVALID="product_type.invalid"
 	}
 }

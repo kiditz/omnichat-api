@@ -7,9 +7,9 @@ import kotlin.reflect.KClass
 
 @Target(AnnotationTarget.FIELD)
 @MustBeDocumented
-@Constraint(validatedBy = [ValidAuthorityValidator::class])
-annotation class ValidAuthority(
-	val message: String = "{${MessageKey.AUTHORITY_INVALID}}",
+@Constraint(validatedBy = [ValidProductTypeValidator::class])
+annotation class ValidProductType(
+	val message: String = "{${MessageKey.PRODUCT_TYPE_INVALID}}",
 	val groups: Array<KClass<*>> = [],
 	val payload: Array<KClass<out Payload>> = []
 )

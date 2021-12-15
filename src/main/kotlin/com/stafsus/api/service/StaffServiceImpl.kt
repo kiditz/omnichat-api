@@ -29,10 +29,12 @@ class StaffServiceImpl(
 		var staff = staffRepository
 			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
 			.orElse(staffDto.toEntity(company))
-		val user = addUser(staffDto, userPrincipal)
-		addProduct(staff, staffDto.products!!)
+		if (!userRepository.existsByEmail(staff.email)) {
+			val user = addUser(staffDto, userPrincipal)
+			addAuthority(staff, user)
+		}
+		addProduct(staff, staffDto.products!!.map { ProductType.valueOf(it) }.toSet())
 		staff = staffRepository.save(staff)
-		addAuthority(staff, user)
 		return staff
 	}
 
@@ -45,7 +47,7 @@ class StaffServiceImpl(
 	}
 
 	private fun addProduct(staff: Staff, products: Set<ProductType>) {
-		staff.products = productRepository.findByTypeIn(products).toSet()
+		staff.products = productRepository.findByTypeIn(products)
 	}
 
 	private fun addAuthority(staff: Staff, user: UserPrincipal) {
@@ -63,7 +65,9 @@ class StaffServiceImpl(
 					company = staff.company,
 					userPrincipal = user,
 				)
-				userCompanyRepository.save(userCompany)
+				if (!userCompanyRepository.existsById(userCompany.id!!)) {
+					userCompanyRepository.save(userCompany)
+				}
 			}
 		}
 	}
