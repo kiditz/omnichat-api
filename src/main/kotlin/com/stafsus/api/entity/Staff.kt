@@ -34,5 +34,5 @@ data class Staff(
 		joinColumns = [JoinColumn(name = "staff_id")],
 		inverseJoinColumns = [JoinColumn(name = "product_id")]
 	)
-	var products: List<Product>? = null
+	var channels: List<Channel>? = null
 ) : Auditable()

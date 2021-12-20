@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
-import java.lang.Exception
 import javax.validation.ConstraintViolationException
 
 @ControllerAdvice
@@ -29,7 +28,7 @@ class GlobalExceptionHandler(
 	fun handleValidationException(ex: ValidationException): ResponseEntity<ResponseDto> {
 		log.info("handleValidationException: {}", ex.message)
 		return ResponseEntity(
-			ResponseDto(false, translateService.toLocale(ex.message!!), ex.message),
+			ResponseDto(false, translateService.toLocale(ex.message!!, ex.extraData), ex.message),
 			HttpStatus.INTERNAL_SERVER_ERROR
 		)
 	}
@@ -118,7 +117,7 @@ class GlobalExceptionHandler(
 			val errorMessage: String = err.message!!
 			val args =
 				err.constraintDescriptor.attributes.entries.filter { it.key == "value" || it.key == "min" || it.key == "max" }
-					.map { it.value }.toTypedArray()
+					.map { it.value }.toList()
 			errors[err.propertyPath.last().name] = translateService.toLocale(errorMessage.trim(), args)
 		}
 		return ResponseEntity(ResponseDto(false, errors = errors), HttpStatus.BAD_REQUEST)

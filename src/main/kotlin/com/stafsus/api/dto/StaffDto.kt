@@ -26,8 +26,7 @@ data class StaffDto(
 	val password: String? = null,
 	@field:ValidAuthority
 	val authority: List<String>? = null,
-	@field:ValidProductType
-	val products: List<String>? = null,
+	val channels: List<Long> = mutableListOf(),
 ) {
 	fun toEntity(company: Company): Staff {
 		return Staff(

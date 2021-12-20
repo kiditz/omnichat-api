@@ -1,7 +1,9 @@
 package com.stafsus.api.service
 
+import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.entity.*
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.*
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -17,8 +19,8 @@ class StaffServiceImpl(
 	private val userRepository: UserRepository,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userCompanyRepository: UserCompanyRepository,
+	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
-	private val productRepository: ProductRepository,
 	private val identIconService: IdentIconService,
 	private val fileService: FileService,
 ) : StaffService {
@@ -33,7 +35,11 @@ class StaffServiceImpl(
 			val user = addUser(staffDto, userPrincipal)
 			addAuthority(staff, user)
 		}
-		addProduct(staff, staffDto.products!!.map { ProductType.valueOf(it) }.toSet())
+
+		staffDto.channels.forEach {
+			channelRepository.findById(it)
+				.orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND, extraData = listOf("")) };
+		}
 		staff = staffRepository.save(staff)
 		return staff
 	}
@@ -46,9 +52,9 @@ class StaffServiceImpl(
 		)
 	}
 
-	private fun addProduct(staff: Staff, products: Set<ProductType>) {
-		staff.products = productRepository.findByTypeIn(products)
-	}
+//	private fun addProduct(staff: Staff, products: Set<ProductType>) {
+//		staff.products = productRepository.findByTypeIn(products)
+//	}
 
 	private fun addAuthority(staff: Staff, user: UserPrincipal) {
 		val authorities = staff.authority.split(",")
