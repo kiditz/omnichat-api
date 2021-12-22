@@ -31,17 +31,35 @@ class StaffServiceImpl(
 		var staff = staffRepository
 			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
 			.orElse(staffDto.toEntity(company))
-		if (!userRepository.existsByEmail(staff.email)) {
-			val user = addUser(staffDto, userPrincipal)
-			addAuthority(staff, user)
-		}
-
-		staffDto.channels.forEach {
-			channelRepository.findById(it)
-				.orElseThrow { ValidationException(MessageKey.CHANNEL_NOT_FOUND, extraData = listOf("")) };
-		}
+		staff.channels = mapChannels(staffDto)
+		setAuthority(staff, staffDto, userPrincipal)
 		staff = staffRepository.save(staff)
 		return staff
+	}
+
+	private fun setAuthority(
+		staff: Staff,
+		staffDto: StaffDto,
+		userPrincipal: UserPrincipal
+	) {
+		if (!userRepository.existsByEmail(staff.email)) {
+			val user = addUser(staffDto)
+			addAuthority(staff, user)
+		} else {
+			addAuthority(staff, userPrincipal)
+		}
+	}
+
+	private fun mapChannels(staffDto: StaffDto): MutableList<Channel> {
+		val channels = mutableListOf<Channel>()
+		staffDto.channels.forEach {
+			val channel = channelRepository.findById(it)
+				.orElseThrow {
+					ValidationException(MessageKey.CHANNEL_WITH_ID_NOT_FOUND, extra = listOf(it))
+				}
+			channels.add(channel)
+		}
+		return channels
 	}
 
 	override fun getStaffList(page: Int, size: Int): List<Staff> {
@@ -51,10 +69,6 @@ class StaffServiceImpl(
 			PageRequest.of(page, size, Sort.Direction.DESC, "id")
 		)
 	}
-
-//	private fun addProduct(staff: Staff, products: Set<ProductType>) {
-//		staff.products = productRepository.findByTypeIn(products)
-//	}
 
 	private fun addAuthority(staff: Staff, user: UserPrincipal) {
 		val authorities = staff.authority.split(",")
@@ -78,14 +92,13 @@ class StaffServiceImpl(
 		}
 	}
 
-	private fun addUser(staff: StaffDto, userPrincipal: UserPrincipal): UserPrincipal {
+	private fun addUser(staff: StaffDto): UserPrincipal {
 		val user = UserPrincipal(
 			email = staff.email!!,
 			name = "${staff.firstName} ${staff.lastName}",
 			status = Status.ACTIVE,
 			password = passwordEncoder.encode(staff.password),
 			isVerified = false,
-			quota = userPrincipal.quota
 		)
 		setProfilePicture(user)
 		return userRepository.save(user)
