@@ -5,6 +5,7 @@ class MessageKey {
 		const val USER_NOT_FOUND = "user.not_found"
 		const val PRODUCT_NOT_FOUND = "product.not_found"
 		const val CHANNEL_NOT_FOUND = "channel.not_found"
+		const val CHANNEL_WITH_ID_NOT_FOUND = "channel.id.not_found"
 		const val PRICE_NOT_FOUND = "price.not_found"
 		const val INDUSTRY_NOT_FOUND = "industry.not_found"
 		const val COMPANY_NOT_FOUND = "company.not_found"
@@ -30,9 +31,9 @@ class MessageKey {
 		const val INVALID_REFRESH_TOKEN = "invalid.refresh.token"
 		const val TRIAL_TIME_IS_UP = "trial.time.is.up"
 		const val MAXIMUM_CHANNEL_HAS_BEEN_REACHED = "maximum.channel.has.been.reached"
-		const val ADMIN_ACCESS_DENIED="admin.access.denied"
-		const val COMPANY_REQUIRED="company.required"
-		const val AUTHORITY_INVALID="authority.invalid"
-		const val PRODUCT_TYPE_INVALID="product_type.invalid"
+		const val ADMIN_ACCESS_DENIED = "admin.access.denied"
+		const val COMPANY_REQUIRED = "company.required"
+		const val AUTHORITY_INVALID = "authority.invalid"
+		const val PRODUCT_TYPE_INVALID = "product_type.invalid"
 	}
 }

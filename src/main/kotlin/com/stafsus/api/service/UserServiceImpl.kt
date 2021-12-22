@@ -29,7 +29,6 @@ class UserServiceImpl(
 	private val userCompanyRepository: UserCompanyRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
-	private val staffRepository: StaffRepository,
 	private val apiKeyRepository: ApiKeyRepository,
 	private val fileService: FileService,
 

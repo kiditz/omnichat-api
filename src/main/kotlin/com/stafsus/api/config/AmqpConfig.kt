@@ -50,34 +50,34 @@ class AmqpConfig(
 
 	@Bean
 	fun installUnofficialWhatsApp(): Queue {
-		return Queue("${UNOFFICIAL_WHATSAPP.name}_q".toLowerCase(), true)
+		return Queue("${UNOFFICIAL_WHATSAPP.name}_q".lowercase(), true)
 	}
 
 	@Bean
 	fun installUnofficialWhatsAppExchange(): DirectExchange {
-		return DirectExchange("${UNOFFICIAL_WHATSAPP.name}_ex".toLowerCase())
+		return DirectExchange("${UNOFFICIAL_WHATSAPP.name}_ex".lowercase())
 	}
 
 	@Bean
 	fun bindUnofficialWhatsApp(): Binding {
 		return BindingBuilder.bind(installUnofficialWhatsApp()).to(installUnofficialWhatsAppExchange())
-			.with("${UNOFFICIAL_WHATSAPP.name}_rk".toLowerCase())
+			.with("${UNOFFICIAL_WHATSAPP.name}_rk".lowercase())
 	}
 
 	@Bean
 	fun installTelegram(): Queue {
-		return Queue("${TELEGRAM_BOT.name}_q".toLowerCase(), true)
+		return Queue("${TELEGRAM_BOT.name}_q".lowercase(), true)
 	}
 
 	@Bean
 	fun installTelegramAppExchange(): DirectExchange {
-		return DirectExchange("${TELEGRAM_BOT.name}_ex".toLowerCase())
+		return DirectExchange("${TELEGRAM_BOT.name}_ex".lowercase())
 	}
 
 	@Bean
 	fun bindTelegram(): Binding {
 		return BindingBuilder.bind(installUnofficialWhatsApp()).to(installUnofficialWhatsAppExchange())
-			.with("${TELEGRAM_BOT.name}_rk".toLowerCase())
+			.with("${TELEGRAM_BOT.name}_rk".lowercase())
 	}
 
 

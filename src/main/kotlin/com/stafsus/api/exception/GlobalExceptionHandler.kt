@@ -28,7 +28,7 @@ class GlobalExceptionHandler(
 	fun handleValidationException(ex: ValidationException): ResponseEntity<ResponseDto> {
 		log.info("handleValidationException: {}", ex.message)
 		return ResponseEntity(
-			ResponseDto(false, translateService.toLocale(ex.message!!, ex.extraData), ex.message),
+			ResponseDto(false, translateService.toLocale(ex.message!!, ex.extra), ex.message),
 			HttpStatus.INTERNAL_SERVER_ERROR
 		)
 	}
