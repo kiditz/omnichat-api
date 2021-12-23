@@ -17,8 +17,7 @@ class CompanyServiceImpl(
 	}
 
 	override fun getCompany(): Company {
-		val companyId = ThreadLocalStorage.getTenantId()
-			?: throw ValidationException(MessageKey.COMPANY_REQUIRED)
+		val companyId = getCompanyId()
 		return companyRepository.findById(companyId)
 			.orElseThrow { ValidationException(MessageKey.COMPANY_NOT_FOUND) }
 	}

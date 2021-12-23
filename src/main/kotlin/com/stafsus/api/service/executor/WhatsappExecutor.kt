@@ -21,7 +21,7 @@ class WhatsappExecutor(
 	}
 
 	override fun restart(channel: Channel): Channel {
-		channel.whatsApp?.deviceStatus = DeviceStatus.ACTIVE
+		channel.whatsApp?.deviceStatus = DeviceStatus.PENDING
 		channelRepository.saveAndFlush(channel)
 		rabbitService.sendRestart(channel)
 		simpMessagingTemplate.convertAndSend("/topic/channel.${channel.id}", channel)
@@ -37,7 +37,7 @@ class WhatsappExecutor(
 	}
 
 	private fun resetValue(channel: Channel) {
-		channel.whatsApp?.deviceStatus = DeviceStatus.INACTIVE
+		channel.whatsApp?.deviceStatus = DeviceStatus.PENDING
 		channel.whatsApp?.status = ChannelStatus.OFFLINE
 		channel.whatsApp?.qrCode = null
 		channel.whatsApp?.browserSession = null

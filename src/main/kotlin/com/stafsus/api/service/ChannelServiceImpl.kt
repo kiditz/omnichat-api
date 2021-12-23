@@ -110,6 +110,11 @@ class ChannelServiceImpl(
 	}
 
 	override fun findChannels(productId: Long, page: Int, size: Int): Page<Channel> {
-		return channelRepository.findByProductId(productId, PageRequest.of(page, size, Sort.by("id").descending()))
+		val companyId = companyService.getCompanyId();
+		return channelRepository.findByProductIdAndCompanyId(
+			productId,
+			companyId,
+			PageRequest.of(page, size, Sort.by("id").descending())
+		)
 	}
 }
