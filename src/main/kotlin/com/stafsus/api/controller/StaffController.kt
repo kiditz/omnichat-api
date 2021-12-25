@@ -30,7 +30,7 @@ class StaffController(
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('ADMIN') && hasAuthority('SUPERVISOR')")
+	@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('SUPERVISOR')")
 	@Operation(summary = "Staff list", security = [SecurityRequirement(name = "bearer-key")])
 	fun getStaffList(
 		@RequestParam page: Int,

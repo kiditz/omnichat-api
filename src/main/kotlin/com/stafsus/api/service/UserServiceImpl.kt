@@ -124,11 +124,12 @@ class UserServiceImpl(
 
 	override fun loadUserById(id: Long): UserDetails {
 		val user = userRepository.findById(id).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }
-		log.info("Tenant ID: {}", ThreadLocalStorage.getTenantId())
-		val tenantId = ThreadLocalStorage.getTenantId() ?: -99
-		val userCompanies =
-			userCompanyRepository.getByUserPrincipalIdAndCompanyId(user.id!!, tenantId)
+		val companyId = ThreadLocalStorage.getTenantId() ?: -99
+		log.info("Company Id: {}", companyId)
+		val userCompanies = userCompanyRepository.getByUserPrincipalIdAndCompanyId(user.id!!, companyId)
+		log.info("User Companies: {}", userCompanies)
 		val authorities = userCompanies.map { Authority.valueOf(it.userAuthority!!.authority) }.toSet()
+		log.info("Found Authorities: {}", authorities)
 		return UserDetailDto(user, authorities)
 	}
 

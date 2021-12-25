@@ -4,6 +4,7 @@ import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
+import com.stafsus.api.projection.StaffView
 import com.stafsus.api.repository.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -67,7 +68,7 @@ class StaffServiceImpl(
 		}.toMutableSet()
 	}
 
-	override fun getStaffList(page: Int, size: Int): Page<Staff> {
+	override fun getStaffList(page: Int, size: Int): Page<StaffView> {
 		val company = companyService.getCompanyId()
 		return staffRepository.getByCompanyId(
 			companyId = company,

@@ -3,6 +3,8 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
       read-date-timestamps-as-nanoseconds: false
+    serialization:
+      order_map_entries_by_keys: true
   rabbitmq:
     addresses: ${AMQP_ADDRESS:amqp://admin:admin@localhost:5672}
     listener:
