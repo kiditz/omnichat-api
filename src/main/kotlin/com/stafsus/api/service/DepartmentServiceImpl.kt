@@ -4,7 +4,7 @@ import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.DepartmentFilterDto
 import com.stafsus.api.entity.Department
 import com.stafsus.api.entity.UserPrincipal
-import com.stafsus.api.execption.ValidationException
+import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.DepartmentRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -14,12 +14,13 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class DepartmentServiceImpl(
-	private val departmentRepository: DepartmentRepository
+	private val departmentRepository: DepartmentRepository,
+	private val companyService: CompanyService,
 ) : DepartmentService {
 
 	@Transactional
 	override fun save(department: Department, userPrincipal: UserPrincipal): Department {
-		department.user = userPrincipal
+		department.company = companyService.getCompany()
 		return departmentRepository.save(department)
 	}
 
@@ -31,12 +32,12 @@ class DepartmentServiceImpl(
 		departmentRepository.deleteById(id)
 	}
 
+
 	override fun findByName(departmentFilterDto: DepartmentFilterDto): Page<Department> {
-		val userId =
-			if (departmentFilterDto.userPrincipal.parentId != null) departmentFilterDto.userPrincipal.parentId else departmentFilterDto.userPrincipal.id
 		val newName = departmentFilterDto.name ?: ""
-		return departmentRepository.findByNameContainingAndUserId(
-			newName, userId!!, PageRequest.of(departmentFilterDto.page, departmentFilterDto.size).withSort(
+		val company = companyService.getCompany()
+		return departmentRepository.findByNameContainingIgnoreCaseAndCompanyId(
+			newName, company.id!!, PageRequest.of(departmentFilterDto.page, departmentFilterDto.size).withSort(
 				Sort.by("name").ascending()
 			)
 		)

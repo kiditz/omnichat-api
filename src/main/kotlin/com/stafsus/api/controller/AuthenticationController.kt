@@ -1,15 +1,11 @@
 package com.stafsus.api.controller
 
 import com.stafsus.api.constant.UrlPath
-import com.stafsus.api.dto.RefreshTokenDto
-import com.stafsus.api.dto.ResponseDto
-import com.stafsus.api.dto.SignInDto
-import com.stafsus.api.dto.UserDetailDto
+import com.stafsus.api.dto.*
 import com.stafsus.api.service.AuthenticationService
+import com.stafsus.api.service.UserService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springframework.security.core.Authentication
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
@@ -19,7 +15,8 @@ import javax.validation.Valid
 @Tag(name = "Authentication", description = "Authentication for admin application")
 @Validated
 class AuthenticationController(
-	private val authenticationService: AuthenticationService
+	private val authenticationService: AuthenticationService,
+	private val userService: UserService
 ) {
 	@PostMapping(UrlPath.SIGN_IN)
 	@Operation(summary = "Get access token")
@@ -28,6 +25,7 @@ class AuthenticationController(
 		return ResponseDto(payload = accessToken)
 	}
 
+
 	@PostMapping(UrlPath.REFRESH)
 	@Operation(summary = "Renew access token by refresh token")
 	fun refresh(@Valid @RequestBody request: RefreshTokenDto): ResponseDto {
@@ -35,10 +33,16 @@ class AuthenticationController(
 		return ResponseDto(payload = accessToken)
 	}
 
-	@GetMapping(UrlPath.USER)
-	@Operation(security = [SecurityRequirement(name = "bearer-key")], summary = "Get User By jwt token")
-	fun getUser(authentication: Authentication): ResponseDto {
-		val userPrincipal = authentication.principal as UserDetailDto
-		return ResponseDto(payload = userPrincipal.user)
+	@GetMapping(UrlPath.AUTHORITY)
+	@Operation(summary = "Get User Authorities")
+	fun getAuthorities(): ResponseDto {
+		return ResponseDto(payload = authenticationService.getAuthorities())
+	}
+
+	@PostMapping(UrlPath.SIGN_UP)
+	@Operation(summary = "Register user as admin")
+	fun registerAdmin(@Valid @RequestBody request: SignUpDto): ResponseDto {
+		val user = userService.signUp(request)
+		return ResponseDto(payload = user)
 	}
 }

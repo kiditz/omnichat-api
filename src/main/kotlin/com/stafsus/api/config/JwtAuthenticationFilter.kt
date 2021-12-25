@@ -15,12 +15,17 @@ class JwtAuthenticationFilter(
 	private val userService: UserService,
 	private val jwtService: JwtService
 ) : OncePerRequestFilter() {
+
 	override fun doFilterInternal(
 		request: HttpServletRequest,
 		response: HttpServletResponse,
 		filterChain: FilterChain
 	) {
 		val token = getJwtFromRequest(request)
+		val tenantId = request.getHeader("X-CompanyID")
+		if (StringUtils.isNotEmpty(tenantId)) {
+			ThreadLocalStorage.setTenant(tenantId.toLong())
+		}
 		if (StringUtils.isNotEmpty(token) && jwtService.validateToken(token)) {
 			val userId = jwtService.getUserIdFromToken(token)
 			if (userId != null) {

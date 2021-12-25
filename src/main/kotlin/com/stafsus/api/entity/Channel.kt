@@ -1,10 +1,16 @@
 package com.stafsus.api.entity
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import javax.persistence.*
 
 @Entity
 @Table
+@JsonIdentityInfo(
+	generator = ObjectIdGenerators.PropertyGenerator::class,
+	property = "id"
+)
 data class Channel(
 	@Id
 	@Column(nullable = false)
@@ -14,20 +20,21 @@ data class Channel(
 	var name: String,
 	@Column(nullable = false, length = 8)
 	var deviceId: String,
-	@Column(length = 20)
-	var phone: String? = null,
-	@Column(nullable = false)
-	var isOnline: Boolean,
-	@Column(nullable = false)
-	var isActive: Boolean,
-	@Column(nullable = false)
-	var isPending: Boolean,
-	@ManyToOne
-	@JoinColumn(name = "user_id")
+	var imageUrl: String? = null,
+) : Auditable() {
+	@ManyToOne(cascade = [CascadeType.ALL])
+	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
-	@ManyToOne
+	var company: Company? = null
+
+	@ManyToOne(cascade = [CascadeType.ALL])
 	@JoinColumn(name = "product_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var product: Product? = null,
-) : Auditable()
+	var product: Product? = null
+
+	@OneToOne(mappedBy = "channel", cascade = [CascadeType.ALL])
+	var whatsApp: WhatsAppChannel? = null
+
+	@OneToOne(mappedBy = "channel")
+	var telegram: TelegramChannel? = null
+}

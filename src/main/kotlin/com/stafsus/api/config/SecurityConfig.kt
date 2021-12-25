@@ -1,7 +1,6 @@
 package com.stafsus.api.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.service.JwtService
 import com.stafsus.api.service.UserService
 import org.springframework.context.annotation.Bean
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -55,16 +53,8 @@ class SecurityConfig(
 	@Throws(Exception::class)
 	override fun configure(http: HttpSecurity) {
 		http
-			.requestMatchers().antMatchers(
-				"${UrlPath.API_AUTH}/**",
-				"${UrlPath.DEPARTMENT}/**",
-				"${UrlPath.TAG}/**",
-				"${UrlPath.PRODUCT}/**",
-				"${UrlPath.PRICE}/**",
-				"${UrlPath.TRANSACTION}/**",
-				"${UrlPath.CHANNEL}/**",
-			)
-			.and()
+			.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+			.antMatcher("/api/**")
 			.cors().and()
 			.csrf().disable()
 			.logout().disable()
@@ -73,18 +63,20 @@ class SecurityConfig(
 			.and()
 			.headers()
 			.frameOptions().sameOrigin()
-			.and() // we don't need CSRF because our token is invulnerable
+			.and()
 			.authorizeRequests()
 			.antMatchers(
-				HttpMethod.POST,
 				"/api/auth/refresh-token",
 				"/api/auth/sign-in",
 				"/api/auth/sign-up",
+				"/api/staff/sign-up",
+				"/api/staff/check-staff",
 				"/api/auth/sign-out",
+				"/api/industry",
+				"/api/auth/authority"
 			).permitAll()
 			.anyRequest().authenticated()
 			.and()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 	}
 }

@@ -30,12 +30,52 @@ class FileServiceImpl(private val properties: FirebaseProperties) : FileService 
 		}?alt=media"
 	}
 
+
+	override fun getImageUrl(name: String, destination: String): String {
+		return "${properties.imageUrl}/${
+			URLEncoder.encode(
+				"${properties.root}/$destination/$name",
+				StandardCharsets.UTF_8
+			)
+		}?alt=media"
+	}
+
 	override fun save(destination: String, file: MultipartFile): String {
 		val bucket: Bucket = StorageClient.getInstance().bucket()
 		val fileName = generateFileName(file.originalFilename!!)
 		bucket.create("${properties.root}/$destination/$fileName", file.bytes, file.contentType)
 		return fileName
 	}
+
+	override fun saveOriginal(destination: String, file: MultipartFile): String {
+		val bucket: Bucket = StorageClient.getInstance().bucket()
+		val fileName = file.originalFilename
+		bucket.create("${properties.root}/$destination/$fileName", file.bytes, file.contentType)
+		return fileName!!
+	}
+
+	override fun saveOriginal(file: MultipartFile): String {
+		val bucket: Bucket = StorageClient.getInstance().bucket()
+		val fileName = file.originalFilename
+		bucket.create("${properties.root}/$fileName", file.bytes, file.contentType)
+		return fileName!!
+	}
+
+	override fun saveOriginal(name: String, contentType: String, byte: ByteArray): String {
+		return saveOriginal(name, "", contentType, byte)
+	}
+
+	override fun saveOriginal(name: String, destination: String, contentType: String, byte: ByteArray): String {
+		val bucket: Bucket = StorageClient.getInstance().bucket()
+		val fileName = "$name.png"
+		if (StringUtils.hasText(destination)) {
+			bucket.create("${properties.root}/$destination/$fileName", byte, contentType)
+		} else {
+			bucket.create("${properties.root}/$fileName", byte, contentType)
+		}
+		return fileName
+	}
+
 
 	override fun save(file: MultipartFile): String {
 		val bucket: Bucket = StorageClient.getInstance().bucket()

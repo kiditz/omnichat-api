@@ -1,12 +1,14 @@
 package com.stafsus.api.dto
 
+import com.stafsus.api.entity.ChannelStatus
+import com.stafsus.api.entity.DeviceStatus
+
 data class WhatsAppChannelDto(
-	val phone: String? = null,
+	var phone: String? = null,
 	var browserSession: String? = null,
 	var qrCode: String? = null,
 	var deviceId: String? = null,
 	val pushName: String? = null,
-	var isOnline: Boolean? = null,
-	var isActive: Boolean? = null,
-	var isPending: Boolean? = null,
+	var status: ChannelStatus? = null,
+	var deviceStatus: DeviceStatus? = null,
 )

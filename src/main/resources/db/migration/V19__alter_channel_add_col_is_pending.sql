@@ -1,1 +1,0 @@
-ALTER TABLE channel ADD COLUMN is_pending boolean NOT NULL DEFAULT FALSE;

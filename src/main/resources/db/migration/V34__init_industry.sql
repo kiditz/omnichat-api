@@ -1,0 +1,17 @@
+INSERT INTO public.industry(name, created_at, version) VALUES ('Automotive', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Banking & Finance', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Consumer Goods', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Pharmaceutical', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Energy', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Mining', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Government', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Healthcare', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Manufacturing', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Insurance', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Media & Entertainment', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Retail', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Property', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Transportation', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Telecommunications', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Education', now(), 0);
+INSERT INTO public.industry(name, created_at, version) VALUES ('Other', now(), 0);

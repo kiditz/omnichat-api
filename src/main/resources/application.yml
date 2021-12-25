@@ -2,6 +2,9 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: false
+      read-date-timestamps-as-nanoseconds: false
+    serialization:
+      order_map_entries_by_keys: true
   rabbitmq:
     addresses: ${AMQP_ADDRESS:amqp://admin:admin@localhost:5672}
     listener:
@@ -16,7 +19,7 @@ spring:
         multiplier: 2
   servlet:
     multipart:
-      max-file-size: 10MB
+      max-file-size: 5MB
       max-request-size: 5MB
   jpa:
     show-sql: false
@@ -43,7 +46,9 @@ security:
   jwtExpirationInMs: 3600000
   refreshExpirationDateInMs: 604800000
 
-
+server:
+  forward-headers-strategy: FRAMEWORK
+  
 springdoc:
   use-fqn: true
   swagger-ui:
@@ -66,3 +71,5 @@ feign:
         connectTimeout: 30000
         readTimeout: 60000
         loggerLevel: full
+app:
+  invitationUrl: "http://localhost:3000/invititation"

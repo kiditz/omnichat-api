@@ -20,9 +20,9 @@ class JwtServiceImpl(
 	override fun generate(userPrincipal: UserPrincipal): AccessTokenDto {
 		val now = Date()
 		val expiryDate = Date(now.time + jwtExpirationInMs)
-		val roles = userPrincipal.authorities
+//		val roles = userPrincipal.authorities
 		val claims = mutableMapOf<String, Any>()
-		claims["roles"] = roles
+//		claims["roles"] = roles
 		val token = Jwts.builder()
 			.setClaims(claims)
 			.setIssuer(userPrincipal.email)

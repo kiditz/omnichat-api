@@ -4,6 +4,7 @@ import com.stafsus.api.dto.WhatsAppChannelDto
 import com.stafsus.api.entity.WhatsAppChannel
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.WhatsAppChannelRepository
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -11,8 +12,10 @@ import java.util.*
 @Service
 class WhatsAppChannelServiceImpl(
 	private val whatsAppChannelRepository: WhatsAppChannelRepository,
-	private val channelRepository: ChannelRepository
+	private val channelRepository: ChannelRepository,
+	private val simpMessagingTemplate: SimpMessagingTemplate
 ) : WhatsAppChannelService {
+
 	@Transactional
 	override fun save(channelDto: WhatsAppChannelDto): Optional<WhatsAppChannel> {
 		val channelOpt = channelRepository.findByDeviceId(channelDto.deviceId!!)
@@ -24,12 +27,11 @@ class WhatsAppChannelServiceImpl(
 			waChannel.pushName = channelDto.pushName ?: waChannel.pushName
 			waChannel.qrCode = channelDto.qrCode ?: waChannel.qrCode
 			waChannel.channel = channel
-
-			channel.isOnline = channelDto.isOnline ?: channel.isOnline
-			channel.isPending = channelDto.isPending ?: channel.isPending
-			channel.isActive = channelDto.isActive ?: channel.isActive
-			channelRepository.save(channel)
-			return Optional.of(whatsAppChannelRepository.save(waChannel))
+			waChannel.status = channelDto.status ?: waChannel.status
+			waChannel.deviceStatus = channelDto.deviceStatus ?: waChannel.deviceStatus
+			channel.whatsApp = waChannel
+			simpMessagingTemplate.convertAndSend("/topic/channel.${channel.id}", channel)
+			return Optional.of(waChannel)
 		}
 		return Optional.empty()
 	}
