@@ -32,7 +32,8 @@ data class Staff(
 	@JoinTable(
 		name = "staff_assignment",
 		joinColumns = [JoinColumn(name = "staff_id")],
-		inverseJoinColumns = [JoinColumn(name = "product_id")]
+		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
-	var channels: List<Channel>? = null
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	var channels: MutableList<Channel> = mutableListOf()
 ) : Auditable()

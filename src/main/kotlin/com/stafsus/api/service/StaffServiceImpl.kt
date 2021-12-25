@@ -31,7 +31,7 @@ class StaffServiceImpl(
 		var staff = staffRepository
 			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
 			.orElse(staffDto.toEntity(company))
-		staff.channels = mapChannels(staffDto)
+		staff.channels.addAll(mapChannels(staffDto))
 		setAuthority(staff, staffDto, userPrincipal)
 		staff = staffRepository.save(staff)
 		return staff
