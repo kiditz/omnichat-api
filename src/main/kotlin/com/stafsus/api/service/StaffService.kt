@@ -4,8 +4,9 @@ import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.entity.Staff
 import com.stafsus.api.entity.UserPrincipal
 import org.springframework.data.domain.Page
+import org.springframework.transaction.annotation.Transactional
 
 interface StaffService {
-	fun addStaff(staffDto: StaffDto, userPrincipal: UserPrincipal): Staff
 	fun getStaffList(page: Int, size: Int): Page<Staff>
+	fun addStaff(staffDto: StaffDto): Staff
 }

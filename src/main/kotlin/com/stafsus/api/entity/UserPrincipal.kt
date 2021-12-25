@@ -30,8 +30,8 @@ data class UserPrincipal(
 	var status: Status,
 	@Column(nullable = false)
 	var isVerified: Boolean,
-	@OneToOne(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+
+	@OneToOne(cascade = [CascadeType.ALL])
 	@JoinColumn(name = "quota_id", nullable = true)
 	var quota: Quota? = null,
-
-	) : Auditable()
+) : Auditable()

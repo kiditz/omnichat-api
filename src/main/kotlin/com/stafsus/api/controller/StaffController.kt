@@ -3,7 +3,6 @@ package com.stafsus.api.controller
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.StaffDto
-import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.service.StaffService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -25,13 +24,13 @@ class StaffController(
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun addStaff(authentication: Authentication, @Valid @RequestBody staffDto: StaffDto): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		val staff = staffService.addStaff(staffDto, user)
+//		val user = (authentication.principal as UserDetailDto).user
+		val staff = staffService.addStaff(staffDto)
 		return ResponseDto(payload = staff)
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN') && hasAuthority('SUPERVISOR')")
 	@Operation(summary = "Staff list", security = [SecurityRequirement(name = "bearer-key")])
 	fun getStaffList(
 		@RequestParam page: Int,

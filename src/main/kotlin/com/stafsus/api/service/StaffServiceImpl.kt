@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional
 class StaffServiceImpl(
 	private val staffRepository: StaffRepository,
 	private val companyService: CompanyService,
-	private val userRepository: UserRepository,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userCompanyRepository: UserCompanyRepository,
+	private val userRepository: UserRepository,
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
@@ -27,88 +27,74 @@ class StaffServiceImpl(
 ) : StaffService {
 
 	@Transactional
-	override fun addStaff(staffDto: StaffDto, userPrincipal: UserPrincipal): Staff {
+	override fun addStaff(staffDto: StaffDto): Staff {
 		val company = companyService.getCompany()
-		var staff = staffRepository
-			.findByEmailAndCompanyId(staffDto.email!!, company.id!!)
-			.orElse(staffDto.toEntity(company))
-		staff.channels.addAll(mapChannels(staffDto))
-		setAuthority(staff, staffDto, userPrincipal)
-		staff = staffRepository.save(staff)
-		return staff
+		val authority = userAuthorityRepository.findByAuthority(staffDto.authority!!)
+			.orElseThrow { ValidationException(MessageKey.AUTHORITY_INVALID) }
+		val user = getUser(staffDto)
+		val userCompany = getUserCompany(company, authority, user)
+		val staff = Staff(
+			user = user,
+			company = userCompany.company,
+			status = StaffStatus.ACTIVE,
+			authority = authority,
+		)
+		staff.channels.addAll(getChannels(staffDto))
+		return staffRepository.saveAndFlush(staff)
 	}
 
-	private fun setAuthority(
-		staff: Staff,
-		staffDto: StaffDto,
-		userPrincipal: UserPrincipal
-	) {
-		if (!userRepository.existsByEmail(staff.email)) {
-			val user = addUser(staffDto)
-			addAuthority(staff, user)
-		} else {
-			addAuthority(staff, userPrincipal)
-		}
+	private fun getUserCompany(
+		company: Company,
+		authority: UserAuthority,
+		user: UserPrincipal
+	): UserCompany {
+		val userCompany = UserCompany(
+			id = UserCompanyId(
+				companyId = company.id,
+				userAuthorityId = authority.id,
+				userPrincipalId = user.id
+			),
+		)
+		return userCompanyRepository.save(userCompany)
 	}
 
-	private fun mapChannels(staffDto: StaffDto): MutableSet<Channel> {
-		val channels = mutableSetOf<Channel>()
-		staffDto.channels.forEach {
-			val channel = channelRepository.findById(it)
-				.orElseThrow {
-					ValidationException(MessageKey.CHANNEL_WITH_ID_NOT_FOUND, extra = listOf(it))
-				}
-			channels.add(channel)
+	private fun getUser(staffDto: StaffDto): UserPrincipal {
+		var user = UserPrincipal(
+			email = staffDto.email!!,
+			name = staffDto.name!!,
+			status = Status.ACTIVE,
+			isVerified = false,
+			imageUrl = getPicture(staffDto.email),
+			password = passwordEncoder.encode(staffDto.password)
+		)
+		user = userRepository.findByEmail(staffDto.email)
+			.orElse(user)
+		if (!userRepository.existsByEmail(staffDto.email)) {
+			userRepository.save(user)
 		}
-		return channels
+		return user
+	}
+
+	private fun getChannels(staffDto: StaffDto): MutableSet<Channel> {
+		return staffDto.channels.map { channelId ->
+			channelRepository.findById(channelId)
+				.orElseThrow { ValidationException(MessageKey.CHANNEL_WITH_ID_NOT_FOUND, listOf(channelId)) }
+		}.toMutableSet()
 	}
 
 	override fun getStaffList(page: Int, size: Int): Page<Staff> {
-		val companyId = companyService.getCompanyId()
+		val company = companyService.getCompanyId()
 		return staffRepository.getByCompanyId(
-			companyId,
-			PageRequest.of(page, size, Sort.Direction.DESC, "id")
+			companyId = company,
+			PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))
 		)
 	}
 
-	private fun addAuthority(staff: Staff, user: UserPrincipal) {
-		val authorities = staff.authority.split(",")
-		authorities.forEach {
-			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
-			if (authority != null) {
-				val userCompany = UserCompany(
-					id = UserCompanyId(
-						userPrincipalId = user.id,
-						userAuthorityId = authority.id,
-						companyId = staff.company!!.id
-					),
-					userAuthority = authority,
-					company = staff.company,
-					userPrincipal = user,
-				)
-				if (!userCompanyRepository.existsById(userCompany.id!!)) {
-					userCompanyRepository.save(userCompany)
-				}
-			}
-		}
-	}
 
-	private fun addUser(staff: StaffDto): UserPrincipal {
-		val user = UserPrincipal(
-			email = staff.email!!,
-			name = "${staff.firstName} ${staff.lastName}",
-			status = Status.ACTIVE,
-			password = passwordEncoder.encode(staff.password),
-			isVerified = false,
-		)
-		setProfilePicture(user)
-		return userRepository.save(user)
-	}
-
-	private fun setProfilePicture(userPrincipal: UserPrincipal) {
-		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))
+	private fun getPicture(email: String): String {
+		val icon = identIconService.saveBytes(identIconService.generateImage(email, 400, 400))
 		val destination = "profile"
-		val image = fileService.saveOriginal(userPrincipal.email, destination, MediaType.IMAGE_PNG_VALUE, icon)
-		userPrincipal.imageUrl = fileService.getImageUrl(image, destination)
+		val image = fileService.saveOriginal(email, destination, MediaType.IMAGE_PNG_VALUE, icon)
+		return fileService.getImageUrl(image, destination)
 	}
 }

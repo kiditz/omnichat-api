@@ -1,7 +1,6 @@
 package com.stafsus.api.entity
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import javax.persistence.*
 
@@ -16,26 +15,23 @@ data class Staff(
 	@Column(nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long? = null,
-	@Column(name = "first_name")
-	var firstName: String,
-	@Column(name = "last_name")
-	var lastName: String,
-	var email: String,
-	var authority: String,
 	@Enumerated(EnumType.STRING)
 	var status: StaffStatus,
 	@OneToOne
+	@JoinColumn(name = "user_id")
+	var user: UserPrincipal? = null,
+	@OneToOne
 	@JoinColumn(name = "company_id")
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var company: Company? = null,
-
-	) : Auditable() {
+	@OneToOne
+	@JoinColumn(name = "authority_id")
+	var authority: UserAuthority? = null
+) : Auditable() {
 	@ManyToMany(cascade = [CascadeType.ALL])
 	@JoinTable(
 		name = "staff_assignment",
 		joinColumns = [JoinColumn(name = "staff_id")],
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	val channels: MutableSet<Channel> = HashSet()
 }
