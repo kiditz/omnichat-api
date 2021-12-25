@@ -73,11 +73,11 @@ class ChannelServiceImpl(
 	}
 
 	private fun validateInstall(company: Company) {
-		if (now().isAfter(company.user!!.quota!!.expiredAt)) {
+		if (now().isAfter(company.quota.expiredAt)) {
 			throw QuotaLimitException(MessageKey.TRIAL_TIME_IS_UP)
 		}
 
-		if (company.user!!.quota!!.maxChannel <= channelRepository.countByCompanyId(company.id!!)) {
+		if (company.quota.maxChannel <= channelRepository.countByCompanyId(company.id!!)) {
 			throw QuotaLimitException(MessageKey.MAXIMUM_CHANNEL_HAS_BEEN_REACHED)
 		}
 	}
@@ -110,7 +110,7 @@ class ChannelServiceImpl(
 	}
 
 	override fun findChannels(productId: Long, page: Int, size: Int): Page<Channel> {
-		val companyId = companyService.getCompanyId();
+		val companyId = companyService.getCompanyId()
 		return channelRepository.findByProductIdAndCompanyId(
 			productId,
 			companyId,

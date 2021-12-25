@@ -4,6 +4,7 @@ CREATE TABLE company
     name character varying(100)  NOT NULL,
     industry_id bigint NOT NULL,
     user_id bigint NOT NULL,
+    quota_id bigint NOT NULL,
     CONSTRAINT company_pkey PRIMARY KEY (id),
     created_at timestamp without time zone NOT NULL,
     created_by character varying(255) ,

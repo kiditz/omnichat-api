@@ -8,7 +8,6 @@ import com.stafsus.api.repository.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
-import org.springframework.http.MediaType
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,12 +17,10 @@ class StaffServiceImpl(
 	private val staffRepository: StaffRepository,
 	private val companyService: CompanyService,
 	private val userAuthorityRepository: UserAuthorityRepository,
-	private val userCompanyRepository: UserCompanyRepository,
 	private val userRepository: UserRepository,
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
-	private val identIconService: IdentIconService,
-	private val fileService: FileService,
+	private val userService: UserService,
 ) : StaffService {
 
 	@Transactional
@@ -32,10 +29,12 @@ class StaffServiceImpl(
 		val authority = userAuthorityRepository.findByAuthority(staffDto.authority!!)
 			.orElseThrow { ValidationException(MessageKey.AUTHORITY_INVALID) }
 		val user = getUser(staffDto)
-		val userCompany = getUserCompany(company, authority, user)
+
+		userService.addAuthority(Authority.valueOf(staffDto.authority), user, company)
+
 		val staff = Staff(
 			user = user,
-			company = userCompany.company,
+			company = company,
 			status = StaffStatus.ACTIVE,
 			authority = authority,
 		)
@@ -43,20 +42,6 @@ class StaffServiceImpl(
 		return staffRepository.saveAndFlush(staff)
 	}
 
-	private fun getUserCompany(
-		company: Company,
-		authority: UserAuthority,
-		user: UserPrincipal
-	): UserCompany {
-		val userCompany = UserCompany(
-			id = UserCompanyId(
-				companyId = company.id,
-				userAuthorityId = authority.id,
-				userPrincipalId = user.id
-			),
-		)
-		return userCompanyRepository.save(userCompany)
-	}
 
 	private fun getUser(staffDto: StaffDto): UserPrincipal {
 		var user = UserPrincipal(
@@ -64,7 +49,7 @@ class StaffServiceImpl(
 			name = staffDto.name!!,
 			status = Status.ACTIVE,
 			isVerified = false,
-			imageUrl = getPicture(staffDto.email),
+			imageUrl = userService.getPicture(staffDto.email),
 			password = passwordEncoder.encode(staffDto.password)
 		)
 		user = userRepository.findByEmail(staffDto.email)
@@ -90,11 +75,4 @@ class StaffServiceImpl(
 		)
 	}
 
-
-	private fun getPicture(email: String): String {
-		val icon = identIconService.saveBytes(identIconService.generateImage(email, 400, 400))
-		val destination = "profile"
-		val image = fileService.saveOriginal(email, destination, MediaType.IMAGE_PNG_VALUE, icon)
-		return fileService.getImageUrl(image, destination)
-	}
 }

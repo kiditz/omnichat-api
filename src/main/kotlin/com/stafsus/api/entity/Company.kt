@@ -21,8 +21,11 @@ data class Company(
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var user: UserPrincipal? = null,
+	var user: UserPrincipal,
 	@OneToOne
 	@JoinColumn(name = "industry_id")
-	var industry: Industry? = null,
+	var industry: Industry,
+	@OneToOne
+	@JoinColumn(name = "quota_id", nullable = true)
+	var quota: Quota,
 ) : Auditable()

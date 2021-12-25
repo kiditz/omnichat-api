@@ -27,9 +27,10 @@ class UserServiceImpl(
 	private val companyRepository: CompanyRepository,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userCompanyRepository: UserCompanyRepository,
+	private val quotaRepository: QuotaRepository,
+	private val apiKeyRepository: ApiKeyRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val identIconService: IdentIconService,
-	private val apiKeyRepository: ApiKeyRepository,
 	private val fileService: FileService,
 
 	) : UserService {
@@ -41,14 +42,13 @@ class UserServiceImpl(
 		if (userRepository.existsByEmail(userPrincipal.email)) {
 			throw ValidationException(MessageKey.EMAIL_EXISTS)
 		}
+		userPrincipal.imageUrl = getPicture(signUpDto.email!!)
 		setPassword(userPrincipal)
-		setProfilePicture(userPrincipal)
-		setQuota(userPrincipal)
 		userRepository.save(userPrincipal)
 		val industry = industryRepository.findById(signUpDto.industryId!!)
 			.orElseThrow { ValidationException(MessageKey.INDUSTRY_NOT_FOUND) }
 		val company = addCompany(signUpDto, industry, userPrincipal)
-		addAuthority(userPrincipal, company)
+		addAuthority(Authority.ADMIN, userPrincipal, company)
 		addApiKey(company)
 		return userPrincipal
 	}
@@ -66,15 +66,16 @@ class UserServiceImpl(
 		userPrincipal.password = passwordEncoder.encode(userPrincipal.password)
 	}
 
-	private fun setQuota(userPrincipal: UserPrincipal) {
+	override fun getTrialQuota(): Quota {
 		val price =
 			priceRepository.findByName(Price.TRIAL).orElseThrow { ValidationException(MessageKey.PRICE_NOT_FOUND) }
-		userPrincipal.quota = Quota(
+		val quota = Quota(
 			maxAgent = price.agentAmount!!.toInt(),
 			maxChannel = price.channelAmount!!.toInt(),
 			monthlyActiveVisitor = price.monthlyActiveVisitor,
 			expiredAt = LocalDateTime.now().plusDays(price.accessTime)
 		)
+		return quotaRepository.save(quota)
 	}
 
 	private fun addCompany(
@@ -84,7 +85,8 @@ class UserServiceImpl(
 	): Company {
 		val company = Company(
 			name = signUpDto.companyName!!,
-			industry = industry,
+			industry = industry!!,
+			quota = getTrialQuota(),
 			user = userPrincipal,
 		)
 		company.createdBy = userPrincipal.email
@@ -93,8 +95,8 @@ class UserServiceImpl(
 		return company
 	}
 
-	private fun addAuthority(userPrincipal: UserPrincipal, company: Company) {
-		val userAuthority = userAuthorityRepository.findByAuthority(Authority.ADMIN.name).orElse(null)
+	override fun addAuthority(authority: Authority, userPrincipal: UserPrincipal, company: Company) {
+		val userAuthority = userAuthorityRepository.findByAuthority(authority.name).orElse(null)
 		val userCompany = UserCompany(
 			UserCompanyId(
 				userPrincipalId = userPrincipal.id,
@@ -107,49 +109,12 @@ class UserServiceImpl(
 		)
 		userCompanyRepository.save(userCompany)
 	}
-//
-//	@Transactional
-//	override fun invitationSignUp(signUpDto: StaffSignUpDto): UserPrincipal {
-//		val staff = staffRepository.findByInvitationCode(signUpDto.invitationCode!!)
-//			.orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
-//		val userPrincipal = signUpDto.toUser(staff.email)
-//		userPrincipal.name = "${staff.firstName} ${staff.lastName}"
-//		if (userRepository.existsByEmail(userPrincipal.email)) {
-//			throw ValidationException(MessageKey.EMAIL_EXISTS)
-//		}
-//		setPassword(userPrincipal)
-//		setProfilePicture(userPrincipal)
-//		userRepository.saveAndFlush(userPrincipal)
-//		val authorities = staff.authority.split(",")
-//		val userCompanies = mutableListOf<UserCompany>()
-//		authorities.forEach {
-//			val authority = userAuthorityRepository.findByAuthority(it).orElse(null)
-//			if (authority != null) {
-//				val userCompany = UserCompany(
-//					id = UserCompanyId(
-//						userPrincipal.id,
-//						staff.company!!.id,
-//						authority.id
-//					),
-//					userAuthority = authority,
-//					company = staff.company,
-//					userPrincipal = userPrincipal
-//				)
-//				userCompanies.add(userCompany)
-//			}
-//		}
-//		userCompanyRepository.saveAll(userCompanies)
-//		staff.status = StaffStatus.ACTIVE
-//		staffRepository.save(staff)
-//		return userPrincipal
-//	}
 
-
-	private fun setProfilePicture(userPrincipal: UserPrincipal) {
-		val icon = identIconService.saveBytes(identIconService.generateImage(userPrincipal.email, 400, 400))
+	override fun getPicture(email: String): String {
+		val icon = identIconService.saveBytes(identIconService.generateImage(email, 400, 400))
 		val destination = "profile"
-		val image = fileService.saveOriginal(userPrincipal.email, destination, MediaType.IMAGE_PNG_VALUE, icon)
-		userPrincipal.imageUrl = fileService.getImageUrl(image, destination)
+		val image = fileService.saveOriginal(email, destination, MediaType.IMAGE_PNG_VALUE, icon)
+		return fileService.getImageUrl(image, destination)
 	}
 
 	override fun loadUserByUsername(username: String): UserDetails {

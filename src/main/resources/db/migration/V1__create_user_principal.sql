@@ -5,7 +5,6 @@ CREATE TABLE user_principal
     name character varying(100) NOT NULL,
     password character varying(60) NOT NULL,
     status character varying(20)  NOT NULL,
-    quota_id bigint,
     image_url text NOT NULL DEFAULT '',
     is_verified boolean NOT NULL DEFAULT FALSE,
     CONSTRAINT user_principal_pkey PRIMARY KEY (id),
