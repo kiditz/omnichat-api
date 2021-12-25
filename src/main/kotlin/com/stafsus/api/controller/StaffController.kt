@@ -38,6 +38,6 @@ class StaffController(
 		@RequestParam size: Int,
 	): ResponseDto {
 		val staffs = staffService.getStaffList(page, size)
-		return ResponseDto(payload = staffs)
+		return ResponseDto.fromPage(staffs)
 	}
 }

@@ -5,6 +5,7 @@ import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
 import com.stafsus.api.repository.*
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
@@ -50,8 +51,8 @@ class StaffServiceImpl(
 		}
 	}
 
-	private fun mapChannels(staffDto: StaffDto): MutableList<Channel> {
-		val channels = mutableListOf<Channel>()
+	private fun mapChannels(staffDto: StaffDto): MutableSet<Channel> {
+		val channels = mutableSetOf<Channel>()
 		staffDto.channels.forEach {
 			val channel = channelRepository.findById(it)
 				.orElseThrow {
@@ -62,9 +63,9 @@ class StaffServiceImpl(
 		return channels
 	}
 
-	override fun getStaffList(page: Int, size: Int): List<Staff> {
+	override fun getStaffList(page: Int, size: Int): Page<Staff> {
 		val companyId = companyService.getCompanyId()
-		return staffRepository.findByCompanyId(
+		return staffRepository.getByCompanyId(
 			companyId,
 			PageRequest.of(page, size, Sort.Direction.DESC, "id")
 		)

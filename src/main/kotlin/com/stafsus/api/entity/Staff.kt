@@ -28,6 +28,8 @@ data class Staff(
 	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 	var company: Company? = null,
+
+	) : Auditable() {
 	@ManyToMany(cascade = [CascadeType.ALL])
 	@JoinTable(
 		name = "staff_assignment",
@@ -35,5 +37,5 @@ data class Staff(
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var channels: MutableList<Channel> = mutableListOf()
-) : Auditable()
+	val channels: MutableSet<Channel> = HashSet()
+}

@@ -21,16 +21,20 @@ data class Channel(
 	@Column(nullable = false, length = 8)
 	var deviceId: String,
 	var imageUrl: String? = null,
+) : Auditable() {
 	@ManyToOne(cascade = [CascadeType.ALL])
 	@JoinColumn(name = "company_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var company: Company? = null,
+	var company: Company? = null
+
 	@ManyToOne(cascade = [CascadeType.ALL])
 	@JoinColumn(name = "product_id")
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	var product: Product? = null,
+	var product: Product? = null
+
 	@OneToOne(mappedBy = "channel", cascade = [CascadeType.ALL])
-	var whatsApp: WhatsAppChannel? = null,
+	var whatsApp: WhatsAppChannel? = null
+
 	@OneToOne(mappedBy = "channel")
 	var telegram: TelegramChannel? = null
-) : Auditable()
+}
