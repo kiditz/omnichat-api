@@ -4,6 +4,7 @@ import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.StaffDto
 import com.stafsus.api.service.StaffService
+import com.stafsus.api.service.TranslateService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -18,13 +19,13 @@ import javax.validation.Valid
 @Tag(name = "Staff", description = "Staff API")
 @Validated
 class StaffController(
-	private val staffService: StaffService
+	private val staffService: StaffService,
+	private val translateService: TranslateService,
 ) {
 	@PostMapping
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun addStaff(authentication: Authentication, @Valid @RequestBody staffDto: StaffDto): ResponseDto {
-//		val user = (authentication.principal as UserDetailDto).user
 		val staff = staffService.addStaff(staffDto)
 		return ResponseDto(payload = staff)
 	}
@@ -38,5 +39,16 @@ class StaffController(
 	): ResponseDto {
 		val staffs = staffService.getStaffList(page, size)
 		return ResponseDto.fromPage(staffs)
+	}
+
+
+	@DeleteMapping("{id}")
+	@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('SUPERVISOR')")
+	@Operation(summary = "Delete Staff", security = [SecurityRequirement(name = "bearer-key")])
+	fun deleteStaff(
+		@PathVariable id: Long,
+	): ResponseDto {
+		val message = staffService.deleteStaff(id)
+		return ResponseDto(message = translateService.toLocale(message), success = true)
 	}
 }

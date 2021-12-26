@@ -23,7 +23,6 @@ class StaffServiceImpl(
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val userService: UserService,
-	private val translateService: TranslateService
 ) : StaffService {
 
 	@Transactional
@@ -51,7 +50,7 @@ class StaffServiceImpl(
 	override fun deleteStaff(id: Long): String {
 		val staff = staffRepository.findById(id).orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
 		staff.status = Status.INACTIVE
-		return translateService.toLocale(MessageKey.STAFF_DELETED_SUCCESS)
+		return MessageKey.STAFF_DELETED_SUCCESS
 	}
 
 
