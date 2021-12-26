@@ -46,7 +46,7 @@ class StaffServiceImpl(
 		return staffRepository.saveAndFlush(staff)
 	}
 
-
+	@Transactional
 	override fun deleteStaff(id: Long): String {
 		val staff = staffRepository.findById(id).orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
 		staff.status = Status.INACTIVE
