@@ -27,7 +27,7 @@ data class ChannelProjection(
 //	fun getWhatsappStatus(): ChannelStatus?
 //
 //	@Value("#{target.whatsApp?.deviceStatus}")
-//	fun getWhatsappDeviceStatus(): DeviceStatus?
+//	fun getWhatsappDeviceStatus(): com.stafsus.api.entity.DeviceStatus?
 //
 //	@Value("#{target.telegram?.botName}")
 //	fun getTelegramBotName(): String?
@@ -39,5 +39,5 @@ data class ChannelProjection(
 //	fun getTelegramStatus(): ChannelStatus?
 //
 //	@Value("#{target.telegram?.deviceStatus}")
-//	fun getTelegramDeviceStatus(): DeviceStatus?
+//	fun getTelegramDeviceStatus(): com.stafsus.api.entity.DeviceStatus?
 )

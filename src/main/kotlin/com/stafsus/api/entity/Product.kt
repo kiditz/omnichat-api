@@ -2,6 +2,7 @@ package com.stafsus.api.entity
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -27,4 +28,20 @@ data class Product(
 	var priority: Long,
 	@Enumerated(EnumType.STRING)
 	var type: ProductType? = null,
-) : Auditable()
+) : Auditable() {
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as Product
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
+
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(id = $id )"
+	}
+}

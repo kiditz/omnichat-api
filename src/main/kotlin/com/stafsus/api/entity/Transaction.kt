@@ -1,5 +1,6 @@
 package com.stafsus.api.entity
 
+import org.hibernate.Hibernate
 import java.math.BigDecimal
 import javax.persistence.*
 
@@ -15,4 +16,19 @@ data class Transaction(
 	var status: TransactionStatus? = null,
 	@OneToMany(mappedBy = "transaction", cascade = [CascadeType.ALL])
 	var items: List<ItemDetails>? = null,
-) : Auditable()
+) : Auditable() {
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as Transaction
+
+		return orderId == other.orderId
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
+
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(orderId = $orderId )"
+	}
+}
