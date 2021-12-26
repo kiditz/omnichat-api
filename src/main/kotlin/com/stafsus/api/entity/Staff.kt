@@ -2,6 +2,7 @@ package com.stafsus.api.entity
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -16,7 +17,7 @@ data class Staff(
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	val id: Long? = null,
 	@Enumerated(EnumType.STRING)
-	var status: StaffStatus,
+	var status: Status,
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	var user: UserPrincipal? = null,
@@ -34,4 +35,13 @@ data class Staff(
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
 	val channels: MutableSet<Channel> = HashSet()
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as Staff
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
 }

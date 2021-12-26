@@ -3,6 +3,7 @@ package com.stafsus.api.entity
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.stafsus.api.utils.UnixToInstantConverter
+import org.hibernate.Hibernate
 import java.time.OffsetDateTime
 import javax.persistence.*
 
@@ -48,4 +49,19 @@ data class Chat(
 	var company: Company? = null,
 	@OneToMany(mappedBy = "chat", cascade = [CascadeType.ALL])
 	var messages: List<Message>? = null
-) : Auditable()
+) : Auditable() {
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as Chat
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
+
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(id = $id )"
+	}
+}
