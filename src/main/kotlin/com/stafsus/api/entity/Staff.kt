@@ -26,7 +26,10 @@ data class Staff(
 	var company: Company? = null,
 	@OneToOne
 	@JoinColumn(name = "authority_id")
-	var authority: UserAuthority? = null
+	var authority: UserAuthority? = null,
+	@OneToOne
+	@JoinColumn(name = "department_id")
+	var department: Department? = null,
 ) : Auditable() {
 	@ManyToMany(cascade = [CascadeType.ALL])
 	@JoinTable(
@@ -44,4 +47,10 @@ data class Staff(
 	}
 
 	override fun hashCode(): Int = javaClass.hashCode()
+
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(id = $id )"
+	}
+
 }

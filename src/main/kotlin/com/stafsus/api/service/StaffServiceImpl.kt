@@ -19,6 +19,7 @@ class StaffServiceImpl(
 	private val companyService: CompanyService,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userRepository: UserRepository,
+	private val departmentRepository: DepartmentRepository,
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val userService: UserService,
@@ -30,14 +31,16 @@ class StaffServiceImpl(
 		val authority = userAuthorityRepository.findByAuthority(staffDto.authority!!)
 			.orElseThrow { ValidationException(MessageKey.AUTHORITY_INVALID) }
 		val user = getUser(staffDto)
-
+		val department = departmentRepository.findById(staffDto.department!!)
+			.orElseThrow { ValidationException(MessageKey.DEPARTMENT_NOT_FOUND) }
 		userService.addAuthority(Authority.valueOf(staffDto.authority), user, company)
 
 		val staff = Staff(
 			user = user,
 			company = company,
-			status = StaffStatus.ACTIVE,
+			status = Status.ACTIVE,
 			authority = authority,
+			department = department,
 		)
 		staff.channels.addAll(getChannels(staffDto))
 		return staffRepository.saveAndFlush(staff)
