@@ -2,7 +2,6 @@ package com.stafsus.api.dto
 
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotBlank
-import javax.validation.constraints.Positive
 import javax.validation.constraints.Size
 
 data class StaffDto(
@@ -17,7 +16,6 @@ data class StaffDto(
 	val password: String? = null,
 	@field:NotBlank
 	val authority: String? = null,
-	@field:Positive
 	val department: Long? = null,
 	val channels: Set<Long> = mutableSetOf(),
 )
