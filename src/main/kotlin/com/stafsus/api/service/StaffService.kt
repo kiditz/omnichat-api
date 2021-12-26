@@ -8,4 +8,5 @@ import org.springframework.data.domain.Page
 interface StaffService {
 	fun getStaffList(page: Int, size: Int): Page<StaffView>
 	fun addStaff(staffDto: StaffDto): Staff
+	fun deleteStaff(id: Long): String
 }

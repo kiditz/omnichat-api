@@ -3,6 +3,7 @@ package com.stafsus.api.entity
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -30,4 +31,18 @@ data class UserPrincipal(
 	var status: Status,
 	@Column(nullable = false)
 	var isVerified: Boolean,
-) : Auditable()
+) : Auditable() {
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as UserPrincipal
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
+	@Override
+	override fun toString(): String {
+		return this::class.simpleName + "(id = $id )"
+	}
+}

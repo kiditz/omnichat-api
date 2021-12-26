@@ -23,6 +23,7 @@ class StaffServiceImpl(
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val userService: UserService,
+	private val translateService: TranslateService
 ) : StaffService {
 
 	@Transactional
@@ -44,6 +45,13 @@ class StaffServiceImpl(
 		)
 		staff.channels.addAll(getChannels(staffDto))
 		return staffRepository.saveAndFlush(staff)
+	}
+
+
+	override fun deleteStaff(id: Long): String {
+		val staff = staffRepository.findById(id).orElseThrow { ValidationException(MessageKey.STAFF_NOT_FOUND) }
+		staff.status = Status.INACTIVE
+		return translateService.toLocale(MessageKey.STAFF_DELETED_SUCCESS)
 	}
 
 
@@ -72,9 +80,10 @@ class StaffServiceImpl(
 	}
 
 	override fun getStaffList(page: Int, size: Int): Page<StaffView> {
-		val company = companyService.getCompanyId()
-		return staffRepository.getByCompanyId(
-			companyId = company,
+		val companyId = companyService.getCompanyId()
+		return staffRepository.getByCompanyIdAndStatus(
+			companyId,
+			Status.ACTIVE,
 			PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"))
 		)
 	}
