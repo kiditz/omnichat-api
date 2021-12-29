@@ -27,9 +27,6 @@ data class Staff(
 	@OneToOne
 	@JoinColumn(name = "authority_id")
 	var authority: UserAuthority? = null,
-	@OneToOne
-	@JoinColumn(name = "department_id")
-	var department: Department? = null,
 ) : Auditable() {
 	@ManyToMany(cascade = [CascadeType.ALL])
 	@JoinTable(
@@ -38,6 +35,7 @@ data class Staff(
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
 	val channels: MutableSet<Channel> = HashSet()
+
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false

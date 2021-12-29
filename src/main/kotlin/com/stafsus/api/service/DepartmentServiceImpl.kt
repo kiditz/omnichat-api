@@ -19,7 +19,7 @@ class DepartmentServiceImpl(
 ) : DepartmentService {
 
 	@Transactional
-	override fun save(department: Department, userPrincipal: UserPrincipal): Department {
+	override fun addDepartment(department: Department): Department {
 		department.company = companyService.getCompany()
 		return departmentRepository.save(department)
 	}

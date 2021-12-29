@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping(UrlPath.PRODUCT)
+@RequestMapping(UrlPath.API_PRODUCT)
 @Tag(name = "Product", description = "Product API")
 @Validated
 class ProductController(

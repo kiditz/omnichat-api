@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.TAG)
+@RequestMapping(UrlPath.API_TAG)
 @Tag(name = "Tag", description = "Tag API")
 @Validated
 class TagController(

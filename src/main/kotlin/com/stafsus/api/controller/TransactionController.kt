@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.TRANSACTION)
+@RequestMapping(UrlPath.API_TRANSACTION)
 @Tag(name = "Transaction", description = "Tag API")
 @Validated
 class TransactionController(

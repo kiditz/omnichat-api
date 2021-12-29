@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(UrlPath.CHAT)
+@RequestMapping(UrlPath.API_CHAT)
 @Tag(name = "Chat", description = "Chat API")
 @Validated
 class ChatController(

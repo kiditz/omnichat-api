@@ -4,6 +4,7 @@ import com.stafsus.api.dto.ChannelDto
 import com.stafsus.api.dto.ControlChannelDto
 import com.stafsus.api.entity.Channel
 import com.stafsus.api.entity.UserPrincipal
+import com.stafsus.api.projection.ProductChannelView
 import org.springframework.data.domain.Page
 import org.springframework.transaction.annotation.Transactional
 
@@ -13,4 +14,5 @@ interface ChannelService {
 	fun findChannels(productId: Long, page: Int, size: Int): Page<Channel>
 	@Transactional
 	fun editChannel(channelId: Long, channelDto: ChannelDto): Channel
+	fun findProductsChannels(): List<ProductChannelView>
 }

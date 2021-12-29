@@ -12,7 +12,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping(UrlPath.PRICE)
+@RequestMapping(UrlPath.API_PRICE)
 @Tag(name = "Price", description = "Price API")
 @Validated
 class PriceController(

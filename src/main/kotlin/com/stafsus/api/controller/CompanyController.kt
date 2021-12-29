@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping(UrlPath.COMPANY)
+@RequestMapping(UrlPath.API_COMPANY)
 @Tag(name = "Company", description = "Company API")
 @Validated
 class CompanyController(

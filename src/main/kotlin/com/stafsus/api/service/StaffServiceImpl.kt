@@ -40,7 +40,7 @@ class StaffServiceImpl(
 			company = company,
 			status = Status.ACTIVE,
 			authority = authority,
-			department = department,
+//			department = department,
 		)
 		staff.channels.addAll(getChannels(staffDto))
 		return staffRepository.saveAndFlush(staff)

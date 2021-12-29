@@ -18,7 +18,7 @@ class AuditAwareImpl : AuditorAware<String> {
 			authentication is AnonymousAuthenticationToken
 		) {
 			log.debug("AnonymousAuthenticationToken")
-			return Optional.empty()
+			return Optional.of("app")
 		}
 		log.debug("Token Exists")
 		return Optional.ofNullable(authentication.name)

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.STAFF)
+@RequestMapping(UrlPath.API_STAFF)
 @Tag(name = "Staff", description = "Staff API")
 @Validated
 class StaffController(
@@ -23,7 +23,7 @@ class StaffController(
 	private val translateService: TranslateService,
 ) {
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize("hasAuthority('ADMIN', 'SUPERVISOR')")
 	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun addStaff(authentication: Authentication, @Valid @RequestBody staffDto: StaffDto): ResponseDto {
 		val staff = staffService.addStaff(staffDto)
@@ -31,7 +31,7 @@ class StaffController(
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('SUPERVISOR')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@Operation(summary = "Staff list", security = [SecurityRequirement(name = "bearer-key")])
 	fun getStaffList(
 		@RequestParam page: Int,
@@ -43,7 +43,7 @@ class StaffController(
 
 
 	@DeleteMapping("{id}")
-	@PreAuthorize("hasAuthority('ADMIN') || hasAuthority('SUPERVISOR')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@Operation(summary = "Delete Staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun deleteStaff(
 		@PathVariable id: Long,

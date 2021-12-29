@@ -16,7 +16,7 @@ import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping(UrlPath.CHANNEL)
+@RequestMapping(UrlPath.API_CHANNEL)
 @Tag(name = "Channel", description = "Channel API")
 @Validated
 class ChannelController(
@@ -53,11 +53,18 @@ class ChannelController(
 	@GetMapping
 	@Operation(summary = "Get Active Channels", security = [SecurityRequirement(name = "bearer-key")])
 	fun findChannel(
-		@RequestParam productId: Long,
+		@RequestParam(required = false) productId: Long,
 		@RequestParam page: Int,
 		@RequestParam size: Int,
 	): ResponseDto {
 		val channels = channelService.findChannels(productId, page, size)
 		return ResponseDto.fromPage(channels)
+	}
+
+	@GetMapping(UrlPath.PRODUCT)
+	@Operation(summary = "Get Channel By Product", security = [SecurityRequirement(name = "bearer-key")])
+	fun findChannelWithProduct(): ResponseDto {
+		val channels = channelService.findProductsChannels()
+		return ResponseDto(payload = channels)
 	}
 }

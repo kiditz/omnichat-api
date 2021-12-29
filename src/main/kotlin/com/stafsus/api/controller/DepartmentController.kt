@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.DEPARTMENT)
+@RequestMapping(UrlPath.API_DEPARTMENT)
 @Tag(name = "Department", description = "Department API")
 @Validated
 class DepartmentController(
@@ -29,21 +29,19 @@ class DepartmentController(
 	@PreAuthorize("hasAuthority('ADMIN')")
 	@Operation(summary = "Add Department", security = [SecurityRequirement(name = "bearer-key")])
 	fun addDepartment(@Valid @RequestBody request: DepartmentDto, authentication: Authentication): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		val department = departmentService.save(department = request.toEntity(), user)
+		(authentication.principal as UserDetailDto).user
+		val department = departmentService.addDepartment(department = request.toEntity())
 		return ResponseDto(payload = department)
 	}
 
 	@PutMapping("{id}")
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPER_ADMIN')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@Operation(summary = "Update Department", security = [SecurityRequirement(name = "bearer-key")])
 	fun updateDepartment(
 		@PathVariable id: Long,
 		@Valid @RequestBody request: DepartmentDto,
-		authentication: Authentication
 	): ResponseDto {
-		val user = (authentication.principal as UserDetailDto).user
-		val department = departmentService.save(department = request.toEntity().copy(id = id), user)
+		val department = departmentService.addDepartment(department = request.toEntity().copy(id = id))
 		return ResponseDto(payload = department)
 	}
 

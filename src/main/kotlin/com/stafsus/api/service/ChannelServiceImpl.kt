@@ -9,6 +9,8 @@ import com.stafsus.api.entity.Product
 import com.stafsus.api.entity.UserPrincipal
 import com.stafsus.api.exception.QuotaLimitException
 import com.stafsus.api.exception.ValidationException
+import com.stafsus.api.projection.ChannelProductView
+import com.stafsus.api.projection.ProductChannelView
 import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.ProductRepository
 import com.stafsus.api.service.executor.ChannelExecutor
@@ -116,5 +118,27 @@ class ChannelServiceImpl(
 			companyId,
 			PageRequest.of(page, size, Sort.by("id").descending())
 		)
+	}
+
+	override fun findProductsChannels(): List<ProductChannelView> {
+		val companyId = companyService.getCompanyId()
+		val products = productRepository.findAll(Sort.by("name"))
+		val channels = products.map { product ->
+			val channelViews =
+				channelRepository.findByProductIdAndCompanyId(product.id!!, companyId).map { channel ->
+					ChannelProductView(
+						id = channel.id!!,
+						channel.name,
+						imageUrl = channel.imageUrl!!,
+					)
+				}
+			ProductChannelView(
+				id = product.id,
+				name = product.name,
+				imageUrl = product.imageUrl,
+				channels = channelViews
+			)
+		}.toList()
+		return channels
 	}
 }

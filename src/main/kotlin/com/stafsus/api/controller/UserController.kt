@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.USER)
+@RequestMapping(UrlPath.API_USER)
 @Tag(name = "User", description = "User Management API")
 @Validated
 class UserController(

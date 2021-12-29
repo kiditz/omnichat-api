@@ -18,14 +18,5 @@ interface StaffView {
 	@Value("#{target.user.imageUrl}")
 	fun getImage(): String
 
-	fun getChannels(): List<ChannelView>
-}
-
-interface ChannelView {
-
-	@Value("#{target.product.imageUrl}")
-	fun getProductImage(): String
-
-	@Value("#{target.product.name}")
-	fun getProductName(): String
+	fun getChannels(): Set<StaffChannelView>
 }
