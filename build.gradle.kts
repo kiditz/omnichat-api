@@ -34,8 +34,8 @@ dependencies {
 	// Jwt
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	// Open Api
-	implementation("org.springdoc:springdoc-openapi-ui:1.6.0")
-	implementation("org.springdoc:springdoc-openapi-kotlin:1.5.12")
+	implementation("org.springdoc:springdoc-openapi-ui:1.6.3")
+	implementation("org.springdoc:springdoc-openapi-kotlin:1.6.3")
 	// Firebase
 	implementation("com.google.firebase:firebase-admin:8.1.0")
 
