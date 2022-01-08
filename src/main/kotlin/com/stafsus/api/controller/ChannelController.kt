@@ -63,7 +63,7 @@ class ChannelController(
 
 	@GetMapping(UrlPath.PRODUCT)
 	@Operation(summary = "Get Channel By Product", security = [SecurityRequirement(name = "bearer-key")])
-	fun findChannelWithProduct(): ResponseDto {
+	fun findProductChannel(): ResponseDto {
 		val channels = channelService.findProductsChannels()
 		return ResponseDto(payload = channels)
 	}

@@ -121,9 +121,10 @@ class ChannelServiceImpl(
 	}
 
 	override fun findProductsChannels(): List<ProductChannelView> {
-		val companyId = companyService.getCompanyId()
+
 		val products = productRepository.findAll(Sort.by("name"))
 		val channels = products.map { product ->
+			val companyId = companyService.getCompanyId()
 			val channelViews =
 				channelRepository.findByProductIdAndCompanyId(product.id!!, companyId).map { channel ->
 					ChannelProductView(

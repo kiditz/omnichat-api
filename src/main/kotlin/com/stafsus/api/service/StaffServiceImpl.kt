@@ -31,8 +31,8 @@ class StaffServiceImpl(
 		val authority = userAuthorityRepository.findByAuthority(staffDto.authority!!)
 			.orElseThrow { ValidationException(MessageKey.AUTHORITY_INVALID) }
 		val user = getUser(staffDto)
-		val department = departmentRepository.findById(staffDto.department!!)
-			.orElseThrow { ValidationException(MessageKey.DEPARTMENT_NOT_FOUND) }
+//		val department = departmentRepository.findById(staffDto.department!!)
+//			.orElseThrow { ValidationException(MessageKey.DEPARTMENT_NOT_FOUND) }
 		userService.addAuthority(Authority.valueOf(staffDto.authority), user, company)
 
 		val staff = Staff(
