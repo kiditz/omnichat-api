@@ -3,6 +3,7 @@ package com.stafsus.api.controller
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
 import com.stafsus.api.dto.StaffDto
+import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.service.StaffService
 import com.stafsus.api.service.TranslateService
 import io.swagger.v3.oas.annotations.Operation
@@ -23,10 +24,11 @@ class StaffController(
 	private val translateService: TranslateService,
 ) {
 	@PostMapping
-	@PreAuthorize("hasAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
 	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun addStaff(authentication: Authentication, @Valid @RequestBody staffDto: StaffDto): ResponseDto {
-		val staff = staffService.addStaff(staffDto)
+		val user = (authentication.principal as UserDetailDto).user
+		val staff = staffService.addStaff(staffDto, user)
 		return ResponseDto(payload = staff)
 	}
 

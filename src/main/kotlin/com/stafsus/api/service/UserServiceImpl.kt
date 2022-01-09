@@ -97,17 +97,26 @@ class UserServiceImpl(
 
 	override fun addAuthority(authority: Authority, userPrincipal: UserPrincipal, company: Company) {
 		val userAuthority = userAuthorityRepository.findByAuthority(authority.name).orElse(null)
-		val userCompany = UserCompany(
-			UserCompanyId(
-				userPrincipalId = userPrincipal.id,
-				userAuthorityId = userAuthority.id,
-				companyId = company.id,
-			),
-			userPrincipal = userPrincipal,
-			userAuthority = userAuthority,
-			company = company
-		)
-		userCompanyRepository.save(userCompany)
+
+		val userCompanies = userCompanyRepository.getByUserPrincipalIdAndCompanyId(userPrincipal.id!!, company.id!!)
+		if (userCompanies.isNotEmpty()) {
+			val current = userCompanies[0]
+			current.id!!.userAuthorityId = userAuthority.id
+			current.userAuthority = userAuthority
+			userCompanyRepository.save(current)
+		} else {
+			val userCompany = UserCompany(
+				UserCompanyId(
+					userPrincipalId = userPrincipal.id,
+					userAuthorityId = userAuthority.id,
+					companyId = company.id,
+				),
+				userPrincipal = userPrincipal,
+				userAuthority = userAuthority,
+				company = company
+			)
+			userCompanyRepository.save(userCompany)
+		}
 	}
 
 	override fun getPicture(email: String): String {

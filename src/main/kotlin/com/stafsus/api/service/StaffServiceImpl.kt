@@ -19,30 +19,28 @@ class StaffServiceImpl(
 	private val companyService: CompanyService,
 	private val userAuthorityRepository: UserAuthorityRepository,
 	private val userRepository: UserRepository,
-	private val departmentRepository: DepartmentRepository,
 	private val channelRepository: ChannelRepository,
 	private val passwordEncoder: PasswordEncoder,
 	private val userService: UserService,
 ) : StaffService {
 
 	@Transactional
-	override fun addStaff(staffDto: StaffDto): Staff {
+	override fun addStaff(staffDto: StaffDto, userPrincipal: UserPrincipal): Staff {
 		val company = companyService.getCompany()
 		val authority = userAuthorityRepository.findByAuthority(staffDto.authority!!)
 			.orElseThrow { ValidationException(MessageKey.AUTHORITY_INVALID) }
-		val user = getUser(staffDto)
-//		val department = departmentRepository.findById(staffDto.department!!)
-//			.orElseThrow { ValidationException(MessageKey.DEPARTMENT_NOT_FOUND) }
-		userService.addAuthority(Authority.valueOf(staffDto.authority), user, company)
+		val user = getUser(staffDto, userPrincipal)
 
+		userService.addAuthority(Authority.valueOf(staffDto.authority), user, company)
 		val staff = Staff(
 			user = user,
 			company = company,
 			status = Status.ACTIVE,
 			authority = authority,
 		)
-		staff.channels.addAll(getChannels(staffDto))
-		return staffRepository.saveAndFlush(staff)
+		staff.channels = getChannels(staffDto)
+		val newStaff = staffRepository.findByUserEmail(staffDto.email!!).orElse(staff)
+		return staffRepository.saveAndFlush(newStaff)
 	}
 
 	@Transactional
@@ -53,21 +51,28 @@ class StaffServiceImpl(
 	}
 
 
-	private fun getUser(staffDto: StaffDto): UserPrincipal {
-		var user = UserPrincipal(
-			email = staffDto.email!!,
-			name = staffDto.name!!,
-			status = Status.ACTIVE,
-			isVerified = false,
-			imageUrl = userService.getPicture(staffDto.email),
-			password = passwordEncoder.encode(staffDto.password)
-		)
-		user = userRepository.findByEmail(staffDto.email)
-			.orElse(user)
-		if (!userRepository.existsByEmail(staffDto.email)) {
-			userRepository.save(user)
+	private fun getUser(staffDto: StaffDto, userPrincipal: UserPrincipal): UserPrincipal {
+		if (userPrincipal.email == staffDto.email) {
+			throw ValidationException(MessageKey.CANNOT_USE_YOUR_OWN_EMAIL)
 		}
-		return user
+		val user: UserPrincipal
+		if (userRepository.existsByEmail(staffDto.email!!)) {
+			user = userRepository.findByEmail(staffDto.email).orElse(null)
+			user.email = staffDto.email
+			user.name = staffDto.name!!
+			user.password = passwordEncoder.encode(staffDto.password)
+			user.isVerified = true
+		} else {
+			user = UserPrincipal(
+				email = staffDto.email,
+				name = staffDto.name!!,
+				status = Status.ACTIVE,
+				isVerified = true,
+				imageUrl = userService.getPicture(staffDto.email),
+				password = passwordEncoder.encode(staffDto.password)
+			)
+		}
+		return userRepository.save(user)
 	}
 
 	private fun getChannels(staffDto: StaffDto): MutableSet<Channel> {

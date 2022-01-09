@@ -28,6 +28,7 @@ class MessageKey {
 		const val OLD_PASSWORD_NOT_MATCHED = "old.password.not.matched"
 		const val UNAUTHORIZED_ERROR = "unauthorized.error"
 		const val EMAIL_EXISTS = "email.exists"
+		const val CANNOT_USE_YOUR_OWN_EMAIL = "cannot.use.your.own.email"
 		const val STAFF_EXISTS = "staff.exists"
 		const val INVALID_REFRESH_TOKEN = "invalid.refresh.token"
 		const val TRIAL_TIME_IS_UP = "trial.time.is.up"

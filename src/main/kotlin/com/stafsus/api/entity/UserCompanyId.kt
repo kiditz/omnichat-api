@@ -7,5 +7,5 @@ import javax.persistence.Embeddable
 data class UserCompanyId(
 	val userPrincipalId: Long? = null,
 	val companyId: Long? = null,
-	val userAuthorityId: Long? = null,
+	var userAuthorityId: Long? = null,
 ) : Serializable

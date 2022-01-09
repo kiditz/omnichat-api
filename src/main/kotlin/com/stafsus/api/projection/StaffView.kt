@@ -18,5 +18,5 @@ interface StaffView {
 	@Value("#{target.user.imageUrl}")
 	fun getImage(): String
 
-	fun getChannels(): Set<StaffChannelView>
+	fun getChannels(): HashSet<StaffChannelView>
 }

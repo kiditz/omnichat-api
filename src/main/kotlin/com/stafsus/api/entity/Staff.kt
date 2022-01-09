@@ -34,7 +34,7 @@ data class Staff(
 		joinColumns = [JoinColumn(name = "staff_id")],
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
-	val channels: MutableSet<Channel> = HashSet()
+	var channels: Set<Channel>? = null
 
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
@@ -50,5 +50,4 @@ data class Staff(
 	override fun toString(): String {
 		return this::class.simpleName + "(id = $id )"
 	}
-
 }

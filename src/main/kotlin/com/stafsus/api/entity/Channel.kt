@@ -3,6 +3,7 @@ package com.stafsus.api.entity
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import org.hibernate.Hibernate
 import javax.persistence.*
 
 @Entity
@@ -37,4 +38,14 @@ data class Channel(
 
 	@OneToOne(mappedBy = "channel")
 	var telegram: TelegramChannel? = null
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
+		other as Channel
+
+		return id != null && id == other.id
+	}
+
+	override fun hashCode(): Int = javaClass.hashCode()
 }
