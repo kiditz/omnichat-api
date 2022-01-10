@@ -33,7 +33,7 @@ class TeamController(
 	}
 
 	@DeleteMapping("{id}")
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+	@PreAuthorize("hasAnyAuthority('ADMIN')")
 	@Operation(summary = "Delete Staff", security = [SecurityRequirement(name = "bearer-key")])
 	fun deleteStaff(
 		@PathVariable id: Long,

@@ -4,10 +4,9 @@ import com.stafsus.api.constant.FtlTemplate
 import com.stafsus.api.constant.MessageKey
 import com.stafsus.api.dto.InvitationDto
 import com.stafsus.api.dto.MailMessageDto
-import com.stafsus.api.entity.Status
-import com.stafsus.api.entity.Team
-import com.stafsus.api.entity.UserPrincipal
+import com.stafsus.api.entity.*
 import com.stafsus.api.exception.ValidationException
+import com.stafsus.api.repository.ChannelRepository
 import com.stafsus.api.repository.TeamRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -19,6 +18,7 @@ class TeamServiceImpl(
 	private val companyService: CompanyService,
 	private val rabbitService: RabbitService,
 	private val fileService: FileService,
+	private val channelRepository: ChannelRepository,
 	@Value("\${app.invitationUrl}") val invitationUrl: String
 ) : TeamService {
 
@@ -34,12 +34,17 @@ class TeamServiceImpl(
 		val company = companyService.getCompany()
 		sendInvitation(user.email, company.name, invitation)
 		val team = Team(
-			status = Status.INACTIVE,
 			email = invitation.email,
 			company = company,
-			picture = fileService.getIdentIcon(invitation.email!!, company.name)
+			picture = fileService.getIdentIcon(invitation.email!!, company.name),
+			authority = Authority.valueOf(invitation.authority!!)
 		)
+		team.channels = getChannels(invitation.channels!!)
 		return teamRepository.save(team)
+	}
+
+	private fun getChannels(channels: List<Long>): Set<Channel> {
+		return channels.map { i -> channelRepository.findById(i).orElse(null) }.toSet()
 	}
 
 	private fun sendInvitation(

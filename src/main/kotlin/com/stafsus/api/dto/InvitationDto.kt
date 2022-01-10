@@ -16,5 +16,5 @@ data class InvitationDto(
 	@field:ValueOfEnum(enumClass = Authority::class)
 	val authority: String? = null,
 	@NotEmpty
-	val channels: List<Int>? = null,
+	val channels: List<Long>? = null,
 )

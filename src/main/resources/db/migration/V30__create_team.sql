@@ -4,6 +4,7 @@ CREATE TABLE team
     picture text NOT NULL,
     email character varying(60) NOT NULL,
     status character varying(30) NOT NULL,
+    authority character varying(60) NOT NULL,
     company_id bigint NOT NULL,
     last_activity timestamp without time zone NOT NULL,
     CONSTRAINT staff_pkey PRIMARY KEY (id),

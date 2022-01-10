@@ -21,13 +21,12 @@ data class Team(
 	var email: String? = null,
 	@Enumerated(EnumType.STRING)
 	var status: Status = Status.INACTIVE,
+	var authority: Authority,
 	var lastActivity: Instant? = null,
 	@OneToOne
 	@JoinColumn(name = "company_id")
 	var company: Company? = null,
-
-
-	) : Auditable() {
+) : Auditable() {
 
 	@ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 	@JoinTable(
