@@ -16,6 +16,5 @@ interface UserService : UserDetailsService {
 	fun editUser(editUserDto: EditUserDto, user: UserPrincipal): UserPrincipal
 	fun updateImage(user: UserPrincipal, multipartFile: MultipartFile): UserPrincipal
 	fun getTrialQuota(): Quota
-	fun getPicture(email: String): String
 	fun addAuthority(authority: Authority, userPrincipal: UserPrincipal, company: Company)
 }

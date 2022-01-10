@@ -2,9 +2,9 @@ package com.stafsus.api.controller
 
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
-import com.stafsus.api.dto.StaffDto
+import com.stafsus.api.dto.InvitationDto
 import com.stafsus.api.dto.UserDetailDto
-import com.stafsus.api.service.StaffService
+import com.stafsus.api.service.TeamService
 import com.stafsus.api.service.TranslateService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -16,33 +16,21 @@ import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
 @RestController
-@RequestMapping(UrlPath.API_STAFF)
-@Tag(name = "Staff", description = "Staff API")
+@RequestMapping(UrlPath.API_TEAM)
+@Tag(name = "Team", description = "Team API")
 @Validated
-class StaffController(
-	private val staffService: StaffService,
+class TeamController(
+	private val staffService: TeamService,
 	private val translateService: TranslateService,
 ) {
-	@PostMapping
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
-	@Operation(summary = "Add new staff", security = [SecurityRequirement(name = "bearer-key")])
-	fun addStaff(authentication: Authentication, @Valid @RequestBody staffDto: StaffDto): ResponseDto {
+	@PostMapping(UrlPath.INVITE)
+	@PreAuthorize("hasAnyAuthority('ADMIN')")
+	@Operation(summary = "Invite new member for your team", security = [SecurityRequirement(name = "bearer-key")])
+	fun inviteStaff(authentication: Authentication, @Valid @RequestBody staffDto: InvitationDto): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
-		val staff = staffService.addStaff(staffDto, user)
+		val staff = staffService.invite(staffDto, user)
 		return ResponseDto(payload = staff)
 	}
-
-	@GetMapping
-	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")
-	@Operation(summary = "Staff list", security = [SecurityRequirement(name = "bearer-key")])
-	fun getStaffList(
-		@RequestParam page: Int,
-		@RequestParam size: Int,
-	): ResponseDto {
-		val staffs = staffService.getStaffList(page, size)
-		return ResponseDto.fromPage(staffs)
-	}
-
 
 	@DeleteMapping("{id}")
 	@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR')")

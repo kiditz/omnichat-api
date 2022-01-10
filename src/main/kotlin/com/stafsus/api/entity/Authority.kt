@@ -1,5 +1,5 @@
 package com.stafsus.api.entity
 
-enum class Authority {
-    ADMIN, STAFF, SUPERVISOR, SUPER_ADMIN
+enum class Authority(val text: String) {
+	ADMIN("Administrator"), STAFF("Staff"), SUPERVISOR("Supervisor")
 }

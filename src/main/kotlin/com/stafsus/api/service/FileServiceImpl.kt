@@ -3,6 +3,7 @@ package com.stafsus.api.service
 import com.google.cloud.storage.Bucket
 import com.google.firebase.cloud.StorageClient
 import com.stafsus.api.config.FirebaseProperties
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.multipart.MultipartFile
@@ -12,7 +13,10 @@ import java.util.*
 
 
 @Service
-class FileServiceImpl(private val properties: FirebaseProperties) : FileService {
+class FileServiceImpl(
+	private val properties: FirebaseProperties,
+	private val identIconService: IdentIconService,
+	) : FileService {
 	fun getExtension(originalFileName: String): String? {
 		return StringUtils.getFilenameExtension(originalFileName)
 	}
@@ -82,5 +86,11 @@ class FileServiceImpl(private val properties: FirebaseProperties) : FileService 
 		val fileName = generateFileName(file.originalFilename!!)
 		bucket.create("${properties.root}/$fileName", file.bytes, file.contentType)
 		return fileName
+	}
+
+	override fun getIdentIcon(text: String, destination: String): String {
+		val icon = identIconService.saveBytes(identIconService.generateImage(text, 400, 400))
+		val image = saveOriginal(text, destination, MediaType.IMAGE_PNG_VALUE, icon)
+		return getImageUrl(image, destination)
 	}
 }

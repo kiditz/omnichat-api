@@ -3,6 +3,7 @@ package com.stafsus.api.entity
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import org.hibernate.Hibernate
+import java.time.Instant
 import javax.persistence.*
 
 @Entity
@@ -11,27 +12,27 @@ import javax.persistence.*
 	generator = ObjectIdGenerators.PropertyGenerator::class,
 	property = "id"
 )
-data class Staff(
+data class Team(
 	@Id
 	@Column(nullable = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	val id: Long? = null,
+	var id: Long? = null,
+	var picture: String? = null,
+	var email: String? = null,
 	@Enumerated(EnumType.STRING)
-	var status: Status,
-	@OneToOne
-	@JoinColumn(name = "user_id")
-	var user: UserPrincipal? = null,
+	var status: Status = Status.INACTIVE,
+	var lastActivity: Instant? = null,
 	@OneToOne
 	@JoinColumn(name = "company_id")
 	var company: Company? = null,
-	@OneToOne
-	@JoinColumn(name = "authority_id")
-	var authority: UserAuthority? = null,
-) : Auditable() {
-	@ManyToMany(cascade = [CascadeType.ALL])
+
+
+	) : Auditable() {
+
+	@ManyToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
 	@JoinTable(
-		name = "staff_assignment",
-		joinColumns = [JoinColumn(name = "staff_id")],
+		name = "team_assignment",
+		joinColumns = [JoinColumn(name = "team_id")],
 		inverseJoinColumns = [JoinColumn(name = "channel_id")]
 	)
 	var channels: Set<Channel>? = null
@@ -39,7 +40,7 @@ data class Staff(
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (other == null || Hibernate.getClass(this) != Hibernate.getClass(other)) return false
-		other as Staff
+		other as Team
 
 		return id != null && id == other.id
 	}

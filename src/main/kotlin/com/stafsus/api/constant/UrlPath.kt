@@ -11,7 +11,7 @@ class UrlPath {
 		const val API_KEY = "/api/api-key"
 		const val API_PRICE = "/api/price"
 		const val API_PRODUCT = "/api/product"
-		const val API_STAFF = "/api/staff"
+		const val API_TEAM = "/api/team"
 		const val API_TAG = "/api/tag"
 		const val API_USER = "/api/user"
 		const val API_TRANSACTION = "/api/transaction"
@@ -21,5 +21,6 @@ class UrlPath {
 		const val REFRESH = "/refresh-token"
 		const val SIGN_IN = "/sign-in"
 		const val PRODUCT = "/product"
+		const val INVITE = "/invite"
 	}
 }

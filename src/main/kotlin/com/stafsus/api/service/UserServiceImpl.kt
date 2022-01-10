@@ -11,7 +11,6 @@ import com.stafsus.api.repository.*
 import org.apache.commons.lang3.RandomStringUtils
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
-import org.springframework.http.MediaType
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -30,9 +29,7 @@ class UserServiceImpl(
 	private val quotaRepository: QuotaRepository,
 	private val apiKeyRepository: ApiKeyRepository,
 	private val passwordEncoder: PasswordEncoder,
-	private val identIconService: IdentIconService,
 	private val fileService: FileService,
-
 	) : UserService {
 	private val log = LoggerFactory.getLogger(javaClass)
 
@@ -42,7 +39,7 @@ class UserServiceImpl(
 		if (userRepository.existsByEmail(userPrincipal.email)) {
 			throw ValidationException(MessageKey.EMAIL_EXISTS)
 		}
-		userPrincipal.imageUrl = getPicture(signUpDto.email!!)
+		userPrincipal.imageUrl = fileService.getIdentIcon(signUpDto.email!!, "profile")
 		setPassword(userPrincipal)
 		userRepository.save(userPrincipal)
 		val industry = industryRepository.findById(signUpDto.industryId!!)
@@ -119,12 +116,6 @@ class UserServiceImpl(
 		}
 	}
 
-	override fun getPicture(email: String): String {
-		val icon = identIconService.saveBytes(identIconService.generateImage(email, 400, 400))
-		val destination = "profile"
-		val image = fileService.saveOriginal(email, destination, MediaType.IMAGE_PNG_VALUE, icon)
-		return fileService.getImageUrl(image, destination)
-	}
 
 	override fun loadUserByUsername(username: String): UserDetails {
 		val user = userRepository.findByEmail(username).orElseThrow { ValidationException(MessageKey.USER_NOT_FOUND) }

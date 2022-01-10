@@ -12,4 +12,5 @@ interface FileService {
 	fun saveOriginal(file: MultipartFile): String
 	fun saveOriginal(name: String, contentType: String, byte: ByteArray): String
 	fun saveOriginal(name: String, destination: String, contentType: String, byte: ByteArray): String
+	fun getIdentIcon(text: String, destination: String): String
 }
