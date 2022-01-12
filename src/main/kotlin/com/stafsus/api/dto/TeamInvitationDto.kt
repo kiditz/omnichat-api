@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.Size
 
-data class InvitationDto(
+data class TeamInvitationDto(
 	@field:Email
 	@field:NotBlank
 	@field:Size(max = 100)

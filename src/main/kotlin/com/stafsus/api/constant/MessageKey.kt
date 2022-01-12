@@ -11,7 +11,7 @@ class MessageKey {
 		const val COMPANY_NOT_FOUND = "company.not_found"
 		const val API_KEY_NOT_FOUND = "api.key.not_found"
 		const val TRANSACTION_NOT_FOUND = "transaction.not_found"
-		const val STAFF_NOT_FOUND = "staff.not_found"
+		const val TEAM_NOT_FOUND = "team.not_found"
 		const val TEAM_DELETED_SUCCESS = "team.delete.success"
 		const val TELEGRAM_TOKEN_REQUIRED = "telegram.token.required"
 		const val INVALID_USER_TO_VERIFY_STAFF = "invalid.user.to.verify.staff"

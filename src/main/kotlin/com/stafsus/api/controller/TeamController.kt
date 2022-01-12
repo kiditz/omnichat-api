@@ -2,7 +2,7 @@ package com.stafsus.api.controller
 
 import com.stafsus.api.constant.UrlPath
 import com.stafsus.api.dto.ResponseDto
-import com.stafsus.api.dto.InvitationDto
+import com.stafsus.api.dto.TeamInvitationDto
 import com.stafsus.api.dto.UserDetailDto
 import com.stafsus.api.service.TeamService
 import com.stafsus.api.service.TranslateService
@@ -26,9 +26,18 @@ class TeamController(
 	@PostMapping(UrlPath.INVITE)
 	@PreAuthorize("hasAnyAuthority('ADMIN')")
 	@Operation(summary = "Invite new member for your team", security = [SecurityRequirement(name = "bearer-key")])
-	fun inviteStaff(authentication: Authentication, @Valid @RequestBody staffDto: InvitationDto): ResponseDto {
+	fun invite(authentication: Authentication, @Valid @RequestBody invitation: TeamInvitationDto): ResponseDto {
 		val user = (authentication.principal as UserDetailDto).user
-		val staff = staffService.invite(staffDto, user)
+		val staff = staffService.invite(invitation, user)
+		return ResponseDto(payload = staff)
+	}
+
+	@PostMapping("${UrlPath.ACCEPT}/{id}")
+	@PreAuthorize("hasAnyAuthority('ADMIN')")
+	@Operation(summary = "Team Accept", security = [SecurityRequirement(name = "bearer-key")])
+	fun accept(authentication: Authentication, @PathVariable id: Long): ResponseDto {
+		val user = (authentication.principal as UserDetailDto).user
+		val staff = staffService
 		return ResponseDto(payload = staff)
 	}
 
@@ -38,7 +47,7 @@ class TeamController(
 	fun deleteStaff(
 		@PathVariable id: Long,
 	): ResponseDto {
-		val message = staffService.deleteStaff(id)
+		val message = staffService.inactive(id)
 		return ResponseDto(message = translateService.toLocale(message), success = true)
 	}
 }

@@ -22,5 +22,6 @@ class UrlPath {
 		const val SIGN_IN = "/sign-in"
 		const val PRODUCT = "/product"
 		const val INVITE = "/invite"
+		const val ACCEPT = "/accept"
 	}
 }
